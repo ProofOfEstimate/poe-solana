@@ -2,6 +2,7 @@
   "rust-analyzer.linkedProjects": [
     "./programs/poe/Cargo.toml",
     "./programs/poe/Cargo.toml",
+    "./programs/poe/Cargo.toml",
     "./programs/poe/Cargo.toml"
   ]
 }
