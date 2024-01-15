@@ -15,4 +15,18 @@ pub mod poe {
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         ctx.accounts.initialize(&ctx.bumps)
     }
+
+    pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {
+        ctx.accounts.register_user(&ctx.bumps)
+    }
+
+    pub fn create_poll(
+        ctx: Context<CreatePoll>,
+        question: String,
+        description: String,
+        end_time: Option<i64>,
+    ) -> Result<()> {
+        ctx.accounts
+            .create_poll(&ctx.bumps, question, description, end_time)
+    }
 }
