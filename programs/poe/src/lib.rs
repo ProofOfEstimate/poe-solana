@@ -48,4 +48,30 @@ pub mod poe {
         ctx.accounts
             .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
     }
+
+    pub fn update_estimate(
+        ctx: Context<UpdateEstimate>,
+        new_lower_estimate: u16,
+        new_upper_estimate: u16,
+    ) -> Result<()> {
+        let new_estimate = (new_lower_estimate + new_upper_estimate) / 2;
+        let new_uncertainty = (new_upper_estimate - new_lower_estimate) as f32 / 100.0;
+        ctx.accounts
+            .update_collective_estimate(&ctx.bumps, new_estimate, new_uncertainty)?;
+        ctx.accounts
+            .update_user_estimate(new_lower_estimate, new_upper_estimate)
+    }
+
+    pub fn remove_estimate(ctx: Context<RemoveEstimate>) -> Result<()> {
+        ctx.accounts.remove_estimate(&ctx.bumps)
+    }
+
+    pub fn resolve_poll(ctx: Context<ResolvePoll>, result: bool) -> Result<()> {
+        ctx.accounts.resolve_poll(result)
+    }
+
+    pub fn collect_points(ctx: Context<CollectPoints>) -> Result<()> {
+        ctx.accounts.collect_points()?;
+        ctx.accounts.transfer_points_to_user()
+    }
 }
