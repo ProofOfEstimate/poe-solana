@@ -2,7 +2,9 @@ use anchor_lang::prelude::*;
 
 pub mod constants;
 pub mod contexts;
+pub mod errors;
 pub mod states;
+mod utils;
 
 use contexts::*;
 
@@ -28,5 +30,22 @@ pub mod poe {
     ) -> Result<()> {
         ctx.accounts
             .create_poll(&ctx.bumps, question, description, end_time)
+    }
+
+    pub fn make_estimate(
+        ctx: Context<MakeEstimate>,
+        lower_estimate: u16,
+        upper_estimate: u16,
+    ) -> Result<()> {
+        let estimate = (lower_estimate + upper_estimate) / 2;
+        let uncertainty = (upper_estimate - lower_estimate) as f32 / 100.0;
+        ctx.accounts.init_estimate_account(
+            &ctx.bumps,
+            lower_estimate,
+            upper_estimate,
+            ctx.accounts.user.score,
+        )?;
+        ctx.accounts
+            .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
     }
 }
