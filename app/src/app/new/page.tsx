@@ -6,7 +6,7 @@ import { useAllPolls } from "@/hooks/queries/useAllPolls";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { Grid, Heading } from "@radix-ui/themes";
 
-export default function Home() {
+export default function New() {
   const program = useAnchorProgram();
   const { data: polls, isLoading } = useAllPolls(program);
 
@@ -22,7 +22,7 @@ export default function Home() {
             xl: "8",
           }}
         >
-          All active Polls
+          New Polls
         </Heading>
         <Grid
           columns={{
@@ -37,11 +37,11 @@ export default function Home() {
           gapY={"5"}
           m={"auto"}
         >
-          <Skeleton className="w-[320px] sm:w-[380px] h-72 rounded-lg" />
-          <Skeleton className="w-[320px] sm:w-[380px] h-72 rounded-lg" />
-          <Skeleton className="w-[320px] sm:w-[380px] h-72 rounded-lg" />
-          <Skeleton className="w-[320px] sm:w-[380px] h-72 rounded-lg" />
-          <Skeleton className="w-[320px] sm:w-[380px] h-72 rounded-lg" />
+          <Skeleton className="w-[380px] h-72 rounded-lg" />
+          <Skeleton className="w-[380px] h-72 rounded-lg" />
+          <Skeleton className="w-[380px] h-72 rounded-lg" />
+          <Skeleton className="w-[380px] h-72 rounded-lg" />
+          <Skeleton className="w-[380px] h-72 rounded-lg" />
         </Grid>
       </main>
     );
@@ -58,7 +58,7 @@ export default function Home() {
           xl: "8",
         }}
       >
-        All active Polls
+        New Polls
       </Heading>
       <Grid
         columns={{
