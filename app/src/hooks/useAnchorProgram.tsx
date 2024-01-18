@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Poe, IDL } from "@/idl/poe";
+import { Poe } from "@/idl/poe";
+import idlFile from "@/idl/poe.json";
 import { Keypair } from "@solana/web3.js";
 
 export default function useAnchorProgram(): Program<Poe> {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const [program, setProgram] = useState<Program<Poe> | null>(null);
+
+  const idl = idlFile as Idl;
 
   useEffect(() => {
     let provider;
@@ -26,12 +29,12 @@ export default function useAnchorProgram(): Program<Poe> {
     }
 
     const program = new Program(
-      IDL as Idl,
-      "CTrJepGaLrejcRmoRAhC3vdyF2JvJPjT8vebCWutMDYE",
+      idl,
+      idl.metadata.address,
       provider
     ) as unknown as Program<Poe>;
     setProgram(program);
-  }, [wallet, connection]);
+  }, [wallet, connection, idl]);
 
   return program as Program<Poe>;
 }
