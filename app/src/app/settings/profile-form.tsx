@@ -19,9 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@radix-ui/themes";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { RxCross2 } from "react-icons/rx";
 
 const profileFormSchema = z.object({
   username: z
@@ -135,7 +135,7 @@ export function ProfileForm() {
                         size="sm"
                         onClick={() => remove(index)}
                       >
-                        <Cross2Icon />
+                        <RxCross2 />
                       </Button>
                     </Flex>
                   </FormControl>
