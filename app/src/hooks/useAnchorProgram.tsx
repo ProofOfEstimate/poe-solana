@@ -27,7 +27,7 @@ export default function useAnchorProgram(): Program<Poe> {
 
     const program = new Program(
       IDL as Idl,
-      "EdgArhqD59ruxCehXsoj2eUtqXKQy2DGPjjwFbYYfMsZ",
+      "CTrJepGaLrejcRmoRAhC3vdyF2JvJPjT8vebCWutMDYE",
       provider
     ) as unknown as Program<Poe>;
     setProgram(program);
