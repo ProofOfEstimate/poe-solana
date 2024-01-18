@@ -29,6 +29,7 @@ import {
 } from "@/texts/toastTitles";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { userAccountKey } from "../queries/useUserAccount";
+import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
 
 const makeEstimate = async (
   program: Program<Poe>,
@@ -96,8 +97,6 @@ const makeEstimate = async (
     program.programId
   );
 
-  let signature: TransactionSignature = "";
-
   const makeEstimateInstruction = await program.methods
     .makeEstimate(
       lowerEstimate !== undefined ? lowerEstimate : 0,
@@ -125,27 +124,7 @@ const makeEstimate = async (
     instructions = [makeEstimateInstruction];
   }
 
-  // Get the latest block hash to use on our transaction and confirmation
-  let latestBlockhash = await connection.getLatestBlockhash();
-
-  // Create a new TransactionMessage with version and compile it to version 0
-  const messageV0 = new TransactionMessage({
-    payerKey: wallet.publicKey,
-    recentBlockhash: latestBlockhash.blockhash,
-    instructions: instructions,
-  }).compileToV0Message();
-
-  // Create a new VersionedTransaction to support the v0 message
-  const transaction = new VersionedTransaction(messageV0);
-
-  // Send transaction and await for signature
-  signature = await wallet.sendTransaction(transaction, connection);
-
-  // Await for confirmation
-  return await connection.confirmTransaction(
-    { signature, ...latestBlockhash },
-    "confirmed"
-  );
+  await sendVersionedTransaction(instructions, wallet, connection);
 };
 
 const useMakeEstimate = (

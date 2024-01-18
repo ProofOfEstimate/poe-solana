@@ -20,6 +20,8 @@ import {
   connectWalletText,
   transactionSuccessfullText,
 } from "@/texts/toastTitles";
+import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
+import { allPollsByUserKey } from "../queries/useAllPollsByUser";
 
 const collectPoints = async (
   program: Program<Poe>,
@@ -64,7 +66,6 @@ const collectPoints = async (
     program.programId
   );
 
-  let signature: TransactionSignature = "";
   const registerUserInstruction = await program.methods
     .collectPoints()
     .accounts({
@@ -77,27 +78,7 @@ const collectPoints = async (
     })
     .instruction();
 
-  // Get the latest block hash to use on our transaction and confirmation
-  let latestBlockhash = await connection.getLatestBlockhash();
-
-  // Create a new TransactionMessage with version and compile it to version 0
-  const messageV0 = new TransactionMessage({
-    payerKey: wallet.publicKey,
-    recentBlockhash: latestBlockhash.blockhash,
-    instructions: [registerUserInstruction],
-  }).compileToV0Message();
-
-  // Create a new VersionedTransaction to support the v0 message
-  const transaction = new VersionedTransaction(messageV0);
-
-  // Send transaction and await for signature
-  signature = await wallet.sendTransaction(transaction, connection);
-
-  // Await for confirmation
-  return await connection.confirmTransaction(
-    { signature, ...latestBlockhash },
-    "confirmed"
-  );
+  await sendVersionedTransaction([registerUserInstruction], wallet, connection);
 };
 
 const useCollectPoints = (
@@ -125,7 +106,7 @@ const useCollectPoints = (
         ],
       });
       queryClient.invalidateQueries({
-        queryKey: [allPollsKey],
+        queryKey: [allPollsByUserKey, wallet.publicKey?.toBase58()],
       });
       queryClient.invalidateQueries({
         queryKey: [pollByIdKey, variables.pollId],
