@@ -1,14 +1,12 @@
 "use client";
 
 import { RequestAirdrop } from "@/components/request-airdrop";
-import { useRegisterUser } from "@/hooks/mutations/useRegisterUser";
 import { useUserAccount } from "@/hooks/queries/useUserAccount";
 import { useUserSolBalance } from "@/hooks/queries/useUserSolBalance";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { Flex, Heading, Text } from "@radix-ui/themes";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipArrow,
@@ -22,7 +20,7 @@ import { useAllPolls } from "@/hooks/queries/useAllPolls";
 import { useAllPollsByUser } from "@/hooks/queries/useAllPollsByUser";
 import Polls from "./polls";
 import { useToast } from "@/components/ui/use-toast";
-import { TbLoader2, TbCopy } from "react-icons/tb";
+import { TbCopy } from "react-icons/tb";
 import { useDashboardTabsStore } from "@/hooks/states/useDashboardTabsStore";
 
 export default function Dashboard() {
@@ -48,9 +46,6 @@ export default function Dashboard() {
     program,
     wallet.publicKey
   );
-
-  const { mutate: registerUser, isPending: isRegisteringUser } =
-    useRegisterUser(program, connection, wallet);
 
   if (!wallet.publicKey) {
     return (
@@ -111,70 +106,34 @@ export default function Dashboard() {
         </Text>
         {balance !== undefined && balance < 0.1 && <RequestAirdrop />}
       </Flex>
-
-      {userAccount !== null ? (
-        <Tabs value={tab} onValueChange={setTab} className="space-y-4 w-full">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="polls">Polls</TabsTrigger>
-            <TabsTrigger value="creation">Creation</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview">Under construction 🏗️</TabsContent>
-          <TabsContent value="analytics">
-            {" "}
-            <Analytics score={userAccount?.score} />
-          </TabsContent>
-          <TabsContent value="polls">
-            <Polls polls={userPolls} />
-          </TabsContent>
-          <TabsContent value="creation">
-            <CreationForm
-              createdPolls={
-                allPolls !== undefined
-                  ? allPolls.filter(
-                      (poll) =>
-                        poll.creator.toBase58() === wallet.publicKey?.toBase58()
-                    )
-                  : []
-              }
-            />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger>
-              <Button
-                disabled={isRegisteringUser}
-                variant={"default"}
-                onClick={() => registerUser()}
-              >
-                {isRegisteringUser && (
-                  <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                <Text>Create User Account</Text>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="w-60">
-              <Text size={"1"}>
-                You need to create a user account to participate in polls. Your
-                user account will store your estimation score.
-              </Text>
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-      {/*
-      <div>User account: {userAccount ? userAccount.score : "no user"}</div>
-      {isPending && <div>Is pending</div>}
-      {isSuccessUserAccount && <div>Success mutation</div>}
-      {isErrorUserAccount && <div>{error.name + error.message}</div>}
-      {isLoadingUserAccount && <div>idle mutation</div>}
-      <div className="hover:cursor-pointer" onClick={() => mutate()}>
-        Register user
-      </div> */}
+      <Tabs value={tab} onValueChange={setTab} className="space-y-4 w-full">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="polls">Polls</TabsTrigger>
+          <TabsTrigger value="creation">Creation</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">Under construction 🏗️</TabsContent>
+        <TabsContent value="analytics">
+          {" "}
+          <Analytics score={userAccount === null ? 1 : userAccount?.score} />
+        </TabsContent>
+        <TabsContent value="polls">
+          <Polls polls={userPolls} />
+        </TabsContent>
+        <TabsContent value="creation">
+          <CreationForm
+            createdPolls={
+              allPolls !== undefined
+                ? allPolls.filter(
+                    (poll) =>
+                      poll.creator.toBase58() === wallet.publicKey?.toBase58()
+                  )
+                : []
+            }
+          />
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }

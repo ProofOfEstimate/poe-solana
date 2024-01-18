@@ -4,6 +4,7 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Connection,
   PublicKey,
+  TransactionInstruction,
   TransactionMessage,
   TransactionSignature,
   VersionedTransaction,
@@ -18,6 +19,7 @@ import {
   transactionSuccessfullText,
 } from "@/texts/toastTitles";
 import { WalletNotConnectedError } from "@/errors/WalletNotConnectedError";
+import { userAccountKey } from "../queries/useUserAccount";
 
 const createPoll = async (
   program: Program<Poe>,
@@ -35,6 +37,12 @@ const createPoll = async (
   if (!wallet.publicKey) {
     throw new WalletNotConnectedError(connectWalletText);
   }
+
+  let [userPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("user"), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+  const userAccount = await connection.getAccountInfo(userPda);
 
   const [statePda] = PublicKey.findProgramAddressSync(
     [Buffer.from("poe_state")],
@@ -64,6 +72,17 @@ const createPoll = async (
     })
     .instruction();
 
+  let instructions: TransactionInstruction[] = [];
+  if (userAccount === null) {
+    const registerUserInstruction = await program.methods
+      .registerUser()
+      .accounts({ user: userPda })
+      .instruction();
+    instructions = [registerUserInstruction, createPollInstruction];
+  } else {
+    instructions = [createPollInstruction];
+  }
+
   // Get the latest block hash to use on our transaction and confirmation
   const latestBlockhash = await connection.getLatestBlockhash();
 
@@ -71,7 +90,7 @@ const createPoll = async (
   const messageV0 = new TransactionMessage({
     payerKey: wallet.publicKey,
     recentBlockhash: latestBlockhash.blockhash,
-    instructions: [createPollInstruction],
+    instructions: instructions,
   }).compileToV0Message();
 
   // Create a new VersionedTransaction to support the v0 message
@@ -120,6 +139,13 @@ const useCreatePoll = (
       queryClient.invalidateQueries({
         queryKey: [
           userSolBalanceKey,
+          connection.rpcEndpoint,
+          wallet.publicKey?.toBase58() || "",
+        ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          userAccountKey,
           connection.rpcEndpoint,
           wallet.publicKey?.toBase58() || "",
         ],

@@ -5,6 +5,7 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Connection,
   PublicKey,
+  TransactionInstruction,
   TransactionMessage,
   TransactionSignature,
   VersionedTransaction,
@@ -27,6 +28,7 @@ import {
   transactionSuccessfullText,
 } from "@/texts/toastTitles";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { userAccountKey } from "../queries/useUserAccount";
 
 const makeEstimate = async (
   program: Program<Poe>,
@@ -45,10 +47,6 @@ const makeEstimate = async (
     program.programId
   );
   const userAccount = await connection.getAccountInfo(userPda);
-
-  if (userAccount === null) {
-    throw new NoUserAccountError("Please create a user account first.");
-  }
 
   const [pollPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("poll"), new BN(pollId).toArrayLike(Buffer, "le", 8)],
@@ -77,7 +75,7 @@ const makeEstimate = async (
 
   let [estimateUpdatePda] = PublicKey.findProgramAddressSync(
     [
-      Buffer.from("estimate_update"),
+      Buffer.from("poll_estimate_update"),
       pollPda.toBuffer(),
       pollAccount.numEstimateUpdates.toArrayLike(Buffer, "le", 8),
     ],
@@ -99,6 +97,7 @@ const makeEstimate = async (
   );
 
   let signature: TransactionSignature = "";
+
   const makeEstimateInstruction = await program.methods
     .makeEstimate(
       lowerEstimate !== undefined ? lowerEstimate : 0,
@@ -115,6 +114,17 @@ const makeEstimate = async (
     })
     .instruction();
 
+  let instructions: TransactionInstruction[] = [];
+  if (userAccount === null) {
+    const registerUserInstruction = await program.methods
+      .registerUser()
+      .accounts({ user: userPda })
+      .instruction();
+    instructions = [registerUserInstruction, makeEstimateInstruction];
+  } else {
+    instructions = [makeEstimateInstruction];
+  }
+
   // Get the latest block hash to use on our transaction and confirmation
   let latestBlockhash = await connection.getLatestBlockhash();
 
@@ -122,7 +132,7 @@ const makeEstimate = async (
   const messageV0 = new TransactionMessage({
     payerKey: wallet.publicKey,
     recentBlockhash: latestBlockhash.blockhash,
-    instructions: [makeEstimateInstruction],
+    instructions: instructions,
   }).compileToV0Message();
 
   // Create a new VersionedTransaction to support the v0 message
@@ -197,6 +207,13 @@ const useMakeEstimate = (
       queryClient.invalidateQueries({
         queryKey: [
           userSolBalanceKey,
+          connection.rpcEndpoint,
+          wallet.publicKey?.toBase58() || "",
+        ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          userAccountKey,
           connection.rpcEndpoint,
           wallet.publicKey?.toBase58() || "",
         ],

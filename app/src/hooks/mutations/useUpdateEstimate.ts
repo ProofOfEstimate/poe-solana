@@ -64,7 +64,7 @@ const updateEstimate = async (
 
   let [estimateUpdatePda] = PublicKey.findProgramAddressSync(
     [
-      Buffer.from("estimate_update"),
+      Buffer.from("poll_estimate_update"),
       pollPda.toBuffer(),
       pollAccount.numEstimateUpdates.toArrayLike(Buffer, "le", 8),
     ],
