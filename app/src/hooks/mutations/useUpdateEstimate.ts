@@ -19,6 +19,7 @@ import {
   connectWalletText,
   transactionSuccessfullText,
 } from "@/texts/toastTitles";
+import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
 
 const updateEstimate = async (
   program: Program<Poe>,
@@ -85,7 +86,6 @@ const updateEstimate = async (
     program.programId
   );
 
-  let signature: TransactionSignature = "";
   const updateEstimateInstruction = await program.methods
     .updateEstimate(
       lowerEstimate !== undefined ? lowerEstimate : 0,
@@ -101,26 +101,10 @@ const updateEstimate = async (
     })
     .instruction();
 
-  // Get the latest block hash to use on our transaction and confirmation
-  let latestBlockhash = await connection.getLatestBlockhash();
-
-  // Create a new TransactionMessage with version and compile it to version 0
-  const messageV0 = new TransactionMessage({
-    payerKey: wallet.publicKey,
-    recentBlockhash: latestBlockhash.blockhash,
-    instructions: [updateEstimateInstruction],
-  }).compileToV0Message();
-
-  // Create a new VersionedTransaction to support the v0 message
-  const transaction = new VersionedTransaction(messageV0);
-
-  // Send transaction and await for signature
-  signature = await wallet.sendTransaction(transaction, connection);
-
-  // Await for confirmation
-  return await connection.confirmTransaction(
-    { signature, ...latestBlockhash },
-    "confirmed"
+  await sendVersionedTransaction(
+    [updateEstimateInstruction],
+    wallet,
+    connection
   );
 };
 

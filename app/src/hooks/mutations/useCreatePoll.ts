@@ -20,6 +20,7 @@ import {
 } from "@/texts/toastTitles";
 import { WalletNotConnectedError } from "@/errors/WalletNotConnectedError";
 import { userAccountKey } from "../queries/useUserAccount";
+import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
 
 const createPoll = async (
   program: Program<Poe>,
@@ -61,7 +62,6 @@ const createPoll = async (
     program.programId
   );
 
-  let signature: TransactionSignature = "";
   const createPollInstruction = await program.methods
     .createPoll(form.getValues().question, form.getValues().description, null)
     .accounts({
@@ -83,27 +83,7 @@ const createPoll = async (
     instructions = [createPollInstruction];
   }
 
-  // Get the latest block hash to use on our transaction and confirmation
-  const latestBlockhash = await connection.getLatestBlockhash();
-
-  // Create a new TransactionMessage with version and compile it to version 0
-  const messageV0 = new TransactionMessage({
-    payerKey: wallet.publicKey,
-    recentBlockhash: latestBlockhash.blockhash,
-    instructions: instructions,
-  }).compileToV0Message();
-
-  // Create a new VersionedTransaction to support the v0 message
-  const transaction = new VersionedTransaction(messageV0);
-
-  // Send transaction and await for signature
-  signature = await wallet.sendTransaction(transaction, connection);
-
-  // Await for confirmation
-  return await connection.confirmTransaction(
-    { signature, ...latestBlockhash },
-    "confirmed"
-  );
+  await sendVersionedTransaction(instructions, wallet, connection);
 };
 
 const useCreatePoll = (

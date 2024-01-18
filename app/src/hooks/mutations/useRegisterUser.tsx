@@ -17,6 +17,7 @@ import {
   transactionSuccessfullText,
 } from "@/texts/toastTitles";
 import { WalletNotConnectedError } from "@/errors/WalletNotConnectedError";
+import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
 
 const registerUser = async (
   program: Program<Poe>,
@@ -32,33 +33,12 @@ const registerUser = async (
     program.programId
   );
 
-  let signature: TransactionSignature = "";
   const registerUserInstruction = await program.methods
     .registerUser()
     .accounts({ user: userPda })
     .instruction();
 
-  // Get the latest block hash to use on our transaction and confirmation
-  let latestBlockhash = await connection.getLatestBlockhash();
-
-  // Create a new TransactionMessage with version and compile it to version 0
-  const messageV0 = new TransactionMessage({
-    payerKey: wallet.publicKey,
-    recentBlockhash: latestBlockhash.blockhash,
-    instructions: [registerUserInstruction],
-  }).compileToV0Message();
-
-  // Create a new VersionedTransaction to support the v0 message
-  const transaction = new VersionedTransaction(messageV0);
-
-  // Send transaction and await for signature
-  signature = await wallet.sendTransaction(transaction, connection);
-
-  // Await for confirmation
-  return await connection.confirmTransaction(
-    { signature, ...latestBlockhash },
-    "confirmed"
-  );
+  await sendVersionedTransaction([registerUserInstruction], wallet, connection);
 };
 
 const useRegisterUser = (
@@ -77,7 +57,6 @@ const useRegisterUser = (
         title: transactionSuccessfullText,
         description: "User is registered.",
       });
-      // toast.success("Transaction successful: User registered");
       queryClient.invalidateQueries({
         queryKey: [
           userAccountKey,
