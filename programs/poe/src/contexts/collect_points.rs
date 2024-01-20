@@ -48,7 +48,7 @@ pub struct CollectPoints<'info> {
 
 impl<'info> CollectPoints<'info> {
     pub fn collect_points(&mut self) -> Result<()> {
-        if self.poll.open {
+        if self.poll.result.is_none() {
             return err!(CustomErrorCode::PollNotResolved);
         }
 

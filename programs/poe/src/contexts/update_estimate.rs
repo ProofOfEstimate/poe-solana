@@ -62,7 +62,7 @@ impl<'info> UpdateEstimate<'info> {
         new_uncertainty: f32,
     ) -> Result<()> {
         assert!(new_estimate <= 100);
-        if !self.poll.open {
+        if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
         match self.poll.collective_estimate {
@@ -180,7 +180,7 @@ impl<'info> UpdateEstimate<'info> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
         assert!(lower_estimate <= upper_estimate);
-        if !self.poll.open {
+        if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
         self.user_estimate.lower_estimate = lower_estimate;

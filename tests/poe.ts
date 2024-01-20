@@ -1068,7 +1068,6 @@ describe("poe", () => {
       "1",
       "Wrong number of predictions."
     );
-    expect(pollAccount.open).to.be.false;
     expect(pollAccount.result).to.eq(result, "Wrong result.");
   });
 

@@ -52,7 +52,7 @@ pub struct RemoveEstimate<'info> {
 
 impl<'info> RemoveEstimate<'info> {
     pub fn remove_estimate(&mut self, bumps: &RemoveEstimateBumps) -> Result<()> {
-        if !self.poll.open {
+        if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
         match self.poll.collective_estimate {

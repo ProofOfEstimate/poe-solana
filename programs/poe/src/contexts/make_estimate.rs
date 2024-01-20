@@ -73,7 +73,7 @@ impl<'info> MakeEstimate<'info> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
         assert!(lower_estimate <= upper_estimate);
-        if !self.poll.open {
+        if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
 
