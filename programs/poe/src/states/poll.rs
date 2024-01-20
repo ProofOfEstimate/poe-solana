@@ -9,7 +9,7 @@ pub struct Poll {
     pub open: bool,
     pub id: u64,
     pub start_slot: u64,
-    pub end_slot: u64,
+    pub end_slot: Option<u64>,
     pub end_time: Option<i64>,
     pub collective_estimate: Option<u32>,
     pub variance: Option<f32>,
@@ -30,7 +30,7 @@ impl Poll {
         8 + PUBKEY_L
             + PUBKEY_L
             + BOOL_L
-            + 3 * OPTION_L
+            + 4 * OPTION_L
             + 5 * U64_L
             + I64_L
             + U32_L
@@ -61,7 +61,7 @@ impl Poll {
             question,
             description,
             start_slot,
-            end_slot: 0,
+            end_slot: None,
             end_time,
             collective_estimate: None,
             variance: None,

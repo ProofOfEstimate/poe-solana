@@ -62,7 +62,7 @@ impl<'info> CollectPoints<'info> {
         let ue_f = convert_to_float(10u32.pow(ESTIMATE_PRECISION as u32) * user_estimate as u32);
 
         // Update user score
-        let last_poll_slot = self.poll.end_slot;
+        let last_poll_slot = self.poll.end_slot.unwrap();
         let last_user_score_slot = self.user_score.last_slot;
 
         let score_weight = 0.49
@@ -109,7 +109,7 @@ impl<'info> CollectPoints<'info> {
 
     pub fn transfer_points_to_user(&mut self) -> Result<()> {
         if let Some(result) = self.poll.result {
-            let duration = self.poll.end_slot - self.poll.start_slot;
+            let duration = self.poll.end_slot.unwrap() - self.poll.start_slot;
             if result {
                 let score = (self.user_score.options as f32 - self.user_score.cost
                     + self.user_score.ln_a)

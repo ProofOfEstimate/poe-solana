@@ -44,7 +44,7 @@ impl<'info> ResolvePoll<'info> {
 
         self.poll.open = false;
         self.poll.result = Some(result);
-        self.poll.end_slot = current_slot;
+        self.poll.end_slot = Some(current_slot);
         self.poll.end_time = Some(Clock::get().unwrap().unix_timestamp);
         msg!("Resolved poll");
         Ok(())
