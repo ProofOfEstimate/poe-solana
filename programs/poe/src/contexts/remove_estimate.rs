@@ -67,7 +67,9 @@ impl<'info> RemoveEstimate<'info> {
                     - self.user_estimate.lower_estimate) as f32
                     / 100.0;
 
-                let weight = (1.0 - uncertainty) * self.user_estimate.weight;
+                let weight = (1.0 - uncertainty)
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.recency_weight;
                 let aw_old = self.poll.accumulated_weights;
                 let aws_old = self.poll.accumulated_weights_squared;
 

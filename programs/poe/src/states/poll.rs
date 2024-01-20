@@ -9,7 +9,7 @@ pub struct Poll {
     pub id: u64,
     pub start_slot: u64,
     pub end_slot: Option<u64>,
-    pub decay: f32,
+    pub decay_rate: f32,
     pub collective_estimate: Option<u32>,
     pub variance: Option<f32>,
     pub num_forecasters: u64,
@@ -47,7 +47,7 @@ impl Poll {
         question: String,
         description: String,
         start_slot: u64,
-        decay: f32,
+        decay_rate: f32,
         bump: u8,
     ) -> Self {
         Self {
@@ -58,7 +58,7 @@ impl Poll {
             description,
             start_slot,
             end_slot: None,
-            decay,
+            decay_rate,
             collective_estimate: None,
             variance: None,
             num_forecasters: 0,

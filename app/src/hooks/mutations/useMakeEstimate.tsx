@@ -2,14 +2,7 @@ import React from "react";
 import { Poe } from "@/idl/poe";
 import { BN, Program } from "@coral-xyz/anchor";
 import { WalletContextState } from "@solana/wallet-adapter-react";
-import {
-  Connection,
-  PublicKey,
-  TransactionInstruction,
-  TransactionMessage,
-  TransactionSignature,
-  VersionedTransaction,
-} from "@solana/web3.js";
+import { Connection, PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userSolBalanceKey } from "../queries/useUserSolBalance";
 import { userEstimateKey } from "../queries/useUserEstimateByPoll";

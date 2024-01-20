@@ -79,9 +79,21 @@ impl<'info> UpdateEstimate<'info> {
 
                 let aw_old = self.poll.accumulated_weights;
                 let aws_old = self.poll.accumulated_weights_squared;
-                let weight_diff = (old_uncertainty - new_uncertainty) * self.user_estimate.weight;
-                let weight_old = (1.0 - old_uncertainty) * self.user_estimate.weight;
-                let weight_new = (1.0 - new_uncertainty) * self.user_estimate.weight;
+                let weight_old = (1.0 - old_uncertainty)
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.recency_weight;
+
+                let current_slot = Clock::get().unwrap().slot as f32;
+                let new_recency_weight = recency_weight(
+                    self.poll.decay_rate,
+                    current_slot,
+                    self.poll.start_slot as f32,
+                );
+                self.user_estimate.recency_weight = new_recency_weight;
+                let weight_new =
+                    (1.0 - new_uncertainty) * self.user_estimate.score_weight * new_recency_weight;
+
+                let weight_diff = weight_new - weight_old;
 
                 self.poll.accumulated_weights += weight_diff;
                 self.poll.accumulated_weights_squared +=

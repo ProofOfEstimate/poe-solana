@@ -68,7 +68,7 @@ impl<'info> MakeEstimate<'info> {
         bumps: &MakeEstimateBumps,
         lower_estimate: u16,
         upper_estimate: u16,
-        weight: f32,
+        score_weight: f32,
     ) -> Result<()> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
@@ -77,12 +77,20 @@ impl<'info> MakeEstimate<'info> {
             return err!(CustomErrorCode::PollClosed);
         }
 
+        let current_slot = Clock::get().unwrap().slot;
+        let recency_weight = recency_weight(
+            self.poll.decay_rate,
+            current_slot as f32,
+            self.poll.start_slot as f32,
+        );
+
         self.user_estimate.set_inner(UserEstimate::new(
             self.forecaster.key(),
             self.poll.key(),
             lower_estimate,
             upper_estimate,
-            weight,
+            score_weight,
+            recency_weight,
             self.poll.num_forecasters + 1,
             bumps.user_estimate,
         ));
@@ -116,7 +124,9 @@ impl<'info> MakeEstimate<'info> {
 
                 let aw_old = self.poll.accumulated_weights;
                 let aws_old = self.poll.accumulated_weights_squared;
-                let weight = (1.0 - uncertainty) * self.user_estimate.weight;
+                let weight = (1.0 - uncertainty)
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.recency_weight;
 
                 self.poll.accumulated_weights += weight;
                 self.poll.accumulated_weights_squared += weight * weight;
@@ -160,11 +170,12 @@ impl<'info> MakeEstimate<'info> {
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
                 self.poll.num_forecasters = 1;
-                self.poll.accumulated_weights = (1.0 - uncertainty) * self.user_estimate.weight;
+                self.poll.accumulated_weights =
+                    (1.0 - uncertainty) * self.user_estimate.score_weight;
                 self.poll.accumulated_weights_squared = (1.0 - uncertainty)
                     * (1.0 - uncertainty)
-                    * self.user_estimate.weight
-                    * self.user_estimate.weight;
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.score_weight;
                 self.poll.num_estimate_updates += 1;
 
                 self.scoring_list.last_slot = Clock::get().unwrap().slot;
