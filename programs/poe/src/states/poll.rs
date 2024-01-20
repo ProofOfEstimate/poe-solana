@@ -9,7 +9,7 @@ pub struct Poll {
     pub id: u64,
     pub start_slot: u64,
     pub end_slot: Option<u64>,
-    pub end_time: Option<i64>,
+    pub decay: f32,
     pub collective_estimate: Option<u32>,
     pub variance: Option<f32>,
     pub num_forecasters: u64,
@@ -28,11 +28,10 @@ impl Poll {
     pub fn len(question: &str, description: &str) -> usize {
         8 + PUBKEY_L
             + PUBKEY_L
-            + 4 * OPTION_L
+            + 3 * OPTION_L
             + 5 * U64_L
-            + I64_L
             + U32_L
-            + 3 * F32_L
+            + 4 * F32_L
             + OPTION_L
             + BOOL_L
             + 2 * STRING_L
@@ -48,7 +47,7 @@ impl Poll {
         question: String,
         description: String,
         start_slot: u64,
-        end_time: Option<i64>,
+        decay: f32,
         bump: u8,
     ) -> Self {
         Self {
@@ -59,7 +58,7 @@ impl Poll {
             description,
             start_slot,
             end_slot: None,
-            end_time,
+            decay,
             collective_estimate: None,
             variance: None,
             num_forecasters: 0,

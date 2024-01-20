@@ -31,7 +31,7 @@ describe("poe", () => {
   const description = "Describe exactly when it will resolve to true";
 
   const startTime = new Date().getTime();
-  const endTime = startTime + 1000 * 60 * 60 * 24 * 7;
+  const decay = 0.04;
 
   const estimate = 92;
   const estimate2 = 10;
@@ -117,7 +117,7 @@ describe("poe", () => {
       );
 
     await program.methods
-      .createPoll(question, description, new anchor.BN(endTime))
+      .createPoll(question, description, decay)
       .accounts({
         resolver: secondUser.publicKey,
         state: statePda,
@@ -141,7 +141,7 @@ describe("poe", () => {
     );
     expect(pollAccount.question).to.eq(question, "Wrong question.");
     expect(pollAccount.description).to.eq(description, "Wrong description");
-    expect(pollAccount.endTime.toString()).to.eq(endTime.toString());
+    expect(pollAccount.decay).to.approximately(decay, 1e-6);
     expect(pollAccount.numForecasters.toString()).to.eq("0");
     expect(pollAccount.numEstimateUpdates.toString()).to.eq("0");
     expect(pollAccount.collectiveEstimate).to.eq(null);
