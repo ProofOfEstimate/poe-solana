@@ -6,11 +6,10 @@ use crate::constants::*;
 pub struct Poll {
     pub creator: Pubkey,
     pub resolver: Pubkey,
-    pub open: bool,
     pub id: u64,
     pub start_slot: u64,
-    pub end_slot: u64,
-    pub end_time: Option<i64>,
+    pub end_slot: Option<u64>,
+    pub decay_rate: f32,
     pub collective_estimate: Option<u32>,
     pub variance: Option<f32>,
     pub num_forecasters: u64,
@@ -29,12 +28,10 @@ impl Poll {
     pub fn len(question: &str, description: &str) -> usize {
         8 + PUBKEY_L
             + PUBKEY_L
-            + BOOL_L
             + 3 * OPTION_L
             + 5 * U64_L
-            + I64_L
             + U32_L
-            + 3 * F32_L
+            + 4 * F32_L
             + OPTION_L
             + BOOL_L
             + 2 * STRING_L
@@ -50,19 +47,18 @@ impl Poll {
         question: String,
         description: String,
         start_slot: u64,
-        end_time: Option<i64>,
+        decay_rate: f32,
         bump: u8,
     ) -> Self {
         Self {
             creator,
             resolver,
-            open: true,
             id,
             question,
             description,
             start_slot,
-            end_slot: 0,
-            end_time,
+            end_slot: None,
+            decay_rate,
             collective_estimate: None,
             variance: None,
             num_forecasters: 0,

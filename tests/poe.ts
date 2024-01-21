@@ -30,8 +30,8 @@ describe("poe", () => {
   const question = "First question";
   const description = "Describe exactly when it will resolve to true";
 
-  const startTime = new Date().getTime();
-  const endTime = startTime + 1000 * 60 * 60 * 24 * 7;
+  // TODO: Adapt test to account for temporal decay
+  const decay_rate = 0.04;
 
   const estimate = 92;
   const estimate2 = 10;
@@ -117,7 +117,7 @@ describe("poe", () => {
       );
 
     await program.methods
-      .createPoll(question, description, new anchor.BN(endTime))
+      .createPoll(question, description, decay_rate)
       .accounts({
         resolver: secondUser.publicKey,
         state: statePda,
@@ -141,7 +141,7 @@ describe("poe", () => {
     );
     expect(pollAccount.question).to.eq(question, "Wrong question.");
     expect(pollAccount.description).to.eq(description, "Wrong description");
-    expect(pollAccount.endTime.toString()).to.eq(endTime.toString());
+    expect(pollAccount.decayRate).to.approximately(decay_rate, 1e-6);
     expect(pollAccount.numForecasters.toString()).to.eq("0");
     expect(pollAccount.numEstimateUpdates.toString()).to.eq("0");
     expect(pollAccount.collectiveEstimate).to.eq(null);
@@ -1068,7 +1068,6 @@ describe("poe", () => {
       "1",
       "Wrong number of predictions."
     );
-    expect(pollAccount.open).to.be.false;
     expect(pollAccount.result).to.eq(result, "Wrong result.");
   });
 

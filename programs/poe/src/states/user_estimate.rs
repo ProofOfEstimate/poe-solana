@@ -8,7 +8,8 @@ pub struct UserEstimate {
     pub poll: Pubkey,
     pub lower_estimate: u16,
     pub upper_estimate: u16,
-    pub weight: f32,
+    pub score_weight: f32,
+    pub recency_weight: f32,
     pub num_forecasters: u64,
     pub num_estimate_updates: u64,
     pub options: Option<f32>,
@@ -22,14 +23,15 @@ impl UserEstimate {
     pub const SEED_PREFIX: &'static str = "user_estimate";
 
     pub const LEN: usize =
-        8 + 2 * PUBKEY_L + U16_L + U16_L + F32_L + 2 * U64_L + 4 * OPTION_L + 4 * F32_L + U8_L;
+        8 + 2 * PUBKEY_L + 2 * U16_L + 2 * F32_L + 2 * U64_L + 4 * OPTION_L + 4 * F32_L + U8_L;
 
     pub fn new(
         forecaster: Pubkey,
         poll: Pubkey,
         lower_estimate: u16,
         upper_estimate: u16,
-        weight: f32,
+        score_weight: f32,
+        recency_weight: f32,
         num_forecasters: u64,
         bump: u8,
     ) -> Self {
@@ -38,7 +40,8 @@ impl UserEstimate {
             poll,
             lower_estimate,
             upper_estimate,
-            weight,
+            score_weight,
+            recency_weight,
             num_forecasters,
             num_estimate_updates: 1,
             options: None,

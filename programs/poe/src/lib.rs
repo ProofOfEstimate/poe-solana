@@ -26,10 +26,10 @@ pub mod poe {
         ctx: Context<CreatePoll>,
         question: String,
         description: String,
-        end_time: Option<i64>,
+        decay: f32,
     ) -> Result<()> {
         ctx.accounts
-            .create_poll(&ctx.bumps, question, description, end_time)
+            .create_poll(&ctx.bumps, question, description, decay)
     }
 
     pub fn make_estimate(

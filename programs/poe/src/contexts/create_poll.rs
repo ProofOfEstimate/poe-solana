@@ -40,7 +40,7 @@ impl<'info> CreatePoll<'info> {
         bumps: &CreatePollBumps,
         question: String,
         description: String,
-        end_time: Option<i64>,
+        decay: f32,
     ) -> Result<()> {
         let current_slot = Clock::get().unwrap().slot;
 
@@ -51,7 +51,7 @@ impl<'info> CreatePoll<'info> {
             question,
             description,
             current_slot,
-            end_time,
+            decay,
             bumps.poll,
         ));
 

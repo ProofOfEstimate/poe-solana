@@ -7,4 +7,7 @@ pub enum CustomErrorCode {
 
     #[msg("Poll has not been resolved.")]
     PollNotResolved,
+
+    #[msg("Poll has already been resolved.")]
+    PollAlreadyResolved,
 }
