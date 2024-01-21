@@ -65,6 +65,9 @@ impl<'info> CollectPoints<'info> {
         let last_poll_slot = self.poll.end_slot.unwrap();
         let last_user_score_slot = self.user_score.last_slot;
 
+        // Idea to improve score_weight (still need to think about it):
+        // Use ratio of num_forecaster when user made estimation and current num_forecasters
+        // instead of just num_forecasters when user made estimation
         let score_weight = 0.49
             * (2.0
                 + (-LN_2 * self.user_estimate.num_forecasters as f32 / 42.0).exp()
@@ -109,7 +112,8 @@ impl<'info> CollectPoints<'info> {
 
     pub fn transfer_points_to_user(&mut self) -> Result<()> {
         if let Some(result) = self.poll.result {
-            let duration = self.poll.end_slot.unwrap() - self.poll.start_slot;
+            // Adding 216000 slots (~1 day) to decrease points of short polls
+            let duration = self.poll.end_slot.unwrap() - self.poll.start_slot + 216000u64;
             if result {
                 let score = (self.user_score.options as f32 - self.user_score.cost
                     + self.user_score.ln_a)

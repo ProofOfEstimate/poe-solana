@@ -140,6 +140,9 @@ impl<'info> UpdateEstimate<'info> {
 
                 // Update user score
                 let last_user_score_slot = self.user_score.last_slot;
+                // Idea to improve score_weight (still need to think about it):
+                // Use ratio of num_forecaster when user made estimation and current num_forecasters
+                // instead of just num_forecasters when user made estimation
                 let score_weight = 0.49
                     * (2.0
                         + (-LN_2 * self.user_estimate.num_forecasters as f32 / 42.0).exp()
