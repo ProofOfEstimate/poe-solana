@@ -28,11 +28,10 @@ impl Poll {
     pub fn len(question: &str, description: &str) -> usize {
         8 + PUBKEY_L
             + PUBKEY_L
-            + 3 * OPTION_L
+            + 4 * OPTION_L
             + 5 * U64_L
             + U32_L
             + 4 * F32_L
-            + OPTION_L
             + BOOL_L
             + 2 * STRING_L
             + question.len()
