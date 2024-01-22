@@ -7,6 +7,7 @@ pub struct Poll {
     pub creator: Pubkey,
     pub resolver: Pubkey,
     pub id: u64,
+    pub category: u16,
     pub start_slot: u64,
     pub end_slot: Option<u64>,
     pub decay_rate: f32,
@@ -28,6 +29,7 @@ impl Poll {
     pub fn len(question: &str, description: &str) -> usize {
         8 + PUBKEY_L
             + PUBKEY_L
+            + U16_L
             + 4 * OPTION_L
             + 5 * U64_L
             + U32_L
@@ -43,6 +45,7 @@ impl Poll {
         creator: Pubkey,
         resolver: Pubkey,
         id: u64,
+        category: u16,
         question: String,
         description: String,
         start_slot: u64,
@@ -53,6 +56,7 @@ impl Poll {
             creator,
             resolver,
             id,
+            category,
             question,
             description,
             start_slot,

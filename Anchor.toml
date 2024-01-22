@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-poe = "CTrJepGaLrejcRmoRAhC3vdyF2JvJPjT8vebCWutMDYE"
+poe = "edGAr9akTocdmjXUZjb2PLm52Z4TH3hYUm3RmAF35ir"
 
 [registry]
 url = "https://api.apr.dev"
