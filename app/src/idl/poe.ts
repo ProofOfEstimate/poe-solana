@@ -88,10 +88,12 @@ export type Poe = {
           type: "string";
         },
         {
-          name: "endTime";
-          type: {
-            option: "i64";
-          };
+          name: "category";
+          type: "u16";
+        },
+        {
+          name: "decay";
+          type: "f32";
         }
       ];
     },
@@ -353,6 +355,10 @@ export type Poe = {
             type: "f32";
           },
           {
+            name: "recalibrationFactor";
+            type: "f32";
+          },
+          {
             name: "bump";
             type: "u8";
           }
@@ -409,12 +415,12 @@ export type Poe = {
             type: "publicKey";
           },
           {
-            name: "open";
-            type: "bool";
-          },
-          {
             name: "id";
             type: "u64";
+          },
+          {
+            name: "category";
+            type: "u16";
           },
           {
             name: "startSlot";
@@ -422,13 +428,13 @@ export type Poe = {
           },
           {
             name: "endSlot";
-            type: "u64";
+            type: {
+              option: "u64";
+            };
           },
           {
-            name: "endTime";
-            type: {
-              option: "i64";
-            };
+            name: "decayRate";
+            type: "f32";
           },
           {
             name: "collectiveEstimate";
@@ -561,7 +567,11 @@ export type Poe = {
             type: "u16";
           },
           {
-            name: "weight";
+            name: "scoreWeight";
+            type: "f32";
+          },
+          {
+            name: "recencyWeight";
             type: "f32";
           },
           {
@@ -694,6 +704,11 @@ export type Poe = {
       code: 6001;
       name: "PollNotResolved";
       msg: "Poll has not been resolved.";
+    },
+    {
+      code: 6002;
+      name: "PollAlreadyResolved";
+      msg: "Poll has already been resolved.";
     }
   ];
 };
@@ -788,10 +803,12 @@ export const IDL: Poe = {
           type: "string",
         },
         {
-          name: "endTime",
-          type: {
-            option: "i64",
-          },
+          name: "category",
+          type: "u16",
+        },
+        {
+          name: "decay",
+          type: "f32",
         },
       ],
     },
@@ -1053,6 +1070,10 @@ export const IDL: Poe = {
             type: "f32",
           },
           {
+            name: "recalibrationFactor",
+            type: "f32",
+          },
+          {
             name: "bump",
             type: "u8",
           },
@@ -1109,12 +1130,12 @@ export const IDL: Poe = {
             type: "publicKey",
           },
           {
-            name: "open",
-            type: "bool",
-          },
-          {
             name: "id",
             type: "u64",
+          },
+          {
+            name: "category",
+            type: "u16",
           },
           {
             name: "startSlot",
@@ -1122,13 +1143,13 @@ export const IDL: Poe = {
           },
           {
             name: "endSlot",
-            type: "u64",
+            type: {
+              option: "u64",
+            },
           },
           {
-            name: "endTime",
-            type: {
-              option: "i64",
-            },
+            name: "decayRate",
+            type: "f32",
           },
           {
             name: "collectiveEstimate",
@@ -1261,7 +1282,11 @@ export const IDL: Poe = {
             type: "u16",
           },
           {
-            name: "weight",
+            name: "scoreWeight",
+            type: "f32",
+          },
+          {
+            name: "recencyWeight",
             type: "f32",
           },
           {
@@ -1394,6 +1419,11 @@ export const IDL: Poe = {
       code: 6001,
       name: "PollNotResolved",
       msg: "Poll has not been resolved.",
+    },
+    {
+      code: 6002,
+      name: "PollAlreadyResolved",
+      msg: "Poll has already been resolved.",
     },
   ],
 };

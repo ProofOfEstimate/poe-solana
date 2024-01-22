@@ -88,10 +88,12 @@
           "type": "string"
         },
         {
-          "name": "endTime",
-          "type": {
-            "option": "i64"
-          }
+          "name": "category",
+          "type": "u16"
+        },
+        {
+          "name": "decay",
+          "type": "f32"
         }
       ]
     },
@@ -353,6 +355,10 @@
             "type": "f32"
           },
           {
+            "name": "recalibrationFactor",
+            "type": "f32"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }
@@ -409,12 +415,12 @@
             "type": "publicKey"
           },
           {
-            "name": "open",
-            "type": "bool"
-          },
-          {
             "name": "id",
             "type": "u64"
+          },
+          {
+            "name": "category",
+            "type": "u16"
           },
           {
             "name": "startSlot",
@@ -422,13 +428,13 @@
           },
           {
             "name": "endSlot",
-            "type": "u64"
+            "type": {
+              "option": "u64"
+            }
           },
           {
-            "name": "endTime",
-            "type": {
-              "option": "i64"
-            }
+            "name": "decayRate",
+            "type": "f32"
           },
           {
             "name": "collectiveEstimate",
@@ -561,7 +567,11 @@
             "type": "u16"
           },
           {
-            "name": "weight",
+            "name": "scoreWeight",
+            "type": "f32"
+          },
+          {
+            "name": "recencyWeight",
             "type": "f32"
           },
           {
@@ -694,9 +704,14 @@
       "code": 6001,
       "name": "PollNotResolved",
       "msg": "Poll has not been resolved."
+    },
+    {
+      "code": 6002,
+      "name": "PollAlreadyResolved",
+      "msg": "Poll has already been resolved."
     }
   ],
   "metadata": {
-    "address": "CTrJepGaLrejcRmoRAhC3vdyF2JvJPjT8vebCWutMDYE"
+    "address": "edGAr9akTocdmjXUZjb2PLm52Z4TH3hYUm3RmAF35ir"
   }
 }
