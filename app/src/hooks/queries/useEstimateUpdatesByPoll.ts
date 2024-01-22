@@ -81,11 +81,11 @@ const getEstimateUpdatesByPoll = async (
 
   let estimates = [];
   let today = new Date().getTime();
-  let endTime =
-    pollAccount.endTime !== null
-      ? Number.parseInt(pollAccount.endTime.toString())
-      : today;
-  let lastDisplayTime = endTime > today / 1000 ? today / 1000 : endTime;
+
+  let lastDisplayTime =
+    updateData[updateData.length - 1].timestamp > today / 1000
+      ? today / 1000
+      : updateData[updateData.length - 1].timestamp;
 
   for (let i = 0; i < updateData.length - 1; i++) {
     const time = updateData[i].timestamp;
