@@ -33,6 +33,14 @@ import { Poll } from "@/types/poe_types";
 import { useResolvePoll } from "@/hooks/mutations/useResolvePoll";
 import { useState } from "react";
 import { TbLoader2 } from "react-icons/tb";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { categoryOptions, decayOptions } from "@/types/options";
 
 const formSchema = z.object({
   question: z
@@ -46,6 +54,8 @@ const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
+  category: z.number().min(0).max(10),
+  decay: z.number(),
 });
 
 type CreationFormProps = {
@@ -77,6 +87,8 @@ export function CreationForm({ createdPolls }: CreationFormProps) {
     defaultValues: {
       question: "",
       description: "",
+      category: 0,
+      decay: 1,
     },
   });
 
@@ -128,11 +140,79 @@ export function CreationForm({ createdPolls }: CreationFormProps) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={(newValue) =>
+                      field.onChange(Number.parseInt(newValue))
+                    }
+                    defaultValue={form.getValues().category.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a suitable category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categoryOptions.map((category) => {
+                        return (
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                          >
+                            {category.label}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />{" "}
+            <FormField
+              control={form.control}
+              name="decay"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration</FormLabel>
+                  <Select
+                    onValueChange={(newValue) =>
+                      field.onChange(Number.parseFloat(newValue))
+                    }
+                    defaultValue={form.getValues().decay.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an approximate duration" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {decayOptions.map((category) => {
+                        return (
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                          >
+                            {category.label}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button disabled={isCreatingPoll} type="submit">
               {isCreatingPoll && (
                 <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              <Text> Submit</Text>
+              <Text>Submit</Text>
             </Button>
           </form>
         </Form>

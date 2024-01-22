@@ -23,6 +23,8 @@ const createPoll = async (
     {
       question: string;
       description: string;
+      category: number;
+      decay: number;
     },
     any,
     undefined
@@ -56,7 +58,12 @@ const createPoll = async (
   );
 
   const createPollInstruction = await program.methods
-    .createPoll(form.getValues().question, form.getValues().description, null)
+    .createPoll(
+      form.getValues().question,
+      form.getValues().description,
+      0,
+      0.001
+    )
     .accounts({
       resolver: wallet.publicKey,
       state: statePda,
@@ -95,6 +102,8 @@ const useCreatePoll = (
         {
           question: string;
           description: string;
+          category: number;
+          decay: number;
         },
         any,
         undefined
