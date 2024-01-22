@@ -83,7 +83,7 @@ const getEstimateUpdatesByPoll = async (
   let today = new Date().getTime();
 
   let lastDisplayTime =
-    updateData[updateData.length - 1].timestamp > today / 1000
+    pollAccount.result === null
       ? today / 1000
       : updateData[updateData.length - 1].timestamp;
 
