@@ -40,6 +40,7 @@ impl<'info> CreatePoll<'info> {
         bumps: &CreatePollBumps,
         question: String,
         description: String,
+        category: u16,
         decay: f32,
     ) -> Result<()> {
         let current_slot = Clock::get().unwrap().slot;
@@ -48,6 +49,7 @@ impl<'info> CreatePoll<'info> {
             *self.creator.key,
             *self.resolver.key,
             self.state.num_polls,
+            category,
             question,
             description,
             current_slot,

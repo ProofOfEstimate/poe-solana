@@ -29,6 +29,7 @@ describe("poe", () => {
   const result = true;
   const question = "First question";
   const description = "Describe exactly when it will resolve to true";
+  const category = 2;
 
   // TODO: Adapt test to account for temporal decay
   const decay_rate = 0.04;
@@ -117,7 +118,7 @@ describe("poe", () => {
       );
 
     await program.methods
-      .createPoll(question, description, decay_rate)
+      .createPoll(question, description, category, decay_rate)
       .accounts({
         resolver: secondUser.publicKey,
         state: statePda,

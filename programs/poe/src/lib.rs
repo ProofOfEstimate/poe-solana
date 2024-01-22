@@ -8,7 +8,7 @@ mod utils;
 
 use contexts::*;
 
-declare_id!("CTrJepGaLrejcRmoRAhC3vdyF2JvJPjT8vebCWutMDYE");
+declare_id!("edGAr9akTocdmjXUZjb2PLm52Z4TH3hYUm3RmAF35ir");
 
 #[program]
 pub mod poe {
@@ -26,10 +26,11 @@ pub mod poe {
         ctx: Context<CreatePoll>,
         question: String,
         description: String,
+        category: u16,
         decay: f32,
     ) -> Result<()> {
         ctx.accounts
-            .create_poll(&ctx.bumps, question, description, decay)
+            .create_poll(&ctx.bumps, question, description, category, decay)
     }
 
     pub fn make_estimate(
