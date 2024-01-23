@@ -88,7 +88,7 @@ export function CreationForm({ createdPolls }: CreationFormProps) {
       question: "",
       description: "",
       category: 0,
-      decay: 1,
+      decay: Number.parseFloat(decayOptions[0].value),
     },
   });
 
