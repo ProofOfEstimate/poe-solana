@@ -6,21 +6,31 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
+interface SettingsSidebarProps extends React.HTMLAttributes<HTMLElement> {
   items: {
     href: string;
     title: string;
   }[];
 }
 
-export function SidebarNav({ className, items, ...props }: SidebarProps) {
+export function SettingsSidebar({
+  className,
+  items,
+  ...props
+}: SettingsSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <nav className={cn("flex flex-col gap-4 my-12 mx-8")} {...props}>
+    <nav
+      className={cn(
+        "flex flex-wrap -space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
+        className
+      )}
+      {...props}
+    >
       {items.map((item) => (
         <Button
-          className="justify-start text-lg"
+          className="justify-start"
           variant={"ghost"}
           key={item.href}
           asChild
@@ -28,7 +38,9 @@ export function SidebarNav({ className, items, ...props }: SidebarProps) {
           <Link
             href={item.href}
             className={cn(
-              pathname === item.href ? "bg-muted" : "hover:bg-muted/50"
+              pathname === item.href
+                ? "bg-muted hover:bg-muted"
+                : "hover:bg-transparent hover:underline"
             )}
           >
             {item.title}
