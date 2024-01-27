@@ -53,6 +53,7 @@ export function PollCard({
     isError: isErrorPoll,
     error: errorPoll,
   } = usePollById(program, pollId);
+
   const { data: userScore, isLoading: isLoadingScore } = useUserScore(
     program,
     connection,

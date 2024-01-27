@@ -88,7 +88,7 @@ export function CreationForm({ createdPolls }: CreationFormProps) {
       question: "",
       description: "",
       category: 0,
-      decay: 1,
+      decay: Number.parseFloat(decayOptions[0].value),
     },
   });
 
@@ -192,13 +192,10 @@ export function CreationForm({ createdPolls }: CreationFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {decayOptions.map((category) => {
+                      {decayOptions.map((decay) => {
                         return (
-                          <SelectItem
-                            key={category.value}
-                            value={category.value}
-                          >
-                            {category.label}
+                          <SelectItem key={decay.value} value={decay.value}>
+                            {decay.label}
                           </SelectItem>
                         );
                       })}

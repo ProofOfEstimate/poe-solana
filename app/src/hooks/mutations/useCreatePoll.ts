@@ -61,8 +61,8 @@ const createPoll = async (
     .createPoll(
       form.getValues().question,
       form.getValues().description,
-      0,
-      0.001
+      form.getValues().category,
+      form.getValues().decay
     )
     .accounts({
       resolver: wallet.publicKey,
