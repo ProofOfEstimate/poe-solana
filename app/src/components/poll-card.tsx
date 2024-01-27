@@ -23,6 +23,7 @@ import { useCollectPoints } from "@/hooks/mutations/useCollectPoints";
 import { useUserScore } from "@/hooks/queries/useUserScore";
 import { TbPlusMinus, TbLoader2 } from "react-icons/tb";
 import { RiArrowRightDoubleLine } from "react-icons/ri";
+import { ProgressBar } from "./ui/progress";
 
 type PollCardInput = {
   pollId: number;
@@ -109,13 +110,14 @@ export function PollCard({
   return (
     <Card className={cn("w-[320px] sm:w-[380px]", className)} {...props}>
       <CardHeader>
-        <CardTitle className="h-12 leading-tight text-sm sm:text-md">
+        <CardTitle className="h-5 leading-tight text-md sm:text-md">
           {question}
         </CardTitle>
       </CardHeader>
 
       <CardContent className="grid">
         <Separator color="primary" />
+        <ProgressBar />
 
         <Flex mt={"4"} gap={"2"}>
           <Text className="text-sm font-medium">Collective Estimate:</Text>
