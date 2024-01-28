@@ -19,9 +19,10 @@ const CategoryBadgeFilter = ({
       <Badge
         variant={null}
         className={cn(
-          categories.length === categoryOptions.length
-            ? "bg-primary hover:brightness-110"
-            : "hover:bg-primary/90",
+          categories.length === categoryOptions.length ||
+            categories.length === 0
+            ? "bg-primary text-primary-foreground hover:brightness-110"
+            : "hover:bg-primary/50",
           "hover:cursor-pointer rounded-2xl px-4 py-2 "
         )}
         onClick={() => {
@@ -40,8 +41,8 @@ const CategoryBadgeFilter = ({
           variant={"outline"}
           className={cn(
             categories.includes(category.value)
-              ? "bg-primary hover:brightness-110"
-              : "hover:bg-primary/90",
+              ? "bg-primary text-primary-foreground hover:brightness-110"
+              : "hover:bg-primary/50",
             "hover:cursor-pointer rounded-2xl px-4 py-2"
           )}
           onClick={() => {
