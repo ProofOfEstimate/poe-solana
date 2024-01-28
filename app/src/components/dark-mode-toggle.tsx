@@ -13,7 +13,9 @@ import {
 import { RxMoon, RxSun } from "react-icons/rx";
 
 export function DarkModeToggle() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
+
+  console.log("Theme", theme);
 
   return (
     <DropdownMenu>

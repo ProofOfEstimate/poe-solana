@@ -22,7 +22,7 @@ export const sidebarNavItems = [
   },
   {
     title: "Create Polls",
-    href: "/create-poll",
+    href: "/dashboard",
     icon: <MdCreate />,
   },
 ];
