@@ -7,34 +7,10 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
+import { sidebarNavItems } from "./sidebar-nav";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-
-  const docsConfig = {
-    mainNav: [
-      { title: "1", href: "523", label: "234" },
-      { title: "2", href: "523", label: "234" },
-      { title: "3", href: "523", label: "234" },
-    ],
-    sidebarNav: [
-      {
-        items: [{ title: "14", href: "523", label: "234", disabled: true }],
-        title: "a",
-        disabled: true,
-      },
-      {
-        items: [{ title: "15", href: "523", label: "234", disabled: true }],
-        title: "b",
-        disabled: true,
-      },
-      {
-        items: [{ title: "16", href: "523", label: "234", disabled: false }],
-        title: "c",
-        disabled: false,
-      },
-    ],
-  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -75,17 +51,17 @@ export function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left" className="pr-0 w-2/3 sm:w-1/2">
         <MobileLink
           href="/"
-          className="flex items-center"
+          className="flex items-center mb-20"
           onOpenChange={setOpen}
         >
-          <span className="font-bold">{"sadfjalsjf"}</span>
+          <span className="font-bold text-2xl">{"POE"}</span>
         </MobileLink>
 
-        <div className="flex flex-col space-y-3">
-          {docsConfig.mainNav?.map(
+        <div className="flex flex-col gap-8">
+          {sidebarNavItems.map(
             (item) =>
               item.href && (
                 <MobileLink
@@ -93,39 +69,13 @@ export function MobileNav() {
                   href={item.href}
                   onOpenChange={setOpen}
                 >
-                  {item.title}
+                  <div className="flex gap-4 items-center text-xl">
+                    {item.icon}
+                    {item.title}
+                  </div>
                 </MobileLink>
               )
           )}
-        </div>
-        <div className="flex flex-col space-y-2">
-          {docsConfig.sidebarNav.map((item, index) => (
-            <div key={index} className="flex flex-col space-y-3 pt-6">
-              <h4 className="font-medium">{item.title}</h4>
-              {item?.items?.length &&
-                item.items.map((item) => (
-                  <React.Fragment key={item.href}>
-                    {!item.disabled &&
-                      (item.href ? (
-                        <MobileLink
-                          href={item.href}
-                          onOpenChange={setOpen}
-                          className="text-muted-foreground"
-                        >
-                          {item.title}
-                          {item.label && (
-                            <span className="ml-2 rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
-                              {item.label}
-                            </span>
-                          )}
-                        </MobileLink>
-                      ) : (
-                        item.title
-                      ))}
-                  </React.Fragment>
-                ))}
-            </div>
-          ))}
         </div>
       </SheetContent>
     </Sheet>
