@@ -7,8 +7,6 @@ import { PollCard } from "./poll-card";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { useAllPolls } from "@/hooks/queries/useAllPolls";
 import { Skeleton } from "./ui/skeleton";
-import { categoryOptions } from "@/types/options";
-import { Badge } from "./ui/badge";
 import CategoryBadgeFilter from "./category-badge-filter";
 import { useCategoryFilterStore } from "@/hooks/states/useCategoryFilterStore";
 
@@ -43,6 +41,7 @@ const AllPolls = () => {
   const program = useAnchorProgram();
   const { data: polls, isLoading } = useAllPolls(program);
   const categories = useCategoryFilterStore((state) => state.filter);
+
   if (isLoading) {
     return (
       <>
