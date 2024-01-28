@@ -3,26 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import UserNav from "./user-nav";
-import { PollFilter } from "./poll-filter";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
-
-const pollFilterItems = [
-  {
-    title: "All",
-    href: "/",
-  },
-  {
-    title: "New",
-    href: "/new",
-  },
-  {
-    title: "Trending",
-    href: "/trending",
-  },
-];
 
 const NavBar = () => {
   return (
@@ -48,8 +32,8 @@ const NavBar = () => {
           <div className="ml-auto flex items-center space-x-4">
             <UserNav />
           </div>
+          <div>tsf</div>
         </div>
-        <PollFilter items={pollFilterItems} />
       </div>
     </header>
   );
