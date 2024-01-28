@@ -7,6 +7,10 @@ import { PollCard } from "./poll-card";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { useAllPolls } from "@/hooks/queries/useAllPolls";
 import { Skeleton } from "./ui/skeleton";
+import { categoryOptions } from "@/types/options";
+import { Badge } from "./ui/badge";
+import CategoryBadgeFilter from "./category-badge-filter";
+import { useCategoryFilterStore } from "@/hooks/states/useCategoryFilterStore";
 
 const HomeTabs = () => {
   const tab = useHomeTabsState((state) => state.tab);
@@ -19,6 +23,7 @@ const HomeTabs = () => {
         <TabsTrigger value="new">New Polls</TabsTrigger>
         <TabsTrigger value="trending">Trending</TabsTrigger>
       </TabsList>
+      <CategoryBadgeFilter className="py-4" />
       <TabsContent value="all">
         <AllPolls />
       </TabsContent>
@@ -37,7 +42,7 @@ export default HomeTabs;
 const AllPolls = () => {
   const program = useAnchorProgram();
   const { data: polls, isLoading } = useAllPolls(program);
-
+  const categories = useCategoryFilterStore((state) => state.filter);
   if (isLoading) {
     return (
       <>
@@ -91,7 +96,12 @@ const AllPolls = () => {
     >
       {polls !== undefined &&
         polls
-          .filter((poll) => poll.result === null)
+          .filter(
+            (poll) =>
+              poll.result === null &&
+              (categories.includes(poll.category.toString()) ||
+                categories.length === 0)
+          )
           .map((poll) => (
             <PollCard key={poll.id} pollId={poll.id} question={poll.question} />
           ))}
