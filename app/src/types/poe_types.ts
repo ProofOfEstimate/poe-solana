@@ -5,6 +5,7 @@ export type Poll = {
   resolver: PublicKey;
   open: boolean;
   id: number;
+  category: number;
   startSlot: number;
   endSlot: number;
   endTime: number | null;

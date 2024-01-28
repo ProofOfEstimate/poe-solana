@@ -50,10 +50,10 @@ export function SidebarNav({ className, items, ...props }: SidebarProps) {
             asChild
           >
             <div
-              className={
-                cn(pathname === item.href ? "bg-muted" : "hover:bg-muted/50") +
-                " flex gap-4"
-              }
+              className={cn(
+                pathname === item.href ? "bg-muted" : "hover:bg-muted/50",
+                "flex gap-4"
+              )}
             >
               {item.icon}
               <Link href={item.href} className="justify-self-start">
