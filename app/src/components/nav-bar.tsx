@@ -6,6 +6,7 @@ import UserNav from "./user-nav";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { DarkModeToggle } from "./dark-mode-toggle";
+import ConnectWalletButton from "./connect-wallet-button";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 
@@ -18,7 +19,7 @@ const NavBar = () => {
           {/* <MainNav /> */}
           <MobileNav />
           <div className="ml-auto flex items-center space-x-4">
-            <UserNav />
+            <ConnectWalletButton />
           </div>
           <DarkModeToggle />
         </div>
