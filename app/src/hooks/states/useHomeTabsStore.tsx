@@ -6,7 +6,7 @@ interface TabsState {
   tab: HomeTabState;
   setTab: (newTab: string) => void;
 }
-export const useHomeTabsState = create<TabsState>()((set) => ({
+export const useHomeTabsStore = create<TabsState>()((set) => ({
   tab: "all",
   setTab: (newTab: string) => set({ tab: newTab as HomeTabState }),
 }));

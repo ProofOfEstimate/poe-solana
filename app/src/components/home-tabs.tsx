@@ -1,6 +1,6 @@
 "use client";
 
-import { useHomeTabsState } from "@/hooks/states/useHomeTabsStore";
+import { useHomeTabsStore } from "@/hooks/states/useHomeTabsStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Grid, Heading } from "@radix-ui/themes";
 import { PollCard } from "./poll-card";
@@ -11,8 +11,8 @@ import CategoryBadgeFilter from "./category-badge-filter";
 import { useCategoryFilterStore } from "@/hooks/states/useCategoryFilterStore";
 
 const HomeTabs = () => {
-  const tab = useHomeTabsState((state) => state.tab);
-  const setTab = useHomeTabsState((state) => state.setTab);
+  const tab = useHomeTabsStore((state) => state.tab);
+  const setTab = useHomeTabsStore((state) => state.setTab);
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="w-full">
@@ -92,6 +92,7 @@ const AllPolls = () => {
       }}
       gapY={"5"}
       my={"4"}
+      justify={"end"}
     >
       {polls !== undefined &&
         polls

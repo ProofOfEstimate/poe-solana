@@ -108,7 +108,7 @@ export function PollCard({
   }
 
   return (
-    <Card className={cn("w-[320px] sm:w-[380px]", className)} {...props}>
+    <Card className={cn("w-[320px]", className)} {...props}>
       <CardHeader>
         <CardTitle className="h-12 leading-tight text-sm sm:text-md">
           {question}
