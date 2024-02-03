@@ -96,12 +96,14 @@ for a large number of users.
 Users get absolute points for being correct, i.e. predicting a high probability for the actual outcome
 and relative points for being more correct, than the rest of the community.
 
+#### Absolute points
 The logarithmic score is used to determine absolute points. It is a well
 researched and commonly used score in information theory.
 If we denote p as the expressed probability the score is:
 `x ln(p) + (1-x) ln(1-p) + ln(2)`
 where x is either one or zero depending on the truth or falsity of the estimate.
 
+#### Relative points
 Prediction markets are the inspiration to determine relative points. The collective
 prediction is considered as a market price. Participants that predict a higher or a
 lower probability are “buying” or “selling” continuously binary options.
