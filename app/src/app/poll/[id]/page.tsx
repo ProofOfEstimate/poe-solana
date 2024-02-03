@@ -21,6 +21,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { categoryOptions } from "@/types/options";
 
 export default function PollDetails({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -51,29 +53,34 @@ export default function PollDetails({ params }: { params: { id: string } }) {
       {isLoadingPoll ? (
         <Skeleton className="w-full sm:w-2/3 lg:w-1/2 h-10 rounded-md" />
       ) : (
-        <Heading
-          className="py-4"
-          as="h1"
-          size={{
-            initial: "5",
-            xs: "7",
-            xl: "8",
-          }}
-        >
-          {poll?.question}
-        </Heading>
-      )}
-      {isLoadingPoll ? (
-        <Flex direction={"column"} gap={"1"} width={"100%"}>
-          <Skeleton className="w-full h-4 rounded-md" />
-          <Skeleton className="w-full h-4 rounded-md" />
-          <Skeleton className="w-1/3 h-4 rounded-md" />
+        <Flex gap={"8"} align={"center"} wrap={"wrap"}>
+          <Heading
+            className="py-4"
+            as="h1"
+            size={{
+              initial: "5",
+              xs: "7",
+              xl: "8",
+            }}
+          >
+            {poll?.question}
+          </Heading>
+          {poll && (
+            <Badge variant={"default"} className="h-fit">
+              {categoryOptions[poll.category].label}
+            </Badge>
+          )}
         </Flex>
-      ) : (
-        <Text size={"2"}>{poll?.description}</Text>
       )}
-      <div className="font-bold text-xl">Collective Estimate</div>
-      <div className="h-96 w-full">
+      <Flex direction={"column"} my={"4"}>
+        <Text size={"5"}>Yes</Text>
+        {poll?.collectiveEstimate && (
+          <Text size={"4"} className="text-primary">
+            {poll.collectiveEstimate / 10000} % Chance
+          </Text>
+        )}
+      </Flex>
+      <div className="h-96 w-full border rounded-lg p-8">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={estimateUpdates}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -162,6 +169,15 @@ export default function PollDetails({ params }: { params: { id: string } }) {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
+      {isLoadingPoll ? (
+        <Flex direction={"column"} gap={"1"} width={"100%"}>
+          <Skeleton className="w-full h-4 rounded-md" />
+          <Skeleton className="w-full h-4 rounded-md" />
+          <Skeleton className="w-1/3 h-4 rounded-md" />
+        </Flex>
+      ) : (
+        <Text size={"2"}>{poll?.description}</Text>
+      )}
     </main>
   );
 }
