@@ -94,7 +94,7 @@ Here, participants aim to maximize their profits rather than to seek truth. This
 especially when high rewards are at stake.
 
 Conversely, POE is grounded in the pursuit of a deeper understanding of the world. It encourages participants to seek the truth, 
-fostering a community where the collective goal is enlightenment, not monetary gain. Research supports that prediction polls equipped 
+fostering a community where the collective goal is enlightenment, not monetary gain. <a href="https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2015.2374" target="_blank" rel="noreferrer noopener">Research</a> supports that prediction polls equipped 
 with appropriate scoring feedback, collaborative capabilities, and sophisticated statistical aggregation methods can serve as a more 
 effective mechanism for harnessing the wisdom of crowds than traditional prediction markets.
 
