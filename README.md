@@ -48,6 +48,8 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#scoring-system">Scoring system</a></li>
+        <li><a href="#why-poe">Why POE?</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -80,6 +82,29 @@ which prioritizes recent contributions, and recalibration techniques to refine t
 
 ![POE Screenshot](/assets/screenshot.png)
 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Scoring System
+
+The scoring system tracks the historical accuracy of users' predictions and gives
+higher weight to those who have a proven track record of making accurate forecasts.
+The scoring system is the dynamically weighted sum of absolute and relative points.
+
+Users get absolute points for being correct, i.e. predicting a high probability for the actual outcome
+and relative points for being more correct, than the rest of the community.
+
+The logarithmic score is used to determine absolute points. It is a well
+researched and commonly used score in information theory.
+If we denote p as the expressed probability the score is:
+`x ln(p) + (1-x) ln(1-p) + ln(2)`
+where x is either one or zero depending on the truth or falsity of the estimate.
+
+Prediction markets are the inspiration to determine relative points. The collective
+prediction is considered as a market price. Participants that predict a higher or a
+lower probability are “buying” or “selling” continuously binary options.
+The virtual profit or loss enters the scoring system as relative points.
+![Relative points](/assets/relative-points.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
