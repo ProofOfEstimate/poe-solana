@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   ComposedChart,
   Area,
+  Brush,
 } from "recharts";
 
 import React, { useState } from "react";
@@ -82,6 +83,20 @@ export default function PollDetails({ params }: { params: { id: string } }) {
   ) => {
     setLowerEstimate(lower);
     setUpperEstimate(upper);
+  };
+
+  const [brushStartIndex, setBrushStartIndex] = useState<number>();
+  const [brushEndIndex, setBrushEndIndex] = useState<number>();
+
+  const handleBrushChange = ({
+    startIndex,
+    endIndex,
+  }: {
+    startIndex?: number;
+    endIndex?: number;
+  }) => {
+    setBrushStartIndex(startIndex);
+    setBrushEndIndex(endIndex);
   };
 
   return (
@@ -291,10 +306,24 @@ export default function PollDetails({ params }: { params: { id: string } }) {
                 stroke="hsl(var(--primary))"
                 isAnimationActive={false}
               />
+              <Brush
+                dataKey="name"
+                height={30}
+                stroke="#8884d8"
+                onChange={handleBrushChange}
+                startIndex={brushStartIndex}
+                endIndex={brushEndIndex}
+                tickFormatter={(number) =>
+                  new Date(number * 1000).toLocaleString()
+                }
+              />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
+      <Text size={"5"} weight={"bold"}>
+        Description
+      </Text>
       {isLoadingPoll ? (
         <Flex direction={"column"} gap={"1"} width={"100%"}>
           <Skeleton className="w-full h-4 rounded-md" />

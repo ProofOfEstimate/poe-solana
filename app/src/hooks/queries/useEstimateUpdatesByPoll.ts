@@ -96,7 +96,7 @@ const getEstimateUpdatesByPoll = async (
 
     const nextTime = updateData[i + 1].timestamp;
     // Fill with data between updates, not necessary but a smoother experience
-    for (let j = 0; j < nextTime - time; j = j + 60) {
+    for (let j = 0; j < nextTime - time; j = j + 60000000000000) {
       estimates.push({
         name: time + j,
         estimate: estimate !== null ? estimate / 10000 : null,
@@ -142,7 +142,7 @@ const getEstimateUpdatesByPoll = async (
   const lastDeviation = updateData[updateData.length - 1].deviation;
   const lastLower = updateData[updateData.length - 1].userLower;
   const lastUpper = updateData[updateData.length - 1].userUpper;
-  for (let k = 0; k < lastDisplayTime - lastTimestamp; k = k + 1) {
+  for (let k = 0; k < lastDisplayTime - lastTimestamp; k = k + 1000000000) {
     estimates.push({
       name: lastTimestamp + k,
       estimate: lastEstimate !== null ? lastEstimate / 10000 : null,
@@ -166,6 +166,28 @@ const getEstimateUpdatesByPoll = async (
           : null,
     } as unknown as EstimateData);
   }
+  estimates.push({
+    name: lastDisplayTime,
+    estimate: lastEstimate !== null ? lastEstimate / 10000 : null,
+    confidenceInterval:
+      lastDeviation !== null && lastEstimate !== null
+        ? [
+            lastEstimate / 10000 - lastDeviation,
+            lastEstimate / 10000 + lastDeviation,
+          ]
+        : null,
+    userEstimate:
+      lastLower !== null && lastUpper !== null
+        ? (lastLower + lastUpper) / 2
+        : null,
+    userInterval:
+      lastLower !== null && lastUpper !== null
+        ? [
+            (lastLower + lastUpper) / 2 - (lastUpper - lastLower) / 2,
+            (lastLower + lastUpper) / 2 + (lastUpper - lastLower) / 2,
+          ]
+        : null,
+  } as unknown as EstimateData);
 
   return estimates;
 };
@@ -181,7 +203,7 @@ const useEstimateUpdatesByPoll = (
       await getEstimateUpdatesByPoll(program, pollId, publicKey),
     enabled: !!program,
     placeholderData: keepPreviousData,
-    refetchInterval: 1000,
+    refetchInterval: 10000,
   });
 };
 
