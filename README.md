@@ -109,8 +109,7 @@ leveraging the collective intelligence of its users to illuminate the future.
 
 * @coral-xyz/anchor
 * @solana/web3.js
-* Love
-
+* Love ❤️
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
