@@ -15,11 +15,15 @@ import React from "react";
 import { usePollById } from "@/hooks/queries/usePollById";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Flex, Text } from "@radix-ui/themes";
+import { Flex, Heading, Text } from "@radix-ui/themes";
 import { useEstimateUpdatesByPoll } from "@/hooks/queries/useEstimateUpdatesByPoll";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Button } from "@/components/ui/button";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
 
 export default function PollDetails({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const program = useAnchorProgram();
   const { publicKey } = useWallet();
 
@@ -35,13 +39,29 @@ export default function PollDetails({ params }: { params: { id: string } }) {
   );
 
   return (
-    <main className="flex flex-col min-h-screen items-center justify-start p-4 sm:p-24 gap-12">
+    <main className="flex min-h-screen flex-col justify-start items-start px-4 sm:px-12 lg:px-16 py-4 sm:py-8">
+      <Button
+        onClick={() => router.back()}
+        variant={"ghost"}
+        className="p-0 hover:bg-transparent"
+      >
+        <FaArrowLeftLong />
+      </Button>
+
       {isLoadingPoll ? (
         <Skeleton className="w-full sm:w-2/3 lg:w-1/2 h-10 rounded-md" />
       ) : (
-        <Text size={"7"} className="font-bold">
+        <Heading
+          className="py-4"
+          as="h1"
+          size={{
+            initial: "5",
+            xs: "7",
+            xl: "8",
+          }}
+        >
           {poll?.question}
-        </Text>
+        </Heading>
       )}
       {isLoadingPoll ? (
         <Flex direction={"column"} gap={"1"} width={"100%"}>
