@@ -90,6 +90,8 @@ which prioritizes recent contributions, and recalibration techniques to refine t
 The scoring system tracks the historical accuracy of users' predictions and gives
 higher weight to those who have a proven track record of making accurate forecasts.
 The scoring system is the dynamically weighted sum of absolute and relative points.
+The weight shifts from absolute points for a small number of users to relative points
+for a large number of users.
 
 Users get absolute points for being correct, i.e. predicting a high probability for the actual outcome
 and relative points for being more correct, than the rest of the community.
