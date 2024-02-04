@@ -14,7 +14,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Skeleton } from "./ui/skeleton";
 import { Flex, Strong, Text } from "@radix-ui/themes";
 import { EstimateSlider } from "./estimate-slider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useMakeEstimate } from "@/hooks/mutations/useMakeEstimate";
 import { useUpdateEstimate } from "@/hooks/mutations/useUpdateEstimate";
@@ -110,7 +110,12 @@ export function PollCard({
   return (
     <Card className={cn("w-[320px]", className)} {...props}>
       <CardHeader>
-        <CardTitle className="h-12 leading-tight text-sm sm:text-md">
+        <CardTitle
+          className={cn(
+            "h-12 leading-tight text-md sm:text-md",
+            poll && poll.question.length < 60 ? "sm:text-lg" : ""
+          )}
+        >
           {question}
         </CardTitle>
       </CardHeader>
