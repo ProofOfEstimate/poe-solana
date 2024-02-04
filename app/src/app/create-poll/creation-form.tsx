@@ -42,8 +42,8 @@ const formSchema = z.object({
     .min(2, {
       message: "Question must be at least 2 characters.",
     })
-    .max(120, {
-      message: "Question must not be more than 120 characters.",
+    .max(100, {
+      message: "Question must not be more than 100 characters.",
     }),
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
@@ -98,6 +98,7 @@ export function CreationForm() {
                 <FormLabel>Question</FormLabel>
                 <FormControl>
                   <Input
+                    maxLength={100}
                     placeholder="Will SOL hit $1000 by end of 2025?"
                     {...field}
                   />

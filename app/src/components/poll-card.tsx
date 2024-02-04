@@ -23,6 +23,9 @@ import { useCollectPoints } from "@/hooks/mutations/useCollectPoints";
 import { useUserScore } from "@/hooks/queries/useUserScore";
 import { TbPlusMinus, TbLoader2 } from "react-icons/tb";
 import { RiArrowRightDoubleLine } from "react-icons/ri";
+import EstimateBar from "./estimate-bar";
+import { Badge } from "./ui/badge";
+import { categoryOptions } from "@/types/options";
 
 type PollCardInput = {
   pollId: number;
@@ -110,7 +113,17 @@ export function PollCard({
   return (
     <Card className={cn("w-[320px]", className)} {...props}>
       <CardHeader>
-        <CardTitle className="h-12 leading-tight text-sm sm:text-md">
+        {poll && (
+          <Badge className="w-fit self-end rounded-xl">
+            {categoryOptions[poll.category].label}
+          </Badge>
+        )}
+        <CardTitle
+          className={cn(
+            "h-12 leading-tight text-md sm:text-md",
+            poll && poll.question.length < 60 ? "sm:text-lg" : ""
+          )}
+        >
           {question}
         </CardTitle>
       </CardHeader>
@@ -118,41 +131,33 @@ export function PollCard({
       <CardContent className="grid">
         <Separator color="primary" />
 
-        <Flex mt={"4"} gap={"2"}>
-          <Text className="text-sm font-medium">Collective Estimate:</Text>
-          {isLoadingPoll ? (
-            <Skeleton className="w-14 h-5 rounded-md" />
-          ) : (
-            <Text className="text-sm font-medium">
-              {isErrorPoll ? (
-                errorPoll.name
-              ) : poll !== undefined ? (
-                poll.collectiveEstimate !== null && poll.variance !== null ? (
-                  <span className="flex items-center gap-1">
-                    {(poll.collectiveEstimate / 10000).toFixed(2)}
-                    <TbPlusMinus />
-                    {/* divide variance by two so sqrt equals confidence interval */}
-                    {Math.sqrt(poll.variance / 2).toFixed(2)} %
-                  </span>
-                ) : (
-                  "-"
-                )
-              ) : (
-                "-"
-              )}
-            </Text>
-          )}
-        </Flex>
+        {poll && poll.collectiveEstimate !== null ? (
+          <EstimateBar estimate={poll.collectiveEstimate / 10000} />
+        ) : (
+          <div>No estimate yet</div>
+        )}
         <Flex gap={"2"}>
-          <Text className="text-sm text-muted-foreground"># Forecasters:</Text>
-          {isLoadingPoll ? (
-            <Skeleton className="w-8 h-5 rounded-md" />
-          ) : (
+          {poll ? (
             <Text className="text-sm text-muted-foreground">
-              {poll?.numForecasters.toString()}
+              {poll.numForecasters.toString()} forecaster
+              {poll.numForecasters.toNumber() > 1 ? "s" : ""}
             </Text>
+          ) : (
+            <Skeleton className="w-8 h-5 rounded-md" />
           )}
         </Flex>
+        <Flex gap={"2"} mb="2">
+          {poll ? (
+            <Text className="text-sm text-muted-foreground">
+              {poll.numEstimateUpdates.toString()} estimate
+              {poll.numEstimateUpdates.toNumber() > 1 ? "s" : ""}
+            </Text>
+          ) : (
+            <Skeleton className="w-8 h-5 rounded-md" />
+          )}
+        </Flex>
+        <Separator color="primary" />
+
         <Flex mt={"4"} gap={"2"} align={"center"}>
           <Text className="text-sm">Your Estimate:</Text>
           {isLoadingEstimate ? (
