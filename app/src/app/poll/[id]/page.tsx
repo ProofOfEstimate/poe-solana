@@ -114,9 +114,9 @@ export default function PollDetails({ params }: { params: { id: string } }) {
       {isLoadingPoll ? (
         <Skeleton className="w-full sm:w-2/3 lg:w-1/2 h-10 rounded-md" />
       ) : (
-        <Flex gap={"8"} align={"center"} wrap={"wrap"}>
+        <Flex gap={"4"} align={"center"} wrap={"wrap"}>
           <Heading
-            className="py-4"
+            className="my-4"
             as="h1"
             size={{
               initial: "5",
