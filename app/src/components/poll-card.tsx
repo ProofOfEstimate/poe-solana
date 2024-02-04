@@ -184,6 +184,7 @@ export function PollCard({
           oldLowerEstimate={userEstimate?.lowerEstimate}
           oldUpperEstimate={userEstimate?.upperEstimate}
           onSliderChange={handleChange}
+          disabled={poll?.result !== null}
         />
       </CardContent>
       <CardFooter className="justify-between">
