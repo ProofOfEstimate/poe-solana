@@ -14,7 +14,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Skeleton } from "./ui/skeleton";
 import { Flex, Strong, Text } from "@radix-ui/themes";
 import { EstimateSlider } from "./estimate-slider";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useMakeEstimate } from "@/hooks/mutations/useMakeEstimate";
 import { useUpdateEstimate } from "@/hooks/mutations/useUpdateEstimate";
@@ -24,6 +24,8 @@ import { useUserScore } from "@/hooks/queries/useUserScore";
 import { TbPlusMinus, TbLoader2 } from "react-icons/tb";
 import { RiArrowRightDoubleLine } from "react-icons/ri";
 import EstimateBar from "./estimate-bar";
+import { Badge } from "./ui/badge";
+import { categoryOptions } from "@/types/options";
 
 type PollCardInput = {
   pollId: number;
@@ -111,6 +113,11 @@ export function PollCard({
   return (
     <Card className={cn("w-[320px]", className)} {...props}>
       <CardHeader>
+        {poll && (
+          <Badge className="w-fit self-end rounded-xl">
+            {categoryOptions[poll.category].label}
+          </Badge>
+        )}
         <CardTitle
           className={cn(
             "h-12 leading-tight text-md sm:text-md",
