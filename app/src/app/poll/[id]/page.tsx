@@ -12,7 +12,7 @@ import {
   Brush,
 } from "recharts";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePollById } from "@/hooks/queries/usePollById";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,14 +36,13 @@ export default function PollDetails({ params }: { params: { id: string } }) {
   const { connection } = useConnection();
   const wallet = useWallet();
 
-  const { data: poll, isLoading: isLoadingPoll } = usePollById(
-    program,
-    Number.parseInt(params.id)
-  );
+  const pollId = Number.parseInt(params.id);
+
+  const { data: poll, isLoading: isLoadingPoll } = usePollById(program, pollId);
 
   const { data: estimateUpdates } = useEstimateUpdatesByPoll(
     program,
-    Number.parseInt(params.id),
+    pollId,
     wallet.publicKey
   );
 
@@ -52,12 +51,9 @@ export default function PollDetails({ params }: { params: { id: string } }) {
     isError: isErrorEstimate,
     error: errorEstimate,
     isLoading: isLoadingEstimate,
-  } = useUserEstimateByPoll(
-    program,
-    connection,
-    wallet.publicKey,
-    Number.parseInt(params.id)
-  );
+  } = useUserEstimateByPoll(program, connection, wallet.publicKey, pollId);
+
+  console.log("User estimate", isLoadingEstimate);
 
   const { mutate: submitEstimate, isPending: isSubmitting } = useMakeEstimate(
     program,
@@ -98,6 +94,13 @@ export default function PollDetails({ params }: { params: { id: string } }) {
     setBrushStartIndex(startIndex);
     setBrushEndIndex(endIndex);
   };
+
+  useEffect(() => {
+    if (userEstimate !== null && userEstimate !== undefined) {
+      setLowerEstimate(userEstimate.lowerEstimate);
+      setUpperEstimate(userEstimate.upperEstimate);
+    }
+  }, [userEstimate]);
 
   return (
     <main className="flex min-h-screen flex-col justify-start items-start px-4 sm:px-12 lg:px-16 py-4 sm:py-8">
@@ -142,14 +145,14 @@ export default function PollDetails({ params }: { params: { id: string } }) {
         </Flex>
         <Flex direction={"column"} my={"4"}>
           <Text size={"5"}>You</Text>
-          {userEstimate ? (
+          {isLoadingEstimate ? (
+            <Skeleton className="w-14 h-5 rounded-md" />
+          ) : (
             <Text size={"4"} className="text-primary">
               {lowerEstimate !== undefined && upperEstimate !== undefined
                 ? ((lowerEstimate + upperEstimate) / 2).toString() + " %"
                 : "-"}
             </Text>
-          ) : (
-            <Text>-</Text>
           )}
         </Flex>
         {poll && (
@@ -186,7 +189,7 @@ export default function PollDetails({ params }: { params: { id: string } }) {
               className="w-full"
               onClick={() =>
                 updateEstimate({
-                  pollId: Number.parseInt(params.id),
+                  pollId,
                   lowerEstimate: lowerEstimate,
                   upperEstimate: upperEstimate,
                 })
@@ -207,7 +210,7 @@ export default function PollDetails({ params }: { params: { id: string } }) {
               className="w-full"
               onClick={() =>
                 submitEstimate({
-                  pollId: Number.parseInt(params.id),
+                  pollId,
                   lowerEstimate: lowerEstimate,
                   upperEstimate: upperEstimate,
                 })
