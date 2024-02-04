@@ -10,8 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
-import Link from "next/link";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { TbCopy } from "react-icons/tb";
@@ -23,11 +26,29 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { useAllPolls } from "@/hooks/queries/useAllPolls";
+import useAnchorProgram from "@/hooks/useAnchorProgram";
+import { useAllPollsByUser } from "@/hooks/queries/useAllPollsByUser";
+import { Skeleton } from "./ui/skeleton";
+import { useUserAccount } from "@/hooks/queries/useUserAccount";
 
 const ConnectWalletButton = () => {
   const wallet = useAnchorWallet();
-  const { disconnect, connected } = useWallet();
+  const { disconnect, connected, publicKey } = useWallet();
+  const program = useAnchorProgram();
+  const { connection } = useConnection();
   const { setVisible } = useWalletModal();
+
+  const { data: userScore } = useUserAccount(program, connection, publicKey);
+
+  const { data: userPolls } = useAllPollsByUser(program, publicKey);
+  const { data: allPolls } = useAllPolls(program);
+  const createdPolls =
+    allPolls !== undefined
+      ? allPolls.filter(
+          (poll) => poll.creator.toBase58() === publicKey?.toBase58()
+        )
+      : [];
 
   if (!connected) {
     return (
@@ -84,10 +105,31 @@ const ConnectWalletButton = () => {
         <DropdownMenuGroup>
           <div className="border rounded-md py-2 px-1 my-2">
             <Flex direction={"column"} className="mx-2 gap-2 text-sm">
-              <Text>Score: 1.0</Text>
-              <Text>Active Polls: 10</Text>
-              <Text>Resolved Polls: 0</Text>
-              <Text>Created Polls: 2</Text>
+              <Text className="flex items-center gap-2">
+                Score:{" "}
+                {userScore ? (
+                  userScore.score.toFixed(2)
+                ) : (
+                  <Skeleton className="w-6 h-4 rounded-md" />
+                )}
+              </Text>
+              <Text className="flex items-center gap-2">
+                Active Polls:{" "}
+                {userPolls ? (
+                  userPolls.filter((poll) => poll.result === null).length
+                ) : (
+                  <Skeleton className="w-6 h-4 rounded-md" />
+                )}
+              </Text>
+              <Text className="flex items-center gap-2">
+                Resolved Polls:{" "}
+                {userPolls ? (
+                  userPolls.filter((poll) => poll.result !== null).length
+                ) : (
+                  <Skeleton className="w-6 h-4 rounded-md" />
+                )}
+              </Text>
+              <Text>Created Polls: {createdPolls.length}</Text>
             </Flex>
           </div>
         </DropdownMenuGroup>
