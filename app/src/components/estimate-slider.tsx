@@ -224,7 +224,9 @@ const EstimateSlider = React.forwardRef<
         <div className="flex items-center space-x-2">
           <Switch
             checked={isConfidenceInterval}
-            disabled={lowerEstimate === 100 || upperEstimate === 0}
+            disabled={
+              lowerEstimate === 100 || upperEstimate === 0 || props.disabled
+            }
             id="confidence-interval"
             onCheckedChange={(value) => {
               setIsConfidenceInterval(value);

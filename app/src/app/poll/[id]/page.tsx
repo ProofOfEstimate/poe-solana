@@ -12,7 +12,7 @@ import {
   Brush,
 } from "recharts";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePollById } from "@/hooks/queries/usePollById";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,14 +36,13 @@ export default function PollDetails({ params }: { params: { id: string } }) {
   const { connection } = useConnection();
   const wallet = useWallet();
 
-  const { data: poll, isLoading: isLoadingPoll } = usePollById(
-    program,
-    Number.parseInt(params.id)
-  );
+  const pollId = Number.parseInt(params.id);
+
+  const { data: poll, isLoading: isLoadingPoll } = usePollById(program, pollId);
 
   const { data: estimateUpdates } = useEstimateUpdatesByPoll(
     program,
-    Number.parseInt(params.id),
+    pollId,
     wallet.publicKey
   );
 
@@ -52,12 +51,9 @@ export default function PollDetails({ params }: { params: { id: string } }) {
     isError: isErrorEstimate,
     error: errorEstimate,
     isLoading: isLoadingEstimate,
-  } = useUserEstimateByPoll(
-    program,
-    connection,
-    wallet.publicKey,
-    Number.parseInt(params.id)
-  );
+  } = useUserEstimateByPoll(program, connection, wallet.publicKey, pollId);
+
+  console.log("User estimate", isLoadingEstimate);
 
   const { mutate: submitEstimate, isPending: isSubmitting } = useMakeEstimate(
     program,
@@ -99,6 +95,13 @@ export default function PollDetails({ params }: { params: { id: string } }) {
     setBrushEndIndex(endIndex);
   };
 
+  useEffect(() => {
+    if (userEstimate !== null && userEstimate !== undefined) {
+      setLowerEstimate(userEstimate.lowerEstimate);
+      setUpperEstimate(userEstimate.upperEstimate);
+    }
+  }, [userEstimate]);
+
   return (
     <main className="flex min-h-screen flex-col justify-start items-start px-4 sm:px-12 lg:px-16 py-4 sm:py-8">
       <Button
@@ -108,7 +111,6 @@ export default function PollDetails({ params }: { params: { id: string } }) {
       >
         <FaArrowLeftLong />
       </Button>
-
       {isLoadingPoll ? (
         <Skeleton className="w-full sm:w-2/3 lg:w-1/2 h-10 rounded-md" />
       ) : (
@@ -129,6 +131,20 @@ export default function PollDetails({ params }: { params: { id: string } }) {
               {categoryOptions[poll.category].label}
             </Badge>
           )}
+          {poll &&
+            (poll.result === true ? (
+              <Badge variant={"secondary"} className="h-fit">
+                Resolved to Yes
+              </Badge>
+            ) : poll.result === false ? (
+              <Badge variant={"destructive"} className="h-fit">
+                Resolved to No
+              </Badge>
+            ) : (
+              <Badge variant={"outline"} className="h-fit">
+                Active
+              </Badge>
+            ))}
         </Flex>
       )}
       <Flex gap={"8"} align={"center"}>
@@ -142,14 +158,14 @@ export default function PollDetails({ params }: { params: { id: string } }) {
         </Flex>
         <Flex direction={"column"} my={"4"}>
           <Text size={"5"}>You</Text>
-          {userEstimate ? (
+          {isLoadingEstimate ? (
+            <Skeleton className="w-14 h-5 rounded-md" />
+          ) : (
             <Text size={"4"} className="text-primary">
               {lowerEstimate !== undefined && upperEstimate !== undefined
                 ? ((lowerEstimate + upperEstimate) / 2).toString() + " %"
                 : "-"}
             </Text>
-          ) : (
-            <Text>-</Text>
           )}
         </Flex>
         {poll && (
@@ -165,61 +181,62 @@ export default function PollDetails({ params }: { params: { id: string } }) {
           </div>
         )}
       </Flex>
-
       <div className="flex sm:flex-row flex-col gap-4 w-full my-8">
-        <div className="flex flex-col gap-4 items-stretch justify-stretch my-4">
-          <EstimateSlider
-            className="w-full"
-            min={0}
-            max={100}
-            oldLowerEstimate={userEstimate?.lowerEstimate}
-            oldUpperEstimate={userEstimate?.upperEstimate}
-            onSliderChange={handleChange}
-          />
-          {userEstimate !== undefined && userEstimate !== null ? (
-            <Button
-              disabled={
-                isUpdating ||
-                (lowerEstimate === userEstimate.lowerEstimate &&
-                  upperEstimate === userEstimate.upperEstimate)
-              }
+        {poll && poll.result === null && (
+          <div className="flex flex-col gap-4 items-stretch justify-stretch my-4">
+            <EstimateSlider
               className="w-full"
-              onClick={() =>
-                updateEstimate({
-                  pollId: Number.parseInt(params.id),
-                  lowerEstimate: lowerEstimate,
-                  upperEstimate: upperEstimate,
-                })
-              }
-            >
-              {isUpdating && (
-                <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Update Estimate
-            </Button>
-          ) : (
-            <Button
-              disabled={
-                isSubmitting ||
-                lowerEstimate === undefined ||
-                upperEstimate === undefined
-              }
-              className="w-full"
-              onClick={() =>
-                submitEstimate({
-                  pollId: Number.parseInt(params.id),
-                  lowerEstimate: lowerEstimate,
-                  upperEstimate: upperEstimate,
-                })
-              }
-            >
-              {isSubmitting && (
-                <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Submit Estimate
-            </Button>
-          )}
-        </div>
+              min={0}
+              max={100}
+              oldLowerEstimate={userEstimate?.lowerEstimate}
+              oldUpperEstimate={userEstimate?.upperEstimate}
+              onSliderChange={handleChange}
+            />
+            {userEstimate !== undefined && userEstimate !== null ? (
+              <Button
+                disabled={
+                  isUpdating ||
+                  (lowerEstimate === userEstimate.lowerEstimate &&
+                    upperEstimate === userEstimate.upperEstimate)
+                }
+                className="w-full"
+                onClick={() =>
+                  updateEstimate({
+                    pollId,
+                    lowerEstimate: lowerEstimate,
+                    upperEstimate: upperEstimate,
+                  })
+                }
+              >
+                {isUpdating && (
+                  <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Update Estimate
+              </Button>
+            ) : (
+              <Button
+                disabled={
+                  isSubmitting ||
+                  lowerEstimate === undefined ||
+                  upperEstimate === undefined
+                }
+                className="w-full"
+                onClick={() =>
+                  submitEstimate({
+                    pollId,
+                    lowerEstimate: lowerEstimate,
+                    upperEstimate: upperEstimate,
+                  })
+                }
+              >
+                {isSubmitting && (
+                  <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Submit Estimate
+              </Button>
+            )}
+          </div>
+        )}
         <div className="h-96 w-full border rounded-lg p-8">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={estimateUpdates}>
@@ -321,6 +338,7 @@ export default function PollDetails({ params }: { params: { id: string } }) {
           </ResponsiveContainer>
         </div>
       </div>
+
       <Text size={"5"} weight={"bold"}>
         Description
       </Text>

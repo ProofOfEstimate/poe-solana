@@ -172,7 +172,8 @@ const CreatedPolls = () => {
                     ) : (
                       <Flex gap={"2"}>
                         <Button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setPollIndex(index);
                             resolvePoll({
                               pollId: poll.id,
@@ -185,7 +186,8 @@ const CreatedPolls = () => {
                           Yes
                         </Button>
                         <Button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setPollIndex(index);
                             resolvePoll({
                               pollId: poll.id,
