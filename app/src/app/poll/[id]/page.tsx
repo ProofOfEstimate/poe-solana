@@ -132,6 +132,20 @@ export default function PollDetails({ params }: { params: { id: string } }) {
               {categoryOptions[poll.category].label}
             </Badge>
           )}
+          {poll &&
+            (poll.result === true ? (
+              <Badge variant={"secondary"} className="h-fit">
+                Resolved to Yes
+              </Badge>
+            ) : poll.result === false ? (
+              <Badge variant={"destructive"} className="h-fit">
+                Resolved to No
+              </Badge>
+            ) : (
+              <Badge variant={"outline"} className="h-fit">
+                Active
+              </Badge>
+            ))}
         </Flex>
       )}
       <Flex gap={"8"} align={"center"}>
