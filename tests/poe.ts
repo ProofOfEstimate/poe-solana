@@ -295,7 +295,7 @@ describe("poe", () => {
     );
   });
 
-  it("updates crowd prediction when user makes prediction!", async () => {
+  it("updates crowd prediction when second user makes prediction!", async () => {
     let [pollPda, _pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("poll"), new anchor.BN(0).toArrayLike(Buffer, "le", 8)],
       program.programId
@@ -1185,6 +1185,239 @@ describe("poe", () => {
     expect(pollAccount.numForecasters.toString()).to.eq(
       "1",
       "Wrong number of predictions."
+    );
+  });
+});
+
+describe("precision", () => {
+  anchor.setProvider(anchor.AnchorProvider.env());
+
+  const program = anchor.workspace.poe as Program<Poe>;
+  const precision = 4; // Same constant as in program
+
+  const question = "Question";
+  const description = "Description";
+  const category = 2;
+  const decay_rate = 0.4;
+
+  const estimate = 80;
+  const updatedEstimate = 100;
+
+  const uncertainty = 6;
+
+  const secondUser = Keypair.generate();
+
+  beforeEach(async () => {
+    let [statePda, _stateBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poe_state")],
+      program.programId
+    );
+
+    // let [user1Pda, _bump1] = anchor.web3.PublicKey.findProgramAddressSync(
+    //   [Buffer.from("user"), program.provider.publicKey.toBuffer()],
+    //   program.programId
+    // );
+    // let [user2Pda, _bump2] = anchor.web3.PublicKey.findProgramAddressSync(
+    //   [Buffer.from("user"), secondUser.publicKey.toBuffer()],
+    //   program.programId
+    // );
+
+    // await program.methods.registerUser().accounts({ user: user1Pda }).rpc();
+    // await program.methods
+    //   .registerUser()
+    //   .accounts({ payer: secondUser.publicKey, user: user2Pda })
+    //   .signers([secondUser])
+    //   .rpc();
+
+    let stateAccount = await program.account.poeState.fetch(statePda);
+
+    const [pollPda, _pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poll"), stateAccount.numPolls.toArrayLike(Buffer, "le", 8)],
+      program.programId
+    );
+
+    const [scoringListAddress, _scoringBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("scoring_list"), pollPda.toBuffer()],
+        program.programId
+      );
+
+    await program.methods
+      .createPoll(question, description, category, decay_rate)
+      .accounts({
+        resolver: secondUser.publicKey,
+        state: statePda,
+        poll: pollPda,
+        scoringList: scoringListAddress,
+      })
+      .rpc();
+  });
+
+  it("makes a prediction!", async () => {
+    const [pollPda, pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poll"), new anchor.BN(1).toArrayLike(Buffer, "le", 8)],
+      program.programId
+    );
+
+    const [userPda, _userBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), program.provider.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [userEstimatePda, _predictionBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_estimate"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+    const [userEstimateUpdatePda, _userUpdateBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_estimate_update"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
+        ],
+        program.programId
+      );
+
+    const [estimateUpdatePda, updateBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("poll_estimate_update"),
+          pollPda.toBuffer(),
+          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
+        ],
+        program.programId
+      );
+
+    const [scoringListPda, _scoringBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("scoring_list"), pollPda.toBuffer()],
+        program.programId
+      );
+
+    const [userScorePda, _userScoreBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_score"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+    await program.methods
+      .makeEstimate(estimate - uncertainty, estimate + uncertainty)
+      .accounts({
+        user: userPda,
+        poll: pollPda,
+        userEstimate: userEstimatePda,
+        userEstimateUpdate: userEstimateUpdatePda,
+        pollEstimateUpdate: estimateUpdatePda,
+        scoringList: scoringListPda,
+        userScore: userScorePda,
+      })
+      .rpc();
+
+    const pollAccount = await program.account.poll.fetch(pollPda);
+
+    expect(pollAccount.collectiveEstimate).to.approximately(
+      10 ** precision * estimate,
+      0.001,
+      "Wrong crowd prediction."
+    );
+    expect(pollAccount.variance).to.approximately(
+      2 * uncertainty * uncertainty,
+      0.0000001,
+      "Wrong variance"
+    );
+  });
+
+  it("updates crowd prediction when user updates own prediction!", async () => {
+    const [pollPda, _pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poll"), new anchor.BN(1).toArrayLike(Buffer, "le", 8)],
+      program.programId
+    );
+    let pollAccount = await program.account.poll.fetch(pollPda);
+
+    const [userEstimatePda, _predictionBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_estimate"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+    let userEstimateAccount = await program.account.userEstimate.fetch(
+      userEstimatePda
+    );
+
+    const [userEstimateUpdatePda, _userUpdateBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_estimate_update"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+          userEstimateAccount.numEstimateUpdates.toArrayLike(Buffer, "le", 8),
+        ],
+        program.programId
+      );
+
+    let [estimateUpdatePda, _updateBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("poll_estimate_update"),
+          pollPda.toBuffer(),
+          pollAccount.numEstimateUpdates.toArrayLike(Buffer, "le", 8),
+        ],
+        program.programId
+      );
+
+    let [scoringListPda, _scoringBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("scoring_list"), pollPda.toBuffer()],
+        program.programId
+      );
+
+    let [userScorePda, _userScoreBump] =
+      anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("user_score"),
+          pollPda.toBuffer(),
+          program.provider.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+    await program.methods
+      .updateEstimate(updatedEstimate, updatedEstimate)
+      .accounts({
+        poll: pollPda,
+        userEstimate: userEstimatePda,
+        userEstimateUpdate: userEstimateUpdatePda,
+        estimateUpdate: estimateUpdatePda,
+        scoringList: scoringListPda,
+        userScore: userScorePda,
+      })
+      .rpc();
+
+    pollAccount = await program.account.poll.fetch(pollPda);
+
+    expect(pollAccount.collectiveEstimate).to.approximately(
+      updatedEstimate * 10 ** precision,
+      0.0000001,
+      "Wrong crowd prediction."
+    );
+    expect(pollAccount.variance).to.approximately(
+      0,
+      0.0000001,
+      "Wrong variance"
     );
   });
 });
