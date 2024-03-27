@@ -170,12 +170,15 @@ impl<'info> MakeEstimate<'info> {
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
                 self.poll.num_forecasters = 1;
-                self.poll.accumulated_weights =
-                    (1.0 - uncertainty) * self.user_estimate.score_weight;
+                self.poll.accumulated_weights = (1.0 - uncertainty)
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.recency_weight;
                 self.poll.accumulated_weights_squared = (1.0 - uncertainty)
                     * (1.0 - uncertainty)
                     * self.user_estimate.score_weight
-                    * self.user_estimate.score_weight;
+                    * self.user_estimate.score_weight
+                    * self.user_estimate.recency_weight
+                    * self.user_estimate.recency_weight;
                 self.poll.num_estimate_updates += 1;
 
                 self.scoring_list.last_slot = Clock::get().unwrap().slot;
