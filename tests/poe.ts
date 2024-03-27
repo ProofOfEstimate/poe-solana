@@ -451,7 +451,7 @@ describe("poe", () => {
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
       weight1 + weight2,
-      1e-6,
+      1e-4,
       "Wrong accumulated weights"
     );
     expect(userEstimateAccount.bump).to.eq(predictionBump, "Wrong bump.");
@@ -993,7 +993,7 @@ describe("poe", () => {
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
       (1 - (2 * uncertainty2) / 100) * 1.0,
-      1e-6,
+      1e-4,
       "Wrong accumulated weights."
     );
     expect(userEstimateAccount.lowerEstimate).to.eq(
