@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{Mint, Token};
 
 use crate::states::*;
 
@@ -14,6 +15,16 @@ pub struct Initialize<'info> {
         bump
     )]
     pub state: Account<'info, PoeState>,
+    #[account(
+        init,
+        seeds = ["poeken_mint".as_bytes()],
+        bump,
+        payer = payer,
+        mint::decimals = 9,
+        mint::authority = mint,
+    )]
+    pub mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
