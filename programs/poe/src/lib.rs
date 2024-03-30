@@ -19,7 +19,8 @@ pub mod poe {
     }
 
     pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {
-        ctx.accounts.register_user(&ctx.bumps)
+        ctx.accounts.register_user(&ctx.bumps)?;
+        ctx.accounts.mint_tokens(&ctx.bumps)
     }
 
     pub fn create_poll(
