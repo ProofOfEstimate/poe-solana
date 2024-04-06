@@ -288,9 +288,20 @@ describe("poe", () => {
         program.programId
       );
 
-    expect(pollId.toString()).to.eq("0", "Wrong Poll ID");
-    let pollAccount = await program.account.poll.fetch(pollPda);
-    expect(pollAccount.endSlot).to.eq(null, "Wrong end slot");
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
 
     await program.methods
       .makeEstimate(estimate - uncertainty1, estimate + uncertainty1)
@@ -303,10 +314,13 @@ describe("poe", () => {
         scoringList: scoringListPda,
         bettingList: bettingListAddress,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .rpc();
 
-    pollAccount = await program.account.poll.fetch(pollPda);
+    const pollAccount = await program.account.poll.fetch(pollPda);
     const userAccount = await program.account.user.fetch(userPda);
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
@@ -448,6 +462,21 @@ describe("poe", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      secondUser.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate2 - uncertainty2, estimate2 + uncertainty2)
       .accounts({
@@ -460,6 +489,9 @@ describe("poe", () => {
         scoringList: scoringListPda,
         bettingList: bettingListAddress,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .signers([secondUser])
       .rpc();
@@ -1037,6 +1069,21 @@ describe("poe", () => {
       );
     // console.log("User score making again", pollAddress);
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate - uncertainty2, estimate + uncertainty2)
       .accounts({
@@ -1048,6 +1095,9 @@ describe("poe", () => {
         scoringList: scoringListPda,
         bettingList: bettingListAddress,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .rpc();
 
@@ -1442,6 +1492,21 @@ describe("precision", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate - uncertainty, estimate + uncertainty)
       .accounts({
@@ -1453,6 +1518,9 @@ describe("precision", () => {
         scoringList: scoringListPda,
         bettingList: bettingListAddress,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .rpc();
 

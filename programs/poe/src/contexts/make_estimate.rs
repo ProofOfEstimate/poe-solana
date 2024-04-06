@@ -2,6 +2,11 @@ use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token;
+use anchor_spl::token::Mint;
+use anchor_spl::token::Token;
+use anchor_spl::token::TokenAccount;
 
 #[derive(Accounts)]
 pub struct MakeEstimate<'info> {
@@ -65,6 +70,29 @@ pub struct MakeEstimate<'info> {
         bump,
       )]
     pub user_score: Account<'info, UserScore>,
+    #[account(
+        mut,
+
+        associated_token::mint = mint,
+        associated_token::authority = forecaster
+    )]
+    pub forecaster_token_account: Account<'info, TokenAccount>,
+    #[account(
+        seeds = ["poeken_mint".as_bytes()],
+        bump,
+        mut
+    )]
+    pub mint: Box<Account<'info, Mint>>,
+    #[account(
+        mut,
+        seeds=[b"escrow"],
+        bump,
+        token::mint = mint,
+        token::authority = mint
+    )]
+    pub escrow_account: Box<Account<'info, TokenAccount>>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
 
@@ -82,6 +110,16 @@ impl<'info> MakeEstimate<'info> {
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
+
+        let cpi_accounts = token::Transfer {
+            from: self.forecaster_token_account.to_account_info(),
+            to: self.escrow_account.to_account_info(),
+            authority: self.forecaster.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
+
+        token::transfer(cpi_ctx, 100 * 10 ^ 9)?;
 
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(
