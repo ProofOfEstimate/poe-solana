@@ -4,6 +4,11 @@ import { Poe } from "../target/types/poe";
 
 import { expect } from "chai";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  getAccount,
+  getAssociatedTokenAddress,
+  getMint,
+} from "@solana/spl-token";
 
 const confirmTx = async (signature: string) => {
   const latestBlockhash = await anchor
@@ -61,7 +66,15 @@ describe("poe", () => {
       program.programId
     );
 
-    await program.methods.initialize().accounts({ state: statePda }).rpc();
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    await program.methods
+      .initialize()
+      .accounts({ state: statePda, mint: mintPda })
+      .rpc();
 
     let stateAccount = await program.account.poeState.fetch(statePda);
 
@@ -83,20 +96,56 @@ describe("poe", () => {
       program.programId
     );
 
-    await program.methods.registerUser().accounts({ user: user1Pda }).rpc();
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const tokenAccountAddress1 = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    const tokenAccountAddress2 = await getAssociatedTokenAddress(
+      mintPda,
+      secondUser.publicKey
+    );
+
     await program.methods
       .registerUser()
-      .accounts({ payer: secondUser.publicKey, user: user2Pda })
+      .accounts({
+        user: user1Pda,
+        mint: mintPda,
+        tokenAccount: tokenAccountAddress1,
+      })
+      .rpc();
+    await program.methods
+      .registerUser()
+      .accounts({
+        payer: secondUser.publicKey,
+        user: user2Pda,
+        mint: mintPda,
+        tokenAccount: tokenAccountAddress2,
+      })
       .signers([secondUser])
       .rpc();
 
     const user1Account = await program.account.user.fetch(user1Pda);
     const user2Account = await program.account.user.fetch(user2Pda);
 
+    const info = await getAccount(
+      program.provider.connection,
+      tokenAccountAddress1
+    );
+    const amount = Number(info.amount);
+    const mint = await getMint(program.provider.connection, info.mint);
+    const balance = amount / 10 ** mint.decimals;
+
     expect(user1Account.score).to.eq(1.0);
     expect(user1Account.bump).to.eq(bump1);
     expect(user2Account.score).to.eq(1.0);
     expect(user2Account.bump).to.eq(bump2);
+    // expect(balance).to.eq(101, "Wrong token balance");
   });
 
   it("creates poll!", async () => {
@@ -147,14 +196,21 @@ describe("poe", () => {
     expect(pollAccount.numEstimateUpdates.toString()).to.eq("0");
     expect(pollAccount.collectiveEstimate).to.eq(null);
     expect(pollAccount.accumulatedWeights).to.eq(0.0);
+    expect(pollAccount.endSlot).to.eq(null, "End slot is not None");
     expect(pollAccount.bump).to.eq(pollBump);
     expect(scoringAccount.options.length).to.eq(101, "Wrong array length");
     expect(scoringAccount.bump).to.eq(scoringBump);
   });
 
   it("makes a prediction!", async () => {
+    const [statePda, _stateBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poe_state")],
+      program.programId
+    );
+    let stateAccount = await program.account.poeState.fetch(statePda);
+    const pollId = stateAccount.numPolls.sub(new anchor.BN(1));
     const [pollPda, pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("poll"), new anchor.BN(0).toArrayLike(Buffer, "le", 8)],
+      [Buffer.from("poll"), pollId.toArrayLike(Buffer, "le", 8)],
       program.programId
     );
 
@@ -210,6 +266,10 @@ describe("poe", () => {
         program.programId
       );
 
+    expect(pollId.toString()).to.eq("0", "Wrong Poll ID");
+    let pollAccount = await program.account.poll.fetch(pollPda);
+    expect(pollAccount.endSlot).to.eq(null, "Wrong end slot");
+
     await program.methods
       .makeEstimate(estimate - uncertainty1, estimate + uncertainty1)
       .accounts({
@@ -223,7 +283,7 @@ describe("poe", () => {
       })
       .rpc();
 
-    const pollAccount = await program.account.poll.fetch(pollPda);
+    pollAccount = await program.account.poll.fetch(pollPda);
     const userAccount = await program.account.user.fetch(userPda);
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda

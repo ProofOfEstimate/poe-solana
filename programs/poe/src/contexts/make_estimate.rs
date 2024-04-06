@@ -12,13 +12,13 @@ pub struct MakeEstimate<'info> {
         seeds=[User::SEED_PREFIX.as_bytes(), forecaster.key().as_ref()],
         bump=user.bump,
       )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
       mut,
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       init,
       payer = forecaster,
