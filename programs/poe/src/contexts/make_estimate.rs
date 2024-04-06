@@ -1,4 +1,3 @@
-use crate::constants::EPSILON;
 use crate::constants::LOGS;
 use crate::errors::*;
 use crate::states::*;
@@ -114,7 +113,7 @@ impl<'info> MakeEstimate<'info> {
 
         let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
 
-        token::transfer(cpi_ctx, 100 * 10 ^ 9)?;
+        token::transfer(cpi_ctx, self.poll.betting_amount)?;
 
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(
@@ -216,7 +215,7 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.collective_estimate =
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
-                self.poll.ln_gm = Some((estimate as f32 / 100.0 + EPSILON).ln());
+                self.poll.ln_gm = Some(LOGS[estimate as usize]);
                 self.poll.num_forecasters = 1;
                 self.poll.accumulated_weights = (1.0 - uncertainty)
                     * self.user_estimate.score_weight

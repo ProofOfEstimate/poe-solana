@@ -74,6 +74,6 @@ pub mod poe {
 
     pub fn collect_points(ctx: Context<CollectPoints>) -> Result<()> {
         ctx.accounts.collect_points()?;
-        ctx.accounts.transfer_points_to_user()
+        ctx.accounts.transfer_points_to_user(&ctx.bumps)
     }
 }

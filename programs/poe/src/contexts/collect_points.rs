@@ -1,10 +1,17 @@
 use std::f32::consts::LN_2;
 
 use crate::constants::EPSILON;
+use crate::constants::LOGS;
 use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token::mint_to;
+use anchor_spl::token::Mint;
+use anchor_spl::token::MintTo;
+use anchor_spl::token::Token;
+use anchor_spl::token::TokenAccount;
 
 #[derive(Accounts)]
 pub struct CollectPoints<'info> {
@@ -43,6 +50,20 @@ pub struct CollectPoints<'info> {
         close = payer
       )]
     pub user_score: Account<'info, UserScore>,
+    #[account(
+        seeds = ["poeken_mint".as_bytes()],
+        bump,
+        mut
+    )]
+    pub mint: Account<'info, Mint>,
+    #[account(
+        mut,
+        associated_token::mint = mint,
+        associated_token::authority = forecaster
+    )]
+    pub forecaster_token_account: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
 
@@ -94,6 +115,9 @@ impl<'info> CollectPoints<'info> {
             - self.user_score.last_lower_cost)
             / 2.0;
 
+        let add_peer_score =
+            self.scoring_list.peer_score[user_estimate as usize] - self.user_score.last_peer_score;
+
         self.user_score.last_lower_option =
             self.scoring_list.options[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_option =
@@ -102,35 +126,54 @@ impl<'info> CollectPoints<'info> {
             self.scoring_list.cost[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_cost =
             self.scoring_list.cost[self.user_estimate.upper_estimate as usize];
+        self.user_score.last_peer_score = self.scoring_list.peer_score[user_estimate as usize];
 
         self.user_score.options += add_option;
         self.user_score.cost += add_cost;
+        self.user_score.peer_score += add_peer_score;
         self.user_score.last_slot = last_poll_slot;
 
         Ok(())
     }
 
-    pub fn transfer_points_to_user(&mut self) -> Result<()> {
+    pub fn transfer_points_to_user(&mut self, bumps: &CollectPointsBumps) -> Result<()> {
         if let Some(result) = self.poll.result {
+            let duration = self.poll.end_slot.unwrap() - self.poll.start_slot;
             // Adding 216000 slots (~1 day) to decrease points of short polls
-            let duration = self.poll.end_slot.unwrap() - self.poll.start_slot + 216000u64;
+            let longer_duration = duration + 216000u64;
             if result {
                 let score = (self.user_score.options as f32 - self.user_score.cost
                     + self.user_score.ln_a)
-                    / duration as f32;
+                    / longer_duration as f32;
                 self.user.score += score;
                 self.user.score = self.user.score.max(1.0);
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
             } else {
-                let score = (self.user_score.ln_b - self.user_score.cost) / duration as f32;
+                let score = (self.user_score.ln_b - self.user_score.cost) / longer_duration as f32;
                 self.user.score += score;
                 self.user.score = self.user.score.max(1.0);
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
             }
+
+            let scaled_peer_score = ((self.user_score.peer_score / (LOGS[0] * duration as f32)
+                + 1.0)
+                * 1000000000.0) as u64;
+            mint_to(
+                CpiContext::new_with_signer(
+                    self.token_program.to_account_info(),
+                    MintTo {
+                        authority: self.mint.to_account_info(),
+                        to: self.forecaster_token_account.to_account_info(),
+                        mint: self.mint.to_account_info(),
+                    },
+                    &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
+                ),
+                self.poll.betting_amount / 1000000000 * scaled_peer_score,
+            )?;
         }
 
         // Store this info in user_estimate so user_score account can be closed

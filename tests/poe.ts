@@ -1234,6 +1234,16 @@ describe("poe", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const tokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
     await program.methods
       .collectPoints()
       .accounts({
@@ -1244,6 +1254,8 @@ describe("poe", () => {
         userEstimate: userEstimatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        mint: mintPda,
+        forecasterTokenAccount: tokenAccountAddress,
       })
       .signers([secondUser])
       .rpc();

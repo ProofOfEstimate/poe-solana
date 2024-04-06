@@ -23,7 +23,7 @@ pub struct UserScore {
 impl UserScore {
     pub const SEED_PREFIX: &'static str = "user_score";
 
-    pub const LEN: usize = 8 + 2 * PUBKEY_L + 8 * F32_L + U64_L + U8_L;
+    pub const LEN: usize = 8 + 2 * PUBKEY_L + 10 * F32_L + U64_L + U8_L;
 
     pub fn new(
         forecaster: Pubkey,
