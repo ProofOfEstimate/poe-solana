@@ -159,9 +159,9 @@ impl<'info> CollectPoints<'info> {
                 }
             }
 
-            let scaled_peer_score = ((self.user_score.peer_score / (LOGS[0] * duration as f32)
-                + 1.0)
-                * 1000000000.0) as u64;
+            let scaled_peer_score =
+                ((self.user_score.peer_score / (-1.0 * LOGS[0] * duration as f32) + 1.0)
+                    * 1000000000.0) as u64;
             mint_to(
                 CpiContext::new_with_signer(
                     self.token_program.to_account_info(),
