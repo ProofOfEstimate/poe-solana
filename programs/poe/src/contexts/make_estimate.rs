@@ -206,6 +206,9 @@ impl<'info> MakeEstimate<'info> {
                     self.poll.num_forecasters as f32 - 1.0,
                 );
 
+                self.betting_list
+                    .update(self.poll.ln_gm.unwrap(), current_slot);
+
                 msg!("Updated collective estimate");
             }
             None => {
@@ -225,7 +228,9 @@ impl<'info> MakeEstimate<'info> {
                     * self.user_estimate.recency_weight;
                 self.poll.num_estimate_updates += 1;
 
-                self.scoring_list.last_slot = Clock::get().unwrap().slot;
+                let current_slot = Clock::get().unwrap().slot;
+                self.scoring_list.last_slot = current_slot;
+                self.betting_list.last_slot = current_slot;
             }
         }
 
