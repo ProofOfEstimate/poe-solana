@@ -54,7 +54,7 @@ impl<'info> RegisterUser<'info> {
                 },
                 &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
             ),
-            1000 * 10 ^ 9,
+            1000 * 10u64.pow(9),
         )?;
 
         msg!("Minted tokens");

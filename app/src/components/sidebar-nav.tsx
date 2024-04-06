@@ -8,6 +8,9 @@ import { Button } from "./ui/button";
 import { AiOutlineHome } from "react-icons/ai";
 import { HiMiniSquare3Stack3D } from "react-icons/hi2";
 import { MdCreate } from "react-icons/md";
+import { useRegisterUser } from "@/hooks/mutations/useRegisterUser";
+import useAnchorProgram from "@/hooks/useAnchorProgram";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 export const sidebarNavItems = [
   {
@@ -38,6 +41,12 @@ interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
 export function SidebarNav({ className, items, ...props }: SidebarProps) {
   const pathname = usePathname();
 
+  const program = useAnchorProgram();
+  const { connection } = useConnection();
+  const wallet = useWallet();
+
+  const { mutate: registerUser } = useRegisterUser(program, connection, wallet);
+
   return (
     <>
       <h2 className="text-3xl p-8 mb-12">POE</h2>
@@ -63,6 +72,12 @@ export function SidebarNav({ className, items, ...props }: SidebarProps) {
           </Button>
         ))}
       </nav>
+      <Button
+        onClick={() => registerUser()}
+        className="flex mt-8 mx-auto text-center justify-center"
+      >
+        Mint Poeken
+      </Button>
     </>
   );
 }

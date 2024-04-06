@@ -59,7 +59,7 @@ impl Poll {
             resolver,
             id,
             category,
-            betting_amount: 100 * 10 ^ 9,
+            betting_amount: 100 * 10u64.pow(9),
             question,
             description,
             start_slot,
