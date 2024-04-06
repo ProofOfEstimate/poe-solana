@@ -134,6 +134,13 @@ impl<'info> UpdateEstimate<'info> {
 
                 self.poll.variance = Some(var_new);
 
+                // Calculate log of geometric mean
+                let ln_p = (111111111 as f32 / 100.0 + EPSILON).ln();
+                let old_ln_gm = self.poll.ln_gm.unwrap();
+                let new_ln_gm = old_ln_gm + (ln_p - old_ln_gm) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm = Some(new_ln_gm);
+
                 let current_slot = Clock::get().unwrap().slot;
 
                 // Update score list
@@ -142,6 +149,7 @@ impl<'info> UpdateEstimate<'info> {
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32,
+                    old_ln_gm,
                 );
 
                 // Update user score

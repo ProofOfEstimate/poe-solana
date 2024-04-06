@@ -102,12 +102,15 @@ impl<'info> RemoveEstimate<'info> {
                     self.poll.variance = Some(var_new);
                 }
 
+                let old_ln_gm = 0.0;
+
                 let current_slot = Clock::get().unwrap().slot;
                 self.scoring_list.update(
                     ce_f,
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32 + 1.0,
+                    old_ln_gm,
                 );
 
                 msg!("Updated collective estimate");

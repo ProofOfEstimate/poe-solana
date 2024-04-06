@@ -1,4 +1,5 @@
 use crate::constants::EPSILON;
+use crate::constants::LOGS;
 use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
@@ -73,7 +74,6 @@ pub struct MakeEstimate<'info> {
     pub user_score: Account<'info, UserScore>,
     #[account(
         mut,
-
         associated_token::mint = mint,
         associated_token::authority = forecaster
     )]
@@ -200,7 +200,7 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.variance = Some(var_new);
 
                 // Calculate log of geometric mean
-                let ln_p = (estimate as f32 / 100.0 + EPSILON).ln();
+                let ln_p = LOGS[estimate as usize];
                 let old_ln_gm = self.poll.ln_gm.unwrap();
                 let new_ln_gm = old_ln_gm + (ln_p - old_ln_gm) / (self.poll.num_forecasters as f32);
 
@@ -212,10 +212,8 @@ impl<'info> MakeEstimate<'info> {
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32 - 1.0,
+                    old_ln_gm,
                 );
-
-                self.betting_list
-                    .update(self.poll.ln_gm.unwrap(), current_slot);
 
                 msg!("Updated collective estimate");
             }

@@ -8,6 +8,7 @@ use crate::constants::*;
 pub struct ScoringList {
     pub options: Vec<f32>,
     pub cost: Vec<f32>,
+    pub peer_score: Vec<f32>,
     pub last_slot: u64,
     pub bump: u8,
 }
@@ -15,12 +16,13 @@ pub struct ScoringList {
 impl ScoringList {
     pub const SEED_PREFIX: &'static str = "scoring_list";
 
-    pub const LEN: usize = 8 + 4 + 101 * F32_L + 4 + 101 * F32_L + U64_L + U8_L;
+    pub const LEN: usize = 8 + 4 + 101 * F32_L + 4 + 101 * F32_L + 4 + 101 * F32_L + U64_L + U8_L;
 
     pub fn new(last_slot: u64, bump: u8) -> Self {
         Self {
             options: vec![0.0; 101],
             cost: vec![0.0; 101],
+            peer_score: vec![0.0; 101],
             last_slot,
             bump,
         }
@@ -32,6 +34,7 @@ impl ScoringList {
         variance: f32,
         current_slot: u64,
         num_forecasters: f32,
+        ln_gm: f32,
     ) {
         let last_slot = self.last_slot;
 
@@ -72,6 +75,10 @@ impl ScoringList {
         {
             *cost +=
                 weight_factor * (current_slot - last_slot) as f32 * collective_estimate / 100.0;
+        }
+
+        for (estimate, score) in self.peer_score.iter_mut().enumerate() {
+            *score += (LOGS[estimate as usize] - ln_gm) * (current_slot - last_slot) as f32;
         }
 
         self.last_slot = current_slot;
