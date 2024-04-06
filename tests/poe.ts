@@ -149,6 +149,7 @@ describe("poe", () => {
     const amount = Number(info.amount);
     const mint = await getMint(program.provider.connection, info.mint);
     const balance = amount / 10 ** mint.decimals;
+    expect(balance).to.eq(1000, "Wrong balance");
 
     expect(user1Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
     expect(user1Account.bump).to.eq(bump1);
@@ -1482,8 +1483,9 @@ describe("precision", () => {
       .rpc();
 
     const pollAccount = await program.account.poll.fetch(pollPda);
-
-    expect(pollAccount.collectiveEstimate).to.approximately(
+    const tokenAccount = expect(
+      pollAccount.collectiveEstimate
+    ).to.approximately(
       10 ** precision * estimate,
       0.001,
       "Wrong crowd prediction."
