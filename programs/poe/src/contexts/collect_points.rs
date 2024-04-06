@@ -146,14 +146,14 @@ impl<'info> CollectPoints<'info> {
                     + self.user_score.ln_a)
                     / longer_duration as f32;
                 self.user.score += score;
-                self.user.score = self.user.score.max(1.0);
+                self.user.score = self.user.score.max(0.0001);
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
             } else {
                 let score = (self.user_score.ln_b - self.user_score.cost) / longer_duration as f32;
                 self.user.score += score;
-                self.user.score = self.user.score.max(1.0);
+                self.user.score = self.user.score.max(0.001);
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
