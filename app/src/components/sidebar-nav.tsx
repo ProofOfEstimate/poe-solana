@@ -11,6 +11,7 @@ import { MdCreate } from "react-icons/md";
 import { useRegisterUser } from "@/hooks/mutations/useRegisterUser";
 import useAnchorProgram from "@/hooks/useAnchorProgram";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useUserAccount } from "@/hooks/queries/useUserAccount";
 
 export const sidebarNavItems = [
   {
@@ -44,6 +45,11 @@ export function SidebarNav({ className, items, ...props }: SidebarProps) {
   const program = useAnchorProgram();
   const { connection } = useConnection();
   const wallet = useWallet();
+  const { data: userScore, isLoading: isScoreLoading } = useUserAccount(
+    program,
+    connection,
+    wallet.publicKey
+  );
 
   const { mutate: registerUser } = useRegisterUser(program, connection, wallet);
 
@@ -72,12 +78,14 @@ export function SidebarNav({ className, items, ...props }: SidebarProps) {
           </Button>
         ))}
       </nav>
-      <Button
-        onClick={() => registerUser()}
-        className="flex mt-8 mx-auto text-center justify-center"
-      >
-        Mint Poeken
-      </Button>
+      {userScore === null && !isScoreLoading && (
+        <Button
+          onClick={() => registerUser()}
+          className="flex mt-8 mx-auto text-center justify-center"
+        >
+          Mint Poeken
+        </Button>
+      )}
     </>
   );
 }
