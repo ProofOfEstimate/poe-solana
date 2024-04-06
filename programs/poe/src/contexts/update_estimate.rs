@@ -1,6 +1,7 @@
 use std::f32::consts::LN_2;
 
 use crate::constants::EPSILON;
+use crate::constants::LOGS;
 use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
@@ -129,9 +130,11 @@ impl<'info> UpdateEstimate<'info> {
                 self.poll.variance = Some(var_new);
 
                 // Calculate log of geometric mean
-                let ln_p = (111111111 as f32 / 100.0 + EPSILON).ln();
+                let ln_p = LOGS[new_estimate as usize];
+                let old_user_ln_p = LOGS[old_estimate as usize];
                 let old_ln_gm = self.poll.ln_gm.unwrap();
-                let new_ln_gm = old_ln_gm + (ln_p - old_ln_gm) / (self.poll.num_forecasters as f32);
+                let new_ln_gm =
+                    old_ln_gm + (ln_p - old_user_ln_p) / (self.poll.num_forecasters as f32);
 
                 self.poll.ln_gm = Some(new_ln_gm);
 
