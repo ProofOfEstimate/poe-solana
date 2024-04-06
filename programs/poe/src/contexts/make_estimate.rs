@@ -1,3 +1,4 @@
+use crate::constants::EPSILON;
 use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
@@ -198,6 +199,13 @@ impl<'info> MakeEstimate<'info> {
 
                 self.poll.variance = Some(var_new);
 
+                // Calculate log of geometric mean
+                let ln_p = (estimate as f32 / 100.0 + EPSILON).ln();
+                let old_ln_gm = self.poll.ln_gm.unwrap();
+                let new_ln_gm = old_ln_gm + (ln_p - old_ln_gm) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm = Some(new_ln_gm);
+
                 let current_slot = Clock::get().unwrap().slot;
                 self.scoring_list.update(
                     ce_f,
@@ -216,6 +224,7 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.collective_estimate =
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
+                self.poll.ln_gm = Some((estimate as f32 / 100.0 + EPSILON).ln());
                 self.poll.num_forecasters = 1;
                 self.poll.accumulated_weights = (1.0 - uncertainty)
                     * self.user_estimate.score_weight
