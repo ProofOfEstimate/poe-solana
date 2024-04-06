@@ -47,6 +47,12 @@ pub struct UpdateEstimate<'info> {
     pub scoring_list: Box<Account<'info, ScoringList>>,
     #[account(
         mut,
+        seeds=[BettingList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
+        bump=betting_list.bump
+    )]
+    pub betting_list: Box<Account<'info, BettingList>>,
+    #[account(
+        mut,
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
         bump=user_score.bump,
       )]

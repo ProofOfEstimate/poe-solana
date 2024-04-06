@@ -19,6 +19,12 @@ pub struct ResolvePoll<'info> {
         bump=scoring_list.bump
     )]
     pub scoring_list: Box<Account<'info, ScoringList>>,
+    #[account(
+        mut,
+        seeds=[BettingList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
+        bump=betting_list.bump
+    )]
+    pub betting_list: Box<Account<'info, BettingList>>,
     pub system_program: Program<'info, System>,
 }
 

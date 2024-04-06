@@ -30,7 +30,15 @@ pub struct CreatePoll<'info> {
         space=ScoringList::LEN,
         bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: Account<'info, ScoringList>,
+    #[account(
+        init,
+        payer = creator,
+        seeds=[BettingList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
+        space=BettingList::LEN,
+        bump
+    )]
+    pub betting_list: Account<'info, BettingList>,
     pub system_program: Program<'info, System>,
 }
 
@@ -60,6 +68,8 @@ impl<'info> CreatePoll<'info> {
         self.state.num_polls += 1;
         self.scoring_list
             .set_inner(ScoringList::new(current_slot, bumps.scoring_list));
+        self.betting_list
+            .set_inner(BettingList::new(current_slot, bumps.betting_list));
         msg!("Created poll");
         Ok(())
     }
