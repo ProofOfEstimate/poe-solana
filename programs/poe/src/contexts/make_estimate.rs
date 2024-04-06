@@ -241,6 +241,8 @@ impl<'info> MakeEstimate<'info> {
         let last_lower_cost = self.scoring_list.cost[self.user_estimate.lower_estimate as usize];
         let last_upper_cost = self.scoring_list.cost[self.user_estimate.upper_estimate as usize];
 
+        let last_peer_score = self.scoring_list.peer_score[estimate as usize];
+
         self.user_score.set_inner(UserScore::new(
             self.forecaster.key(),
             self.poll.key(),
@@ -248,6 +250,7 @@ impl<'info> MakeEstimate<'info> {
             last_upper_option,
             last_lower_cost,
             last_upper_cost,
+            last_peer_score,
             bumps.user_score,
         ));
 

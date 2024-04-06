@@ -12,8 +12,10 @@ pub struct UserScore {
     pub cost: f32,
     pub last_lower_cost: f32,
     pub last_upper_cost: f32,
+    pub last_peer_score: f32,
     pub ln_a: f32,
     pub ln_b: f32,
+    pub peer_score: f32,
     pub last_slot: u64,
     pub bump: u8,
 }
@@ -30,6 +32,7 @@ impl UserScore {
         last_upper_option: f32,
         last_lower_cost: f32,
         last_upper_cost: f32,
+        last_peer_score: f32,
         bump: u8,
     ) -> Self {
         Self {
@@ -41,8 +44,10 @@ impl UserScore {
             cost: 0.0,
             last_lower_cost,
             last_upper_cost,
+            last_peer_score,
             ln_a: 0.0,
             ln_b: 0.0,
+            peer_score: 0.0,
             last_slot: Clock::get().unwrap().slot,
             bump,
         }
