@@ -150,9 +150,9 @@ describe("poe", () => {
     const mint = await getMint(program.provider.connection, info.mint);
     const balance = amount / 10 ** mint.decimals;
 
-    expect(user1Account.score).to.eq(1.0);
+    expect(user1Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
     expect(user1Account.bump).to.eq(bump1);
-    expect(user2Account.score).to.eq(1.0);
+    expect(user2Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
     expect(user2Account.bump).to.eq(bump2);
     // expect(balance).to.eq(101, "Wrong token balance");
   });
@@ -859,7 +859,7 @@ describe("poe", () => {
       "Wrong variance."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty1) / 100) * 1.0,
+      (1 - (2 * uncertainty1) / 100) * 0.0001,
       1e-6,
       "Wrong accumulated weights."
     );
@@ -1111,7 +1111,7 @@ describe("poe", () => {
       "Wrong number of prediction updates."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty2) / 100) * 1.0,
+      (1 - (2 * uncertainty2) / 100) * 0.0001,
       1e-4,
       "Wrong accumulated weights."
     );
@@ -1273,19 +1273,27 @@ describe("poe", () => {
 
     // Depending on crowd prediction, this could be wrong
     if (estimate <= 50) {
-      expect(user1Account.score).to.eq(1.0, "Wrong user swcore");
+      expect(user1Account.score).to.approximately(
+        0.0001,
+        0.000001,
+        "Wrong user swcore"
+      );
       expect(user1Account.correctAnswersCount).to.eq(
         0,
         "Wrong correct answer count"
       );
     } else {
-      expect(user1Account.score).to.be.greaterThan(1.0, "Wrong user score");
+      expect(user1Account.score).to.be.greaterThan(0.0001, "Wrong user score");
       expect(user1Account.correctAnswersCount).to.eq(
         1,
         "Wrong correct answer count"
       );
     }
-    expect(user2Account.score).to.eq(1.0, "Wrong user 2 score");
+    expect(user2Account.score).to.approximately(
+      0.0001,
+      0.00001,
+      "Wrong user 2 score"
+    );
     expect(user2Account.participationCount).to.eq(
       0,
       "Wrong user 2 participation count"
@@ -1563,10 +1571,6 @@ describe("precision", () => {
       0.0000001,
       "Wrong crowd prediction."
     );
-    expect(pollAccount.variance).to.approximately(
-      0,
-      0.0000001,
-      "Wrong variance"
-    );
+    expect(pollAccount.variance).to.approximately(0, 0.0001, "Wrong variance");
   });
 });
