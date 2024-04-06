@@ -175,12 +175,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     await program.methods
       .createPoll(question, description, category, decay_rate)
       .accounts({
@@ -188,7 +182,6 @@ describe("poe", () => {
         state: statePda,
         poll: pollPda,
         scoringList: scoringListAddress,
-        bettingList: bettingListAddress,
       })
       .rpc();
 
@@ -272,12 +265,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     const [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -312,7 +299,6 @@ describe("poe", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
         forecasterTokenAccount: forecasterTokenAccountAddress,
         mint: mintPda,
@@ -446,12 +432,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     let [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -487,7 +467,6 @@ describe("poe", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
         forecasterTokenAccount: forecasterTokenAccountAddress,
         mint: mintPda,
@@ -673,12 +652,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     let [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -698,7 +671,6 @@ describe("poe", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         estimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
       })
       .signers([secondUser])
@@ -1052,12 +1024,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     let [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1093,7 +1059,6 @@ describe("poe", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
         forecasterTokenAccount: forecasterTokenAccountAddress,
         mint: mintPda,
@@ -1189,19 +1154,12 @@ describe("poe", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     await program.methods
       .resolvePoll(result)
       .accounts({
         resolver: secondUser.publicKey,
         poll: pollPda,
         scoringList: scoringListAddress,
-        bettingList: bettingListAddress,
       })
       .signers([secondUser])
       .rpc();
@@ -1266,12 +1224,6 @@ describe("poe", () => {
         program.programId
       );
 
-    let [bettingListAddress, _bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     let [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1291,7 +1243,6 @@ describe("poe", () => {
         poll: pollPda,
         userEstimate: userEstimatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
       })
       .signers([secondUser])
@@ -1410,12 +1361,6 @@ describe("precision", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     await program.methods
       .createPoll(question, description, category, decay_rate)
       .accounts({
@@ -1423,7 +1368,6 @@ describe("precision", () => {
         state: statePda,
         poll: pollPda,
         scoringList: scoringListAddress,
-        bettingList: bettingListAddress,
       })
       .rpc();
   });
@@ -1476,12 +1420,6 @@ describe("precision", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     const [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1516,7 +1454,6 @@ describe("precision", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
         forecasterTokenAccount: forecasterTokenAccountAddress,
         mint: mintPda,
@@ -1585,12 +1522,6 @@ describe("precision", () => {
         program.programId
       );
 
-    const [bettingListAddress, bettingBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from("betting_list"), pollPda.toBuffer()],
-        program.programId
-      );
-
     let [userScorePda, _userScoreBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1609,7 +1540,6 @@ describe("precision", () => {
         userEstimateUpdate: userEstimateUpdatePda,
         estimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
-        bettingList: bettingListAddress,
         userScore: userScorePda,
       })
       .rpc();

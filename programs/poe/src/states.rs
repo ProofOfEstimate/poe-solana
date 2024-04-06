@@ -1,4 +1,3 @@
-mod betting_list;
 mod poe_state;
 mod poll;
 mod poll_estimate_update;
@@ -8,7 +7,6 @@ mod user_estimate;
 mod user_estimate_update;
 mod user_score;
 
-pub use betting_list::*;
 pub use poe_state::*;
 pub use poll::*;
 pub use poll_estimate_update::*;
