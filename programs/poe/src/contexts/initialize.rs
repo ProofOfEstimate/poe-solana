@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::states::*;
 
@@ -14,7 +14,7 @@ pub struct Initialize<'info> {
         space=PoeState::LEN,
         bump
     )]
-    pub state: Account<'info, PoeState>,
+    pub state: Box<Account<'info, PoeState>>,
     #[account(
         init,
         seeds = ["poeken_mint".as_bytes()],
@@ -23,7 +23,16 @@ pub struct Initialize<'info> {
         mint::decimals = 9,
         mint::authority = mint,
     )]
-    pub mint: Account<'info, Mint>,
+    pub mint: Box<Account<'info, Mint>>,
+    #[account(
+        init,
+        payer=payer,
+        seeds=[b"escrow"],
+        bump,
+        token::mint = mint,
+        token::authority = mint
+    )]
+    pub escrow_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }

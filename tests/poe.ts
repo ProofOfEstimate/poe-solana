@@ -71,9 +71,18 @@ describe("poe", () => {
       program.programId
     );
 
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .initialize()
-      .accounts({ state: statePda, mint: mintPda })
+      .accounts({
+        state: statePda,
+        mint: mintPda,
+        escrowAccount: escrowPda,
+      })
       .rpc();
 
     let stateAccount = await program.account.poeState.fetch(statePda);
