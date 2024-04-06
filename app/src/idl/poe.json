@@ -16,6 +16,21 @@
           "isSigner": false
         },
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -34,6 +49,26 @@
         {
           "name": "user",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -138,6 +173,31 @@
         {
           "name": "userScore",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "forecasterTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -328,6 +388,26 @@
           "isSigner": false
         },
         {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "forecasterTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
@@ -423,6 +503,10 @@
             "type": "u16"
           },
           {
+            "name": "bettingAmount",
+            "type": "u64"
+          },
+          {
             "name": "startSlot",
             "type": "u64"
           },
@@ -444,6 +528,12 @@
           },
           {
             "name": "variance",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "lnGm",
             "type": {
               "option": "f32"
             }
@@ -498,6 +588,12 @@
           },
           {
             "name": "cost",
+            "type": {
+              "vec": "f32"
+            }
+          },
+          {
+            "name": "peerScore",
             "type": {
               "vec": "f32"
             }
@@ -651,11 +747,19 @@
             "type": "f32"
           },
           {
+            "name": "lastPeerScore",
+            "type": "f32"
+          },
+          {
             "name": "lnA",
             "type": "f32"
           },
           {
             "name": "lnB",
+            "type": "f32"
+          },
+          {
+            "name": "peerScore",
             "type": "f32"
           },
           {
@@ -712,6 +816,6 @@
     }
   ],
   "metadata": {
-    "address": "edGAr9akTocdmjXUZjb2PLm52Z4TH3hYUm3RmAF35ir"
+    "address": "PoeTiYU8zYTXHCa7xCD2m42PoFsoTfUpWdtMHYxkjnq"
   }
 }
