@@ -115,21 +115,6 @@ impl<'info> MakeEstimate<'info> {
 
         // token::transfer(cpi_ctx, self.poll.betting_amount)?;
 
-        let cpi_accounts = token::Burn {
-            mint: self.mint.to_account_info(),
-            from: self.forecaster_token_account.to_account_info(),
-            authority: self.forecaster.to_account_info(),
-        };
-
-        token::burn(
-            CpiContext::new_with_signer(
-                self.token_program.to_account_info(),
-                cpi_accounts,
-                &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
-            ),
-            self.poll.betting_amount,
-        )?;
-
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(
             self.poll.decay_rate,
