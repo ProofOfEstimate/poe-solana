@@ -32,7 +32,7 @@ pub struct MakeEstimate<'info> {
       space = UserEstimate::LEN,
       bump,
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     // TODO: Instead of init_if_needed, close user_estimate_update accounts when user removes estimate or figure out where to start to count
     // Maybe use a timestamp instead of counter
     #[account(
@@ -42,7 +42,7 @@ pub struct MakeEstimate<'info> {
         space= UserEstimateUpdate::LEN,
         bump,
     )]
-    pub user_estimate_update: Account<'info, UserEstimateUpdate>,
+    pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
     #[account(
         init,
         payer = forecaster,
@@ -50,7 +50,7 @@ pub struct MakeEstimate<'info> {
         space= PollEstimateUpdate::LEN,
         bump,
     )]
-    pub poll_estimate_update: Account<'info, PollEstimateUpdate>,
+    pub poll_estimate_update: Box<Account<'info, PollEstimateUpdate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
@@ -64,13 +64,13 @@ pub struct MakeEstimate<'info> {
         space = UserScore::LEN,
         bump,
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
     #[account(
         mut,
         associated_token::mint = mint,
         associated_token::authority = forecaster
     )]
-    pub forecaster_token_account: Account<'info, TokenAccount>,
+    pub forecaster_token_account: Box<Account<'info, TokenAccount>>,
     #[account(
         seeds = ["poeken_mint".as_bytes()],
         bump,
