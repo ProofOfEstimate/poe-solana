@@ -25,7 +25,7 @@ pub struct RegisterUser<'info> {
     )]
     pub mint: Account<'info, Mint>,
     #[account(
-        init,
+        init_if_needed,
         payer = payer,
         associated_token::mint = mint,
         associated_token::authority = payer
