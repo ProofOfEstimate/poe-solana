@@ -6,9 +6,9 @@ use crate::constants::*;
 
 #[account]
 pub struct ScoringList {
-    pub options: Vec<f32>,
-    pub cost: Vec<f32>,
-    pub peer_score: Vec<f32>,
+    pub options: [f32; 101],
+    pub cost: [f32; 101],
+    pub peer_score: [f32; 101],
     pub last_slot: u64,
     pub bump: u8,
 }
@@ -16,13 +16,13 @@ pub struct ScoringList {
 impl ScoringList {
     pub const SEED_PREFIX: &'static str = "scoring_list";
 
-    pub const LEN: usize = 8 + 4 + 101 * F32_L + 4 + 101 * F32_L + 4 + 101 * F32_L + U64_L + U8_L;
+    pub const LEN: usize = 8 + 101 * F32_L + 101 * F32_L + 101 * F32_L + U64_L + U8_L;
 
     pub fn new(last_slot: u64, bump: u8) -> Self {
         Self {
-            options: vec![0.0; 101],
-            cost: vec![0.0; 101],
-            peer_score: vec![0.0; 101],
+            options: [0.0; 101],
+            cost: [0.0; 101],
+            peer_score: [0.0; 101],
             last_slot,
             bump,
         }

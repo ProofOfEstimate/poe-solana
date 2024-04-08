@@ -583,19 +583,19 @@
           {
             "name": "options",
             "type": {
-              "vec": "f32"
+              "array": ["f32", 101]
             }
           },
           {
             "name": "cost",
             "type": {
-              "vec": "f32"
+              "array": ["f32", 101]
             }
           },
           {
             "name": "peerScore",
             "type": {
-              "vec": "f32"
+              "array": ["f32", 101]
             }
           },
           {
