@@ -14,7 +14,7 @@ pub struct CreatePoll<'info> {
         seeds=[PoeState::SEED_PREFIX.as_bytes()],
         bump = state.bump
     )]
-    pub state: Account<'info, PoeState>,
+    pub state: Box<Account<'info, PoeState>>,
     #[account(
         init,
         payer = creator,
@@ -22,7 +22,7 @@ pub struct CreatePoll<'info> {
         space=Poll::len(&question, &description),
         bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
         init,
         payer = creator,
@@ -30,7 +30,7 @@ pub struct CreatePoll<'info> {
         space=ScoringList::LEN,
         bump
     )]
-    pub scoring_list: Account<'info, ScoringList>,
+    pub scoring_list: Box<Account<'info, ScoringList>>,
     pub system_program: Program<'info, System>,
 }
 

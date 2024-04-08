@@ -105,15 +105,15 @@ impl<'info> MakeEstimate<'info> {
             return err!(CustomErrorCode::PollClosed);
         }
 
-        // let cpi_accounts = token::Transfer {
-        //     from: self.forecaster_token_account.to_account_info(),
-        //     to: self.escrow_account.to_account_info(),
-        //     authority: self.forecaster.to_account_info(),
-        // };
+        let cpi_accounts = token::Transfer {
+            from: self.forecaster_token_account.to_account_info(),
+            to: self.escrow_account.to_account_info(),
+            authority: self.forecaster.to_account_info(),
+        };
 
-        // let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
+        let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
 
-        // token::transfer(cpi_ctx, self.poll.betting_amount)?;
+        token::transfer(cpi_ctx, self.poll.betting_amount)?;
 
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(

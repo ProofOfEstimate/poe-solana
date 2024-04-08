@@ -12,7 +12,7 @@ pub struct ResolvePoll<'info> {
         seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
         bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],

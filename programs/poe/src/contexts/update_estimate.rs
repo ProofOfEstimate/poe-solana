@@ -16,13 +16,13 @@ pub struct UpdateEstimate<'info> {
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       mut,
       seeds=[UserEstimate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
       bump = user_estimate.bump,
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     // TODO: Instead of init_if_needed, close user_estimate_update accounts when user removes estimate, but how to ensure that?
     #[account(
         init_if_needed,
@@ -31,7 +31,7 @@ pub struct UpdateEstimate<'info> {
         space= UserEstimateUpdate::LEN,
         bump,
     )]
-    pub user_estimate_update: Account<'info, UserEstimateUpdate>,
+    pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
     #[account(
         init,
         payer = forecaster,
@@ -39,7 +39,7 @@ pub struct UpdateEstimate<'info> {
         space= PollEstimateUpdate::LEN,
         bump,
     )]
-    pub estimate_update: Account<'info, PollEstimateUpdate>,
+    pub estimate_update: Box<Account<'info, PollEstimateUpdate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
@@ -51,7 +51,7 @@ pub struct UpdateEstimate<'info> {
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
         bump=user_score.bump,
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
     pub system_program: Program<'info, System>,
 }
 

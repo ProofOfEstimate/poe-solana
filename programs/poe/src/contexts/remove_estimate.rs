@@ -12,20 +12,20 @@ pub struct RemoveEstimate<'info> {
         seeds=[User::SEED_PREFIX.as_bytes(), forecaster.key().as_ref()],
         bump=user.bump,
       )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
       mut,
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       mut,
       seeds=[UserEstimate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
       bump = user_estimate.bump,
       close = forecaster
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     #[account(
         init,
         payer = forecaster,
@@ -33,7 +33,7 @@ pub struct RemoveEstimate<'info> {
         space= PollEstimateUpdate::LEN,
         bump,
     )]
-    pub estimate_update: Account<'info, PollEstimateUpdate>,
+    pub estimate_update: Box<Account<'info, PollEstimateUpdate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
@@ -46,7 +46,7 @@ pub struct RemoveEstimate<'info> {
         bump = user_score.bump,
         close = forecaster
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
     pub system_program: Program<'info, System>,
 }
 

@@ -8,7 +8,7 @@ mod utils;
 
 use contexts::*;
 
-declare_id!("XMS3h47C9MAgYnvM6kY1ZrPiK2QG6eYoAzEqLfvq3Sh");
+declare_id!("4FomhFzS5vFyUeinAGR865NGm5gntyuNGZHmx8xrfXn5");
 
 #[program]
 pub mod poe {
@@ -39,14 +39,17 @@ pub mod poe {
         lower_estimate: u16,
         upper_estimate: u16,
     ) -> Result<()> {
+        msg!("Start of make estimate");
         let estimate = (lower_estimate + upper_estimate) / 2;
         let uncertainty = (upper_estimate - lower_estimate) as f32 / 100.0;
+        msg!("Initialize estimate account");
         ctx.accounts.init_estimate_account(
             &ctx.bumps,
             lower_estimate,
             upper_estimate,
             ctx.accounts.user.score,
         )?;
+        msg!("Estimate account initialized");
         ctx.accounts
             .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
     }

@@ -24,19 +24,19 @@ pub struct CollectPoints<'info> {
       seeds=[User::SEED_PREFIX.as_bytes(), forecaster.key().as_ref()],
       bump=user.bump,
     )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
       mut,
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       mut,
       seeds=[UserEstimate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
       bump = user_estimate.bump,
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
@@ -49,19 +49,19 @@ pub struct CollectPoints<'info> {
         bump=user_score.bump,
         close = payer
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
     #[account(
         seeds = ["poeken_mint".as_bytes()],
         bump,
         mut
     )]
-    pub mint: Account<'info, Mint>,
+    pub mint: Box<Account<'info, Mint>>,
     #[account(
         mut,
         associated_token::mint = mint,
         associated_token::authority = forecaster
     )]
-    pub forecaster_token_account: Account<'info, TokenAccount>,
+    pub forecaster_token_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,

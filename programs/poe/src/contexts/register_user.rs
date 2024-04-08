@@ -17,20 +17,20 @@ pub struct RegisterUser<'info> {
         space=User::LEN,
         bump
     )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
         seeds = ["poeken_mint".as_bytes()],
         bump,
         mut
     )]
-    pub mint: Account<'info, Mint>,
+    pub mint: Box<Account<'info, Mint>>,
     #[account(
         init_if_needed,
         payer = payer,
         associated_token::mint = mint,
         associated_token::authority = payer
     )]
-    pub token_account: Account<'info, TokenAccount>,
+    pub token_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
