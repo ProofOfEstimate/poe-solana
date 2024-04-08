@@ -211,7 +211,7 @@ impl<'info> UpdateEstimate<'info> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
         assert!(lower_estimate <= upper_estimate);
-        let scoring_list = self.scoring_list.load_init()?;
+        let scoring_list = self.scoring_list.load()?;
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }

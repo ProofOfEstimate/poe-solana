@@ -72,7 +72,7 @@ impl<'info> CollectPoints<'info> {
         if self.poll.result.is_none() {
             return err!(CustomErrorCode::PollNotResolved);
         }
-        let scoring_list = self.scoring_list.load_init()?;
+        let scoring_list = self.scoring_list.load()?;
         assert!(self.poll.num_forecasters > 0);
         assert!(self.poll.num_estimate_updates > 0);
         assert!(self.poll.accumulated_weights > 0.0);
