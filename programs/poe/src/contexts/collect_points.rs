@@ -40,9 +40,9 @@ pub struct CollectPoints<'info> {
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         mut,
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
@@ -72,7 +72,7 @@ impl<'info> CollectPoints<'info> {
         if self.poll.result.is_none() {
             return err!(CustomErrorCode::PollNotResolved);
         }
-
+        let scoring_list = self.scoring_list.load_init()?;
         assert!(self.poll.num_forecasters > 0);
         assert!(self.poll.num_estimate_updates > 0);
         assert!(self.poll.accumulated_weights > 0.0);
@@ -103,30 +103,30 @@ impl<'info> CollectPoints<'info> {
             * (1.0 - uncertainty * uncertainty)
             * ((1.0 - ue_f / 100.0 + EPSILON).ln() + LN_2);
 
-        let add_option = (self.scoring_list.options[self.user_estimate.upper_estimate as usize]
+        let add_option = (scoring_list.options[self.user_estimate.upper_estimate as usize]
             - self.user_score.last_upper_option
-            + self.scoring_list.options[self.user_estimate.lower_estimate as usize]
+            + scoring_list.options[self.user_estimate.lower_estimate as usize]
             - self.user_score.last_lower_option)
             / 2.0;
 
-        let add_cost = (self.scoring_list.cost[self.user_estimate.upper_estimate as usize]
+        let add_cost = (scoring_list.cost[self.user_estimate.upper_estimate as usize]
             - self.user_score.last_upper_cost
-            + self.scoring_list.cost[self.user_estimate.lower_estimate as usize]
+            + scoring_list.cost[self.user_estimate.lower_estimate as usize]
             - self.user_score.last_lower_cost)
             / 2.0;
 
         let add_peer_score =
-            self.scoring_list.peer_score[user_estimate as usize] - self.user_score.last_peer_score;
+            scoring_list.peer_score[user_estimate as usize] - self.user_score.last_peer_score;
 
         self.user_score.last_lower_option =
-            self.scoring_list.options[self.user_estimate.lower_estimate as usize];
+            scoring_list.options[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_option =
-            self.scoring_list.options[self.user_estimate.upper_estimate as usize];
+            scoring_list.options[self.user_estimate.upper_estimate as usize];
         self.user_score.last_lower_cost =
-            self.scoring_list.cost[self.user_estimate.lower_estimate as usize];
+            scoring_list.cost[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_cost =
-            self.scoring_list.cost[self.user_estimate.upper_estimate as usize];
-        self.user_score.last_peer_score = self.scoring_list.peer_score[user_estimate as usize];
+            scoring_list.cost[self.user_estimate.upper_estimate as usize];
+        self.user_score.last_peer_score = scoring_list.peer_score[user_estimate as usize];
 
         self.user_score.options += add_option;
         self.user_score.cost += add_cost;

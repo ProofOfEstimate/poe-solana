@@ -37,9 +37,9 @@ pub struct RemoveEstimate<'info> {
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         mut,
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
@@ -55,6 +55,7 @@ impl<'info> RemoveEstimate<'info> {
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
+        let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
                 assert!(self.poll.num_forecasters > 0);
@@ -105,7 +106,7 @@ impl<'info> RemoveEstimate<'info> {
                 let old_ln_gm = 0.0;
 
                 let current_slot = Clock::get().unwrap().slot;
-                self.scoring_list.update(
+                scoring_list.update(
                     ce_f,
                     var_old / 10000.0,
                     current_slot,

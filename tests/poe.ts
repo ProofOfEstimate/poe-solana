@@ -208,8 +208,7 @@ describe("poe", () => {
     expect(pollAccount.accumulatedWeights).to.eq(0.0);
     expect(pollAccount.endSlot).to.eq(null, "End slot is not None");
     expect(pollAccount.bump).to.eq(pollBump);
-    expect(scoringAccount.options.length).to.eq(101, "Wrong array length");
-    expect(scoringAccount.bump).to.eq(scoringBump);
+    expect(scoringAccount.options.length).to.eq(128, "Wrong array length");
   });
 
   it("makes a prediction!", async () => {
@@ -305,7 +304,7 @@ describe("poe", () => {
         mint: mintPda,
         escrowAccount: escrowPda,
       })
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     const pollAccount = await program.account.poll.fetch(pollPda);
     const userAccount = await program.account.user.fetch(userPda);
@@ -474,7 +473,7 @@ describe("poe", () => {
         escrowAccount: escrowPda,
       })
       .signers([secondUser])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     pollAccount = await program.account.poll.fetch(pollPda);
     const user1Account = await program.account.user.fetch(user1Pda);
@@ -675,7 +674,7 @@ describe("poe", () => {
         userScore: userScorePda,
       })
       .signers([secondUser])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     pollAccount = await program.account.poll.fetch(pollPda);
     const user1Account = await program.account.user.fetch(user1Pda);

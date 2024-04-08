@@ -54,9 +54,9 @@ pub struct MakeEstimate<'info> {
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         init,
         payer = forecaster,
@@ -153,6 +153,7 @@ impl<'info> MakeEstimate<'info> {
         uncertainty: f32,
     ) -> Result<()> {
         assert!(estimate <= 100);
+        let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
                 assert!(self.poll.num_forecasters > 0);
@@ -200,7 +201,8 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.ln_gm = Some(new_ln_gm);
 
                 let current_slot = Clock::get().unwrap().slot;
-                self.scoring_list.update(
+
+                scoring_list.update(
                     ce_f,
                     var_old / 10000.0,
                     current_slot,
@@ -229,18 +231,16 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.num_estimate_updates += 1;
 
                 let current_slot = Clock::get().unwrap().slot;
-                self.scoring_list.last_slot = current_slot;
+                scoring_list.new(current_slot);
             }
         }
 
-        let last_lower_option =
-            self.scoring_list.options[self.user_estimate.lower_estimate as usize];
-        let last_upper_option =
-            self.scoring_list.options[self.user_estimate.upper_estimate as usize];
-        let last_lower_cost = self.scoring_list.cost[self.user_estimate.lower_estimate as usize];
-        let last_upper_cost = self.scoring_list.cost[self.user_estimate.upper_estimate as usize];
+        let last_lower_option = scoring_list.options[self.user_estimate.lower_estimate as usize];
+        let last_upper_option = scoring_list.options[self.user_estimate.upper_estimate as usize];
+        let last_lower_cost = scoring_list.cost[self.user_estimate.lower_estimate as usize];
+        let last_upper_cost = scoring_list.cost[self.user_estimate.upper_estimate as usize];
 
-        let last_peer_score = self.scoring_list.peer_score[estimate as usize];
+        let last_peer_score = scoring_list.peer_score[estimate as usize];
 
         self.user_score.set_inner(UserScore::new(
             self.forecaster.key(),

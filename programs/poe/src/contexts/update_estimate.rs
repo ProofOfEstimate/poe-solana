@@ -43,9 +43,9 @@ pub struct UpdateEstimate<'info> {
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         mut,
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
@@ -66,6 +66,7 @@ impl<'info> UpdateEstimate<'info> {
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
+        let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
                 assert!(self.poll.num_forecasters > 0);
@@ -141,7 +142,7 @@ impl<'info> UpdateEstimate<'info> {
                 let current_slot = Clock::get().unwrap().slot;
 
                 // Update score list
-                self.scoring_list.update(
+                scoring_list.update(
                     old_ce_f,
                     var_old / 10000.0,
                     current_slot,
@@ -168,20 +169,19 @@ impl<'info> UpdateEstimate<'info> {
                     * (1.0 - old_uncertainty * old_uncertainty)
                     * ((1.0 - old_ue_f / 100.0 + EPSILON).ln() + LN_2);
 
-                let add_option = (self.scoring_list.options
-                    [self.user_estimate.upper_estimate as usize]
+                let add_option = (scoring_list.options[self.user_estimate.upper_estimate as usize]
                     - self.user_score.last_upper_option
-                    + self.scoring_list.options[self.user_estimate.lower_estimate as usize]
+                    + scoring_list.options[self.user_estimate.lower_estimate as usize]
                     - self.user_score.last_lower_option)
                     / 2.0;
 
-                let add_cost = (self.scoring_list.cost[self.user_estimate.upper_estimate as usize]
+                let add_cost = (scoring_list.cost[self.user_estimate.upper_estimate as usize]
                     - self.user_score.last_upper_cost
-                    + self.scoring_list.cost[self.user_estimate.lower_estimate as usize]
+                    + scoring_list.cost[self.user_estimate.lower_estimate as usize]
                     - self.user_score.last_lower_cost)
                     / 2.0;
 
-                let add_peer_score = self.scoring_list.peer_score
+                let add_peer_score = scoring_list.peer_score
                     [self.user_estimate.get_estimate() as usize]
                     - self.user_score.last_peer_score;
 
@@ -211,6 +211,7 @@ impl<'info> UpdateEstimate<'info> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
         assert!(lower_estimate <= upper_estimate);
+        let scoring_list = self.scoring_list.load_init()?;
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
@@ -226,12 +227,12 @@ impl<'info> UpdateEstimate<'info> {
             upper_estimate,
         ));
 
-        self.user_score.last_lower_option = self.scoring_list.options[lower_estimate as usize];
-        self.user_score.last_upper_option = self.scoring_list.options[upper_estimate as usize];
-        self.user_score.last_lower_cost = self.scoring_list.cost[lower_estimate as usize];
-        self.user_score.last_upper_cost = self.scoring_list.cost[upper_estimate as usize];
+        self.user_score.last_lower_option = scoring_list.options[lower_estimate as usize];
+        self.user_score.last_upper_option = scoring_list.options[upper_estimate as usize];
+        self.user_score.last_lower_cost = scoring_list.cost[lower_estimate as usize];
+        self.user_score.last_upper_cost = scoring_list.cost[upper_estimate as usize];
         self.user_score.last_peer_score =
-            self.scoring_list.peer_score[self.user_estimate.get_estimate() as usize];
+            scoring_list.peer_score[self.user_estimate.get_estimate() as usize];
         msg!("Updated user estimate");
         Ok(())
     }

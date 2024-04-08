@@ -30,7 +30,7 @@ pub struct CreatePoll<'info> {
         space=ScoringList::LEN,
         bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     pub system_program: Program<'info, System>,
 }
 
@@ -44,7 +44,6 @@ impl<'info> CreatePoll<'info> {
         decay: f32,
     ) -> Result<()> {
         let current_slot = Clock::get().unwrap().slot;
-
         self.poll.set_inner(Poll::new(
             *self.creator.key,
             *self.resolver.key,
@@ -58,8 +57,6 @@ impl<'info> CreatePoll<'info> {
         ));
 
         self.state.num_polls += 1;
-        self.scoring_list
-            .set_inner(ScoringList::new(current_slot, bumps.scoring_list));
         msg!("Created poll");
         Ok(())
     }
