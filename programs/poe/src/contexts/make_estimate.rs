@@ -35,14 +35,14 @@ pub struct MakeEstimate<'info> {
     pub user_estimate: Box<Account<'info, UserEstimate>>,
     // TODO: Instead of init_if_needed, close user_estimate_update accounts when user removes estimate or figure out where to start to count
     // Maybe use a timestamp instead of counter
-    #[account(
-        init_if_needed,
-        payer = forecaster,
-        seeds=[UserEstimateUpdate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref(), &0u64.to_le_bytes()],
-        space= UserEstimateUpdate::LEN,
-        bump,
-    )]
-    pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
+    // #[account(
+    //     init_if_needed,
+    //     payer = forecaster,
+    //     seeds=[UserEstimateUpdate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref(), &0u64.to_le_bytes()],
+    //     space= UserEstimateUpdate::LEN,
+    //     bump,
+    // )]
+    // pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
     #[account(
         init,
         payer = forecaster,
@@ -133,12 +133,12 @@ impl<'info> MakeEstimate<'info> {
             bumps.user_estimate,
         ));
 
-        self.user_estimate_update.set_inner(UserEstimateUpdate::new(
-            self.poll.key(),
-            self.forecaster.key(),
-            lower_estimate,
-            upper_estimate,
-        ));
+        // self.user_estimate_update.set_inner(UserEstimateUpdate::new(
+        //     self.poll.key(),
+        //     self.forecaster.key(),
+        //     lower_estimate,
+        //     upper_estimate,
+        // ));
 
         self.user.participation_count += 1;
 
@@ -240,7 +240,7 @@ impl<'info> MakeEstimate<'info> {
         let last_lower_cost = scoring_list.cost[self.user_estimate.lower_estimate as usize];
         let last_upper_cost = scoring_list.cost[self.user_estimate.upper_estimate as usize];
 
-        let last_peer_score = scoring_list.peer_score[estimate as usize];
+        let last_peer_score = scoring_list.peer_score_a[estimate as usize];
 
         self.user_score.set_inner(UserScore::new(
             self.forecaster.key(),

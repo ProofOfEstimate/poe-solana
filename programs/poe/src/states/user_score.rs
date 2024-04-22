@@ -15,7 +15,8 @@ pub struct UserScore {
     pub last_peer_score: f32,
     pub ln_a: f32,
     pub ln_b: f32,
-    pub peer_score: f32,
+    pub peer_score_a: f32,
+    pub peer_score_b: f32,
     pub last_slot: u64,
     pub bump: u8,
 }
@@ -23,7 +24,7 @@ pub struct UserScore {
 impl UserScore {
     pub const SEED_PREFIX: &'static str = "user_score";
 
-    pub const LEN: usize = 8 + 2 * PUBKEY_L + 10 * F32_L + U64_L + U8_L;
+    pub const LEN: usize = 8 + 2 * PUBKEY_L + 11 * F32_L + U64_L + U8_L;
 
     pub fn new(
         forecaster: Pubkey,
@@ -47,7 +48,8 @@ impl UserScore {
             last_peer_score,
             ln_a: 0.0,
             ln_b: 0.0,
-            peer_score: 0.0,
+            peer_score_a: 0.0,
+            peer_score_b: 0.0,
             last_slot: Clock::get().unwrap().slot,
             bump,
         }

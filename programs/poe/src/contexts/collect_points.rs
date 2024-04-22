@@ -115,8 +115,8 @@ impl<'info> CollectPoints<'info> {
             - self.user_score.last_lower_cost)
             / 2.0;
 
-        let add_peer_score =
-            scoring_list.peer_score[user_estimate as usize] - self.user_score.last_peer_score;
+        let add_peer_score_a =
+            scoring_list.peer_score_a[user_estimate as usize] - self.user_score.last_peer_score;
 
         self.user_score.last_lower_option =
             scoring_list.options[self.user_estimate.lower_estimate as usize];
@@ -126,11 +126,11 @@ impl<'info> CollectPoints<'info> {
             scoring_list.cost[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_cost =
             scoring_list.cost[self.user_estimate.upper_estimate as usize];
-        self.user_score.last_peer_score = scoring_list.peer_score[user_estimate as usize];
+        self.user_score.last_peer_score = scoring_list.peer_score_a[user_estimate as usize];
 
         self.user_score.options += add_option;
         self.user_score.cost += add_cost;
-        self.user_score.peer_score += add_peer_score;
+        self.user_score.peer_score_a += add_peer_score_a;
         self.user_score.last_slot = last_poll_slot;
 
         Ok(())
@@ -160,7 +160,7 @@ impl<'info> CollectPoints<'info> {
             }
 
             let scaled_peer_score =
-                ((self.user_score.peer_score / (-1.0 * LOGS[0] * duration as f32) + 1.0)
+                ((self.user_score.peer_score_a / (-1.0 * LOGS[0] * duration as f32) + 1.0)
                     * 1000000000.0) as u64;
             mint_to(
                 CpiContext::new_with_signer(

@@ -181,13 +181,13 @@ impl<'info> UpdateEstimate<'info> {
                     - self.user_score.last_lower_cost)
                     / 2.0;
 
-                let add_peer_score = scoring_list.peer_score
+                let add_peer_score = scoring_list.peer_score_a
                     [self.user_estimate.get_estimate() as usize]
                     - self.user_score.last_peer_score;
 
                 self.user_score.options += add_option;
                 self.user_score.cost += add_cost;
-                self.user_score.peer_score += add_peer_score;
+                self.user_score.peer_score_a += add_peer_score;
                 self.user_score.last_slot = current_slot;
 
                 msg!("Updated collective estimate");
@@ -232,7 +232,7 @@ impl<'info> UpdateEstimate<'info> {
         self.user_score.last_lower_cost = scoring_list.cost[lower_estimate as usize];
         self.user_score.last_upper_cost = scoring_list.cost[upper_estimate as usize];
         self.user_score.last_peer_score =
-            scoring_list.peer_score[self.user_estimate.get_estimate() as usize];
+            scoring_list.peer_score_a[self.user_estimate.get_estimate() as usize];
         msg!("Updated user estimate");
         Ok(())
     }

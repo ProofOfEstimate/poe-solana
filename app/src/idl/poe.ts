@@ -156,11 +156,6 @@ export type Poe = {
           isSigner: false;
         },
         {
-          name: "userEstimateUpdate";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "pollEstimateUpdate";
           isMut: true;
           isSigner: false;
@@ -593,7 +588,13 @@ export type Poe = {
             };
           },
           {
-            name: "peerScore";
+            name: "peerScoreA";
+            type: {
+              array: ["f32", 128];
+            };
+          },
+          {
+            name: "peerScoreB";
             type: {
               array: ["f32", 128];
             };
@@ -755,7 +756,11 @@ export type Poe = {
             type: "f32";
           },
           {
-            name: "peerScore";
+            name: "peerScoreA";
+            type: "f32";
+          },
+          {
+            name: "peerScoreB";
             type: "f32";
           },
           {
@@ -967,11 +972,6 @@ export const IDL: Poe = {
         },
         {
           name: "userEstimate",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "userEstimateUpdate",
           isMut: true,
           isSigner: false,
         },
@@ -1408,7 +1408,13 @@ export const IDL: Poe = {
             },
           },
           {
-            name: "peerScore",
+            name: "peerScoreA",
+            type: {
+              array: ["f32", 128],
+            },
+          },
+          {
+            name: "peerScoreB",
             type: {
               array: ["f32", 128],
             },
@@ -1570,7 +1576,11 @@ export const IDL: Poe = {
             type: "f32",
           },
           {
-            name: "peerScore",
+            name: "peerScoreA",
+            type: "f32",
+          },
+          {
+            name: "peerScoreB",
             type: "f32",
           },
           {
