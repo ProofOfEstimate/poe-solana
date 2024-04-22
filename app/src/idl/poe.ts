@@ -744,7 +744,11 @@ export type Poe = {
             type: "f32";
           },
           {
-            name: "lastPeerScore";
+            name: "lastPeerScoreA";
+            type: "f32";
+          },
+          {
+            name: "lastPeerScoreB";
             type: "f32";
           },
           {
@@ -1564,7 +1568,11 @@ export const IDL: Poe = {
             type: "f32",
           },
           {
-            name: "lastPeerScore",
+            name: "lastPeerScoreA",
+            type: "f32",
+          },
+          {
+            name: "lastPeerScoreB",
             type: "f32",
           },
           {

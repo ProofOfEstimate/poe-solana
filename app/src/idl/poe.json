@@ -744,7 +744,11 @@
             "type": "f32"
           },
           {
-            "name": "lastPeerScore",
+            "name": "lastPeerScoreA",
+            "type": "f32"
+          },
+          {
+            "name": "lastPeerScoreB",
             "type": "f32"
           },
           {
