@@ -116,7 +116,9 @@ impl<'info> CollectPoints<'info> {
             / 2.0;
 
         let add_peer_score_a =
-            scoring_list.peer_score_a[user_estimate as usize] - self.user_score.last_peer_score;
+            scoring_list.peer_score_a[user_estimate as usize] - self.user_score.last_peer_score_a;
+        let add_peer_score_b =
+            scoring_list.peer_score_b[user_estimate as usize] - self.user_score.last_peer_score_b;
 
         self.user_score.last_lower_option =
             scoring_list.options[self.user_estimate.lower_estimate as usize];
@@ -126,11 +128,13 @@ impl<'info> CollectPoints<'info> {
             scoring_list.cost[self.user_estimate.lower_estimate as usize];
         self.user_score.last_upper_cost =
             scoring_list.cost[self.user_estimate.upper_estimate as usize];
-        self.user_score.last_peer_score = scoring_list.peer_score_a[user_estimate as usize];
+        self.user_score.last_peer_score_a = scoring_list.peer_score_a[user_estimate as usize];
+        self.user_score.last_peer_score_b = scoring_list.peer_score_b[user_estimate as usize];
 
         self.user_score.options += add_option;
         self.user_score.cost += add_cost;
         self.user_score.peer_score_a += add_peer_score_a;
+        self.user_score.peer_score_b += add_peer_score_b;
         self.user_score.last_slot = last_poll_slot;
 
         Ok(())
@@ -138,6 +142,7 @@ impl<'info> CollectPoints<'info> {
 
     pub fn transfer_points_to_user(&mut self, bumps: &CollectPointsBumps) -> Result<()> {
         if let Some(result) = self.poll.result {
+            let scaled_peer_score;
             let duration = self.poll.end_slot.unwrap() - self.poll.start_slot;
             // Adding 216000 slots (~1 day) to decrease points of short polls
             let longer_duration = duration + 216000u64;
@@ -150,6 +155,9 @@ impl<'info> CollectPoints<'info> {
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
+                scaled_peer_score =
+                    ((self.user_score.peer_score_a / (-1.0 * LOGS[0] * duration as f32) + 1.0)
+                        * 1000000000.0) as u64;
             } else {
                 let score = (self.user_score.ln_b - self.user_score.cost) / longer_duration as f32;
                 self.user.score += score;
@@ -157,11 +165,11 @@ impl<'info> CollectPoints<'info> {
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
+                scaled_peer_score =
+                    ((self.user_score.peer_score_b / (-1.0 * LOGS[0] * duration as f32) + 1.0)
+                        * 1000000000.0) as u64;
             }
 
-            let scaled_peer_score =
-                ((self.user_score.peer_score_a / (-1.0 * LOGS[0] * duration as f32) + 1.0)
-                    * 1000000000.0) as u64;
             mint_to(
                 CpiContext::new_with_signer(
                     self.token_program.to_account_info(),
