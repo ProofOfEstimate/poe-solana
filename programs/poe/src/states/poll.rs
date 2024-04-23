@@ -14,7 +14,8 @@ pub struct Poll {
     pub decay_rate: f32,
     pub collective_estimate: Option<u32>,
     pub variance: Option<f32>,
-    pub ln_gm: Option<f32>,
+    pub ln_gm_a: Option<f32>,
+    pub ln_gm_b: Option<f32>,
     pub num_forecasters: u64,
     pub num_estimate_updates: u64,
     pub accumulated_weights: f32,
@@ -32,10 +33,10 @@ impl Poll {
         8 + PUBKEY_L
             + PUBKEY_L
             + U16_L
-            + 5 * OPTION_L
+            + 6 * OPTION_L
             + 6 * U64_L
             + U32_L
-            + 5 * F32_L
+            + 6 * F32_L
             + BOOL_L
             + 2 * STRING_L
             + question.len()
@@ -67,7 +68,8 @@ impl Poll {
             decay_rate,
             collective_estimate: None,
             variance: None,
-            ln_gm: None,
+            ln_gm_a: None,
+            ln_gm_b: None,
             num_forecasters: 0,
             num_estimate_updates: 0,
             accumulated_weights: 0.0,

@@ -194,11 +194,19 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.variance = Some(var_new);
 
                 // Calculate log of geometric mean
-                let ln_p = LOGS[estimate as usize];
-                let old_ln_gm = self.poll.ln_gm.unwrap();
-                let new_ln_gm = old_ln_gm + (ln_p - old_ln_gm) / (self.poll.num_forecasters as f32);
+                let ln_p_a = LOGS[estimate as usize];
+                let old_ln_gm_a = self.poll.ln_gm_a.unwrap();
+                let new_ln_gm_a =
+                    old_ln_gm_a + (ln_p_a - old_ln_gm_a) / (self.poll.num_forecasters as f32);
 
-                self.poll.ln_gm = Some(new_ln_gm);
+                self.poll.ln_gm_a = Some(new_ln_gm_a);
+
+                let ln_p_b = LOGS[100 - estimate as usize];
+                let old_ln_gm_b = self.poll.ln_gm_b.unwrap();
+                let new_ln_gm_b =
+                    old_ln_gm_b + (ln_p_b - old_ln_gm_b) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm_b = Some(new_ln_gm_b);
 
                 let current_slot = Clock::get().unwrap().slot;
 
@@ -207,7 +215,8 @@ impl<'info> MakeEstimate<'info> {
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32 - 1.0,
-                    old_ln_gm,
+                    old_ln_gm_a,
+                    old_ln_gm_b,
                 );
 
                 msg!("Updated collective estimate");
@@ -217,7 +226,8 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.collective_estimate =
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
-                self.poll.ln_gm = Some(LOGS[estimate as usize]);
+                self.poll.ln_gm_a = Some(LOGS[estimate as usize]);
+                self.poll.ln_gm_b = Some(LOGS[100 - estimate as usize]);
                 self.poll.num_forecasters = 1;
                 self.poll.accumulated_weights = (1.0 - uncertainty)
                     * self.user_estimate.score_weight

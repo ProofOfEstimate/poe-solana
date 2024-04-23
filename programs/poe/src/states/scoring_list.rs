@@ -32,7 +32,8 @@ impl ScoringList {
         variance: f32,
         current_slot: u64,
         num_forecasters: f32,
-        ln_gm: f32,
+        ln_gm_a: f32,
+        ln_gm_b: f32,
     ) {
         let last_slot = self.last_slot;
 
@@ -78,10 +79,9 @@ impl ScoringList {
         }
 
         for (estimate, score) in self.peer_score_a.iter_mut().enumerate().take(101) {
-            *score += (LOGS[estimate as usize] - ln_gm) * (current_slot - last_slot) as f32;
+            *score += (LOGS[estimate as usize] - ln_gm_a) * (current_slot - last_slot) as f32;
         }
 
-        let ln_gm_b = (1.0 - ln_gm.exp()).ln();
         for (estimate, score) in self.peer_score_b.iter_mut().enumerate().take(101) {
             *score += (LOGS[100 - estimate as usize] - ln_gm_b) * (current_slot - last_slot) as f32;
         }

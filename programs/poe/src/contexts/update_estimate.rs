@@ -131,13 +131,21 @@ impl<'info> UpdateEstimate<'info> {
                 self.poll.variance = Some(var_new);
 
                 // Calculate log of geometric mean
-                let ln_p = LOGS[new_estimate as usize];
-                let old_user_ln_p = LOGS[old_estimate as usize];
-                let old_ln_gm = self.poll.ln_gm.unwrap();
-                let new_ln_gm =
-                    old_ln_gm + (ln_p - old_user_ln_p) / (self.poll.num_forecasters as f32);
+                let ln_p_a = LOGS[new_estimate as usize];
+                let old_user_ln_p_a = LOGS[old_estimate as usize];
+                let old_ln_gm_a = self.poll.ln_gm_a.unwrap();
+                let new_ln_gm_a =
+                    old_ln_gm_a + (ln_p_a - old_user_ln_p_a) / (self.poll.num_forecasters as f32);
 
-                self.poll.ln_gm = Some(new_ln_gm);
+                self.poll.ln_gm_a = Some(new_ln_gm_a);
+
+                let ln_p_b = LOGS[100 - new_estimate as usize];
+                let old_user_ln_p_b = LOGS[100 - old_estimate as usize];
+                let old_ln_gm_b = self.poll.ln_gm_b.unwrap();
+                let new_ln_gm_b =
+                    old_ln_gm_b + (ln_p_b - old_user_ln_p_b) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm_b = Some(new_ln_gm_b);
 
                 let current_slot = Clock::get().unwrap().slot;
 
@@ -147,7 +155,8 @@ impl<'info> UpdateEstimate<'info> {
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32,
-                    old_ln_gm,
+                    old_ln_gm_a,
+                    old_ln_gm_b,
                 );
 
                 // Update user score

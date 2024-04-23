@@ -40,7 +40,8 @@ impl<'info> ResolvePoll<'info> {
                 variance,
                 current_slot,
                 self.poll.num_forecasters as f32,
-                self.poll.ln_gm.unwrap(),
+                self.poll.ln_gm_a.unwrap(),
+                self.poll.ln_gm_b.unwrap(),
             )
         }
 
