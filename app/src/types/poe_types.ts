@@ -10,6 +10,8 @@ export type Poll = {
   endSlot: number;
   endTime: number | null;
   collectiveEstimate: number | null;
+  lnGmA: number | null;
+  lnGmB: number | null;
   numForecasters: number;
   numEstimateUpdates: number;
   accumulatedWeights: number;

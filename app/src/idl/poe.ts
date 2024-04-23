@@ -528,7 +528,13 @@ export type Poe = {
             };
           },
           {
-            name: "lnGm";
+            name: "lnGmA";
+            type: {
+              option: "f32";
+            };
+          },
+          {
+            name: "lnGmB";
             type: {
               option: "f32";
             };
@@ -1352,7 +1358,13 @@ export const IDL: Poe = {
             },
           },
           {
-            name: "lnGm",
+            name: "lnGmA",
+            type: {
+              option: "f32",
+            },
+          },
+          {
+            name: "lnGmB",
             type: {
               option: "f32",
             },

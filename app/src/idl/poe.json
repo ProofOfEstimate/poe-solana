@@ -528,7 +528,13 @@
             }
           },
           {
-            "name": "lnGm",
+            "name": "lnGmA",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "lnGmB",
             "type": {
               "option": "f32"
             }
@@ -578,25 +584,37 @@
           {
             "name": "options",
             "type": {
-              "array": ["f32", 128]
+              "array": [
+                "f32",
+                128
+              ]
             }
           },
           {
             "name": "cost",
             "type": {
-              "array": ["f32", 128]
+              "array": [
+                "f32",
+                128
+              ]
             }
           },
           {
             "name": "peerScoreA",
             "type": {
-              "array": ["f32", 128]
+              "array": [
+                "f32",
+                128
+              ]
             }
           },
           {
             "name": "peerScoreB",
             "type": {
-              "array": ["f32", 128]
+              "array": [
+                "f32",
+                128
+              ]
             }
           },
           {
@@ -821,6 +839,6 @@
     }
   ],
   "metadata": {
-    "address": "Poeb2QxxukSBRwSaB8KJJr7x8aDRo1TeeNtt9jnkufs"
+    "address": "HzHZcbY1A4YhAb2N5jbY2CEimdqxKqPR8bkjGm7PVioL"
   }
 }
