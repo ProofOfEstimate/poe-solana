@@ -388,6 +388,11 @@
           "isSigner": false
         },
         {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "forecasterTokenAccount",
           "isMut": true,
           "isSigner": false
@@ -839,6 +844,6 @@
     }
   ],
   "metadata": {
-    "address": "HzHZcbY1A4YhAb2N5jbY2CEimdqxKqPR8bkjGm7PVioL"
+    "address": "485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi"
   }
 }

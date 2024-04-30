@@ -388,6 +388,11 @@ export type Poe = {
           isSigner: false;
         },
         {
+          name: "escrowAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: "forecasterTokenAccount";
           isMut: true;
           isSigner: false;
@@ -1214,6 +1219,11 @@ export const IDL: Poe = {
         },
         {
           name: "mint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "escrowAccount",
           isMut: true,
           isSigner: false,
         },

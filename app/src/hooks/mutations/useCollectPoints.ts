@@ -66,6 +66,11 @@ const collectPoints = async (
     program.programId
   );
 
+  let [escrowPda, _escrowBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("escrow")],
+    program.programId
+  );
+
   const tokenAccountAddress = await getAssociatedTokenAddress(
     mintPda,
     wallet.publicKey
@@ -81,6 +86,7 @@ const collectPoints = async (
       scoringList: scoreListPda,
       userScore: userScorePda,
       mint: mintPda,
+      escrowAccount: escrowPda,
       forecasterTokenAccount: tokenAccountAddress,
     })
     .instruction();
