@@ -191,19 +191,6 @@ impl<'info> CollectPoints<'info> {
                 ),
                 self.poll.betting_amount / 1000000 * scaled_peer_score,
             )?;
-
-            // mint_to(
-            //     CpiContext::new_with_signer(
-            //         self.token_program.to_account_info(),
-            //         MintTo {
-            //             authority: self.mint.to_account_info(),
-            //             to: self.forecaster_token_account.to_account_info(),
-            //             mint: self.mint.to_account_info(),
-            //         },
-            //         &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
-            //     ),
-            //     self.poll.betting_amount / 1000000000 * scaled_peer_score,
-            // )?;
         }
 
         // Store this info in user_estimate so user_score account can be closed
