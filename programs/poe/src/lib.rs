@@ -39,17 +39,14 @@ pub mod poe {
         lower_estimate: u16,
         upper_estimate: u16,
     ) -> Result<()> {
-        msg!("Start of make estimate");
         let estimate = (lower_estimate + upper_estimate) / 2;
         let uncertainty = (upper_estimate - lower_estimate) as f32 / 100.0;
-        msg!("Initialize estimate account");
-        ctx.accounts.init_estimate_account(
-            &ctx.bumps,
-            lower_estimate,
-            upper_estimate,
-            ctx.accounts.user.score,
-        )?;
-        msg!("Estimate account initialized");
+
+        ctx.accounts
+            .sanity_checks(lower_estimate, upper_estimate, estimate)?;
+        ctx.accounts
+            .init_estimate_account(&ctx.bumps, lower_estimate, upper_estimate)?;
+        ctx.accounts.transfer_stake()?;
         ctx.accounts
             .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
     }

@@ -33,16 +33,6 @@ pub struct MakeEstimate<'info> {
       bump,
     )]
     pub user_estimate: Box<Account<'info, UserEstimate>>,
-    // TODO: Instead of init_if_needed, close user_estimate_update accounts when user removes estimate or figure out where to start to count
-    // Maybe use a timestamp instead of counter
-    // #[account(
-    //     init_if_needed,
-    //     payer = forecaster,
-    //     seeds=[UserEstimateUpdate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref(), &0u64.to_le_bytes()],
-    //     space= UserEstimateUpdate::LEN,
-    //     bump,
-    // )]
-    // pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
     #[account(
         init,
         payer = forecaster,
@@ -91,20 +81,25 @@ pub struct MakeEstimate<'info> {
 }
 
 impl<'info> MakeEstimate<'info> {
-    pub fn init_estimate_account(
-        &mut self,
-        bumps: &MakeEstimateBumps,
+    pub fn sanity_checks(
+        &self,
         lower_estimate: u16,
         upper_estimate: u16,
-        score_weight: f32,
+        estimate: u16,
     ) -> Result<()> {
         assert!(lower_estimate <= 100);
         assert!(upper_estimate <= 100);
         assert!(lower_estimate <= upper_estimate);
+        assert!(estimate <= 100);
+
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
 
+        Ok(())
+    }
+
+    pub fn transfer_stake(&self) -> Result<()> {
         let cpi_accounts = token::Transfer {
             from: self.forecaster_token_account.to_account_info(),
             to: self.escrow_account.to_account_info(),
@@ -113,8 +108,15 @@ impl<'info> MakeEstimate<'info> {
 
         let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
 
-        token::transfer(cpi_ctx, self.poll.betting_amount)?;
+        token::transfer(cpi_ctx, self.poll.betting_amount)
+    }
 
+    pub fn init_estimate_account(
+        &mut self,
+        bumps: &MakeEstimateBumps,
+        lower_estimate: u16,
+        upper_estimate: u16,
+    ) -> Result<()> {
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(
             self.poll.decay_rate,
@@ -127,18 +129,11 @@ impl<'info> MakeEstimate<'info> {
             self.poll.key(),
             lower_estimate,
             upper_estimate,
-            score_weight,
+            self.user.score,
             recency_weight,
             self.poll.num_forecasters + 1,
             bumps.user_estimate,
         ));
-
-        // self.user_estimate_update.set_inner(UserEstimateUpdate::new(
-        //     self.poll.key(),
-        //     self.forecaster.key(),
-        //     lower_estimate,
-        //     upper_estimate,
-        // ));
 
         self.user.participation_count += 1;
 
@@ -152,7 +147,6 @@ impl<'info> MakeEstimate<'info> {
         estimate: u16,
         uncertainty: f32,
     ) -> Result<()> {
-        assert!(estimate <= 100);
         let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
