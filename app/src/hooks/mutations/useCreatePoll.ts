@@ -14,6 +14,7 @@ import {
 import { WalletNotConnectedError } from "@/errors/WalletNotConnectedError";
 import { userAccountKey } from "../queries/useUserAccount";
 import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 
 const createPoll = async (
   program: Program<Poe>,
@@ -57,6 +58,16 @@ const createPoll = async (
     program.programId
   );
 
+  let [mintPda, mintBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("poeken_mint")],
+    program.programId
+  );
+
+  const tokenAccountAddress = await getAssociatedTokenAddress(
+    mintPda,
+    wallet.publicKey
+  );
+
   const createPollInstruction = await program.methods
     .createPoll(
       form.getValues().question,
@@ -76,7 +87,11 @@ const createPoll = async (
   if (userAccount === null) {
     const registerUserInstruction = await program.methods
       .registerUser()
-      .accounts({ user: userPda })
+      .accounts({
+        user: userPda,
+        mint: mintPda,
+        tokenAccount: tokenAccountAddress,
+      })
       .instruction();
     instructions = [registerUserInstruction, createPollInstruction];
   } else {

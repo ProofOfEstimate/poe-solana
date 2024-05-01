@@ -23,6 +23,7 @@ import {
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { userAccountKey } from "../queries/useUserAccount";
 import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 
 const makeEstimate = async (
   program: Program<Poe>,
@@ -90,6 +91,21 @@ const makeEstimate = async (
     program.programId
   );
 
+  let [mintPda, _mintBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("poeken_mint")],
+    program.programId
+  );
+
+  const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+    mintPda,
+    wallet.publicKey
+  );
+
+  let [escrowPda, _escrowBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("escrow")],
+    program.programId
+  );
+
   const makeEstimateInstruction = await program.methods
     .makeEstimate(
       lowerEstimate !== undefined ? lowerEstimate : 0,
@@ -99,10 +115,13 @@ const makeEstimate = async (
       user: userPda,
       poll: pollPda,
       userEstimate: userEstimatePda,
-      userEstimateUpdate: userEstimateUpdatePda,
+      // userEstimateUpdate: userEstimateUpdatePda,
       pollEstimateUpdate: estimateUpdatePda,
       scoringList: scoreListPda,
       userScore: userScorePda,
+      forecasterTokenAccount: forecasterTokenAccountAddress,
+      mint: mintPda,
+      escrowAccount: escrowPda,
     })
     .instruction();
 
@@ -110,7 +129,11 @@ const makeEstimate = async (
   if (userAccount === null) {
     const registerUserInstruction = await program.methods
       .registerUser()
-      .accounts({ user: userPda })
+      .accounts({
+        user: userPda,
+        mint: mintPda,
+        tokenAccount: forecasterTokenAccountAddress,
+      })
       .instruction();
     instructions = [registerUserInstruction, makeEstimateInstruction];
   } else {

@@ -39,7 +39,11 @@ const ConnectWalletButton = () => {
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
 
-  const { data: userScore } = useUserAccount(program, connection, publicKey);
+  const { data: userScore, isLoading: isScoreLoading } = useUserAccount(
+    program,
+    connection,
+    publicKey
+  );
 
   const { data: userPolls } = useAllPollsByUser(program, publicKey);
   const { data: allPolls } = useAllPolls(program);
@@ -107,8 +111,12 @@ const ConnectWalletButton = () => {
             <Flex direction={"column"} className="mx-2 gap-2 text-sm">
               <Text className="flex items-center gap-2">
                 Score:{" "}
-                {userScore ? (
-                  userScore.score.toFixed(2)
+                {!isScoreLoading ? (
+                  userScore ? (
+                    userScore.score.toFixed(2)
+                  ) : (
+                    0.0
+                  )
                 ) : (
                   <Skeleton className="w-6 h-4 rounded-md" />
                 )}

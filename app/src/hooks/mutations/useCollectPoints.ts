@@ -16,6 +16,7 @@ import {
 } from "@/texts/toastTitles";
 import { sendVersionedTransaction } from "../../../utils/sendVersionedTransaction";
 import { allPollsByUserKey } from "../queries/useAllPollsByUser";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 
 const collectPoints = async (
   program: Program<Poe>,
@@ -60,6 +61,21 @@ const collectPoints = async (
     program.programId
   );
 
+  let [mintPda, mintBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("poeken_mint")],
+    program.programId
+  );
+
+  let [escrowPda, _escrowBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("escrow")],
+    program.programId
+  );
+
+  const tokenAccountAddress = await getAssociatedTokenAddress(
+    mintPda,
+    wallet.publicKey
+  );
+
   const registerUserInstruction = await program.methods
     .collectPoints()
     .accounts({
@@ -69,6 +85,9 @@ const collectPoints = async (
       userEstimate: userPredictionPda,
       scoringList: scoreListPda,
       userScore: userScorePda,
+      mint: mintPda,
+      escrowAccount: escrowPda,
+      forecasterTokenAccount: tokenAccountAddress,
     })
     .instruction();
 

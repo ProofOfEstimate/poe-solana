@@ -2,6 +2,7 @@ import { Poe } from "@/idl/poe";
 import { Program } from "@coral-xyz/anchor";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userAccountKey } from "../queries/useUserAccount";
 import { userSolBalanceKey } from "../queries/useUserSolBalance";
@@ -27,9 +28,23 @@ const registerUser = async (
     program.programId
   );
 
+  let [mintPda, mintBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("poeken_mint")],
+    program.programId
+  );
+
+  const tokenAccountAddress = await getAssociatedTokenAddress(
+    mintPda,
+    wallet.publicKey
+  );
+
   const registerUserInstruction = await program.methods
     .registerUser()
-    .accounts({ user: userPda })
+    .accounts({
+      user: userPda,
+      mint: mintPda,
+      tokenAccount: tokenAccountAddress,
+    })
     .instruction();
 
   await sendVersionedTransaction([registerUserInstruction], wallet, connection);

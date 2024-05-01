@@ -16,6 +16,21 @@ export type Poe = {
           isSigner: false;
         },
         {
+          name: "mint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "escrowAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: "systemProgram";
           isMut: false;
           isSigner: false;
@@ -34,6 +49,26 @@ export type Poe = {
         {
           name: "user";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "mint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -121,11 +156,6 @@ export type Poe = {
           isSigner: false;
         },
         {
-          name: "userEstimateUpdate";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "pollEstimateUpdate";
           isMut: true;
           isSigner: false;
@@ -138,6 +168,31 @@ export type Poe = {
         {
           name: "userScore";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "forecasterTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "mint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "escrowAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -328,6 +383,31 @@ export type Poe = {
           isSigner: false;
         },
         {
+          name: "mint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "escrowAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "forecasterTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: "systemProgram";
           isMut: false;
           isSigner: false;
@@ -423,6 +503,10 @@ export type Poe = {
             type: "u16";
           },
           {
+            name: "bettingAmount";
+            type: "u64";
+          },
+          {
             name: "startSlot";
             type: "u64";
           },
@@ -444,6 +528,18 @@ export type Poe = {
           },
           {
             name: "variance";
+            type: {
+              option: "f32";
+            };
+          },
+          {
+            name: "lnGmA";
+            type: {
+              option: "f32";
+            };
+          },
+          {
+            name: "lnGmB";
             type: {
               option: "f32";
             };
@@ -493,22 +589,30 @@ export type Poe = {
           {
             name: "options";
             type: {
-              vec: "f32";
+              array: ["f32", 128];
             };
           },
           {
             name: "cost";
             type: {
-              vec: "f32";
+              array: ["f32", 128];
+            };
+          },
+          {
+            name: "peerScoreA";
+            type: {
+              array: ["f32", 128];
+            };
+          },
+          {
+            name: "peerScoreB";
+            type: {
+              array: ["f32", 128];
             };
           },
           {
             name: "lastSlot";
             type: "u64";
-          },
-          {
-            name: "bump";
-            type: "u8";
           }
         ];
       };
@@ -651,11 +755,27 @@ export type Poe = {
             type: "f32";
           },
           {
+            name: "lastPeerScoreA";
+            type: "f32";
+          },
+          {
+            name: "lastPeerScoreB";
+            type: "f32";
+          },
+          {
             name: "lnA";
             type: "f32";
           },
           {
             name: "lnB";
+            type: "f32";
+          },
+          {
+            name: "peerScoreA";
+            type: "f32";
+          },
+          {
+            name: "peerScoreB";
             type: "f32";
           },
           {
@@ -731,6 +851,21 @@ export const IDL: Poe = {
           isSigner: false,
         },
         {
+          name: "mint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "escrowAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: "systemProgram",
           isMut: false,
           isSigner: false,
@@ -749,6 +884,26 @@ export const IDL: Poe = {
         {
           name: "user",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "mint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -836,11 +991,6 @@ export const IDL: Poe = {
           isSigner: false,
         },
         {
-          name: "userEstimateUpdate",
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: "pollEstimateUpdate",
           isMut: true,
           isSigner: false,
@@ -853,6 +1003,31 @@ export const IDL: Poe = {
         {
           name: "userScore",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "forecasterTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "mint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "escrowAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -1043,6 +1218,31 @@ export const IDL: Poe = {
           isSigner: false,
         },
         {
+          name: "mint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "escrowAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "forecasterTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: "systemProgram",
           isMut: false,
           isSigner: false,
@@ -1138,6 +1338,10 @@ export const IDL: Poe = {
             type: "u16",
           },
           {
+            name: "bettingAmount",
+            type: "u64",
+          },
+          {
             name: "startSlot",
             type: "u64",
           },
@@ -1159,6 +1363,18 @@ export const IDL: Poe = {
           },
           {
             name: "variance",
+            type: {
+              option: "f32",
+            },
+          },
+          {
+            name: "lnGmA",
+            type: {
+              option: "f32",
+            },
+          },
+          {
+            name: "lnGmB",
             type: {
               option: "f32",
             },
@@ -1208,22 +1424,30 @@ export const IDL: Poe = {
           {
             name: "options",
             type: {
-              vec: "f32",
+              array: ["f32", 128],
             },
           },
           {
             name: "cost",
             type: {
-              vec: "f32",
+              array: ["f32", 128],
+            },
+          },
+          {
+            name: "peerScoreA",
+            type: {
+              array: ["f32", 128],
+            },
+          },
+          {
+            name: "peerScoreB",
+            type: {
+              array: ["f32", 128],
             },
           },
           {
             name: "lastSlot",
             type: "u64",
-          },
-          {
-            name: "bump",
-            type: "u8",
           },
         ],
       },
@@ -1366,11 +1590,27 @@ export const IDL: Poe = {
             type: "f32",
           },
           {
+            name: "lastPeerScoreA",
+            type: "f32",
+          },
+          {
+            name: "lastPeerScoreB",
+            type: "f32",
+          },
+          {
             name: "lnA",
             type: "f32",
           },
           {
             name: "lnB",
+            type: "f32",
+          },
+          {
+            name: "peerScoreA",
+            type: "f32",
+          },
+          {
+            name: "peerScoreB",
             type: "f32",
           },
           {

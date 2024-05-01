@@ -12,20 +12,20 @@ pub struct RemoveEstimate<'info> {
         seeds=[User::SEED_PREFIX.as_bytes(), forecaster.key().as_ref()],
         bump=user.bump,
       )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
       mut,
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       mut,
       seeds=[UserEstimate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
       bump = user_estimate.bump,
       close = forecaster
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     #[account(
         init,
         payer = forecaster,
@@ -33,20 +33,20 @@ pub struct RemoveEstimate<'info> {
         space= PollEstimateUpdate::LEN,
         bump,
     )]
-    pub estimate_update: Account<'info, PollEstimateUpdate>,
+    pub estimate_update: Box<Account<'info, PollEstimateUpdate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         mut,
         seeds=[UserScore::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref()],
         bump = user_score.bump,
         close = forecaster
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
     pub system_program: Program<'info, System>,
 }
 
@@ -55,6 +55,7 @@ impl<'info> RemoveEstimate<'info> {
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
+        let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
                 assert!(self.poll.num_forecasters > 0);
@@ -102,12 +103,17 @@ impl<'info> RemoveEstimate<'info> {
                     self.poll.variance = Some(var_new);
                 }
 
+                // TODO:
+                let old_ln_gm = 0.0;
+
                 let current_slot = Clock::get().unwrap().slot;
-                self.scoring_list.update(
+                scoring_list.update(
                     ce_f,
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32 + 1.0,
+                    old_ln_gm,
+                    old_ln_gm,
                 );
 
                 msg!("Updated collective estimate");

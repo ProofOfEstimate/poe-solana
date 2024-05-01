@@ -8,7 +8,7 @@ mod utils;
 
 use contexts::*;
 
-declare_id!("edGAr9akTocdmjXUZjb2PLm52Z4TH3hYUm3RmAF35ir");
+declare_id!("485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi");
 
 #[program]
 pub mod poe {
@@ -19,7 +19,8 @@ pub mod poe {
     }
 
     pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {
-        ctx.accounts.register_user(&ctx.bumps)
+        ctx.accounts.register_user(&ctx.bumps)?;
+        ctx.accounts.mint_tokens(&ctx.bumps)
     }
 
     pub fn create_poll(
@@ -38,14 +39,17 @@ pub mod poe {
         lower_estimate: u16,
         upper_estimate: u16,
     ) -> Result<()> {
+        msg!("Start of make estimate");
         let estimate = (lower_estimate + upper_estimate) / 2;
         let uncertainty = (upper_estimate - lower_estimate) as f32 / 100.0;
+        msg!("Initialize estimate account");
         ctx.accounts.init_estimate_account(
             &ctx.bumps,
             lower_estimate,
             upper_estimate,
             ctx.accounts.user.score,
         )?;
+        msg!("Estimate account initialized");
         ctx.accounts
             .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
     }
@@ -73,6 +77,6 @@ pub mod poe {
 
     pub fn collect_points(ctx: Context<CollectPoints>) -> Result<()> {
         ctx.accounts.collect_points()?;
-        ctx.accounts.transfer_points_to_user()
+        ctx.accounts.transfer_points_to_user(&ctx.bumps)
     }
 }

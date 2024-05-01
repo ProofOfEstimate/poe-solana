@@ -20,7 +20,20 @@ process.env.ANCHOR_WALLET = idWallet;
     program.programId
   );
 
-  await program.methods.initialize().accounts({ state: statePda }).rpc();
+  let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("poeken_mint")],
+    program.programId
+  );
+
+  let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("escrow")],
+    program.programId
+  );
+
+  await program.methods
+    .initialize()
+    .accounts({ state: statePda, mint: mintPda, escrowAccount: escrowPda })
+    .rpc();
 })()
   .then(() => console.log("POE initialized!"))
   .catch((e) => console.log(e));

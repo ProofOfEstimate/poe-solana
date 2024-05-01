@@ -1,7 +1,13 @@
+use crate::constants::LOGS;
 use crate::errors::*;
 use crate::states::*;
 use crate::utils::*;
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token;
+use anchor_spl::token::Mint;
+use anchor_spl::token::Token;
+use anchor_spl::token::TokenAccount;
 
 #[derive(Accounts)]
 pub struct MakeEstimate<'info> {
@@ -12,13 +18,13 @@ pub struct MakeEstimate<'info> {
         seeds=[User::SEED_PREFIX.as_bytes(), forecaster.key().as_ref()],
         bump=user.bump,
       )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
     #[account(
       mut,
       seeds=[Poll::SEED_PREFIX.as_bytes(), &poll.id.to_le_bytes()],
       bump=poll.bump
     )]
-    pub poll: Account<'info, Poll>,
+    pub poll: Box<Account<'info, Poll>>,
     #[account(
       init,
       payer = forecaster,
@@ -26,17 +32,17 @@ pub struct MakeEstimate<'info> {
       space = UserEstimate::LEN,
       bump,
     )]
-    pub user_estimate: Account<'info, UserEstimate>,
+    pub user_estimate: Box<Account<'info, UserEstimate>>,
     // TODO: Instead of init_if_needed, close user_estimate_update accounts when user removes estimate or figure out where to start to count
     // Maybe use a timestamp instead of counter
-    #[account(
-        init_if_needed,
-        payer = forecaster,
-        seeds=[UserEstimateUpdate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref(), &0u64.to_le_bytes()],
-        space= UserEstimateUpdate::LEN,
-        bump,
-    )]
-    pub user_estimate_update: Account<'info, UserEstimateUpdate>,
+    // #[account(
+    //     init_if_needed,
+    //     payer = forecaster,
+    //     seeds=[UserEstimateUpdate::SEED_PREFIX.as_bytes(), poll.key().as_ref(), forecaster.key().as_ref(), &0u64.to_le_bytes()],
+    //     space= UserEstimateUpdate::LEN,
+    //     bump,
+    // )]
+    // pub user_estimate_update: Box<Account<'info, UserEstimateUpdate>>,
     #[account(
         init,
         payer = forecaster,
@@ -44,13 +50,13 @@ pub struct MakeEstimate<'info> {
         space= PollEstimateUpdate::LEN,
         bump,
     )]
-    pub poll_estimate_update: Account<'info, PollEstimateUpdate>,
+    pub poll_estimate_update: Box<Account<'info, PollEstimateUpdate>>,
     #[account(
         mut,
         seeds=[ScoringList::SEED_PREFIX.as_bytes(), poll.key().as_ref()],
-        bump=scoring_list.bump
+        bump
     )]
-    pub scoring_list: Box<Account<'info, ScoringList>>,
+    pub scoring_list: AccountLoader<'info, ScoringList>,
     #[account(
         init,
         payer = forecaster,
@@ -58,7 +64,29 @@ pub struct MakeEstimate<'info> {
         space = UserScore::LEN,
         bump,
       )]
-    pub user_score: Account<'info, UserScore>,
+    pub user_score: Box<Account<'info, UserScore>>,
+    #[account(
+        mut,
+        associated_token::mint = mint,
+        associated_token::authority = forecaster
+    )]
+    pub forecaster_token_account: Box<Account<'info, TokenAccount>>,
+    #[account(
+        seeds = ["poeken_mint".as_bytes()],
+        bump,
+        mut
+    )]
+    pub mint: Box<Account<'info, Mint>>,
+    #[account(
+        mut,
+        seeds=[b"escrow"],
+        bump,
+        token::mint = mint,
+        token::authority = mint
+    )]
+    pub escrow_account: Box<Account<'info, TokenAccount>>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
 
@@ -76,6 +104,16 @@ impl<'info> MakeEstimate<'info> {
         if self.poll.end_slot.is_some() {
             return err!(CustomErrorCode::PollClosed);
         }
+
+        let cpi_accounts = token::Transfer {
+            from: self.forecaster_token_account.to_account_info(),
+            to: self.escrow_account.to_account_info(),
+            authority: self.forecaster.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
+
+        token::transfer(cpi_ctx, self.poll.betting_amount)?;
 
         let current_slot = Clock::get().unwrap().slot;
         let recency_weight = recency_weight(
@@ -95,12 +133,12 @@ impl<'info> MakeEstimate<'info> {
             bumps.user_estimate,
         ));
 
-        self.user_estimate_update.set_inner(UserEstimateUpdate::new(
-            self.poll.key(),
-            self.forecaster.key(),
-            lower_estimate,
-            upper_estimate,
-        ));
+        // self.user_estimate_update.set_inner(UserEstimateUpdate::new(
+        //     self.poll.key(),
+        //     self.forecaster.key(),
+        //     lower_estimate,
+        //     upper_estimate,
+        // ));
 
         self.user.participation_count += 1;
 
@@ -115,6 +153,7 @@ impl<'info> MakeEstimate<'info> {
         uncertainty: f32,
     ) -> Result<()> {
         assert!(estimate <= 100);
+        let mut scoring_list = self.scoring_list.load_mut()?;
         match self.poll.collective_estimate {
             Some(collective_estimate) => {
                 assert!(self.poll.num_forecasters > 0);
@@ -154,12 +193,30 @@ impl<'info> MakeEstimate<'info> {
 
                 self.poll.variance = Some(var_new);
 
+                // Calculate log of geometric mean
+                let ln_p_a = LOGS[estimate as usize];
+                let old_ln_gm_a = self.poll.ln_gm_a.unwrap();
+                let new_ln_gm_a =
+                    old_ln_gm_a + (ln_p_a - old_ln_gm_a) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm_a = Some(new_ln_gm_a);
+
+                let ln_p_b = LOGS[100 - estimate as usize];
+                let old_ln_gm_b = self.poll.ln_gm_b.unwrap();
+                let new_ln_gm_b =
+                    old_ln_gm_b + (ln_p_b - old_ln_gm_b) / (self.poll.num_forecasters as f32);
+
+                self.poll.ln_gm_b = Some(new_ln_gm_b);
+
                 let current_slot = Clock::get().unwrap().slot;
-                self.scoring_list.update(
+
+                scoring_list.update(
                     ce_f,
                     var_old / 10000.0,
                     current_slot,
                     self.poll.num_forecasters as f32 - 1.0,
+                    old_ln_gm_a,
+                    old_ln_gm_b,
                 );
 
                 msg!("Updated collective estimate");
@@ -169,6 +226,8 @@ impl<'info> MakeEstimate<'info> {
                 self.poll.collective_estimate =
                     Some(10u32.pow(ESTIMATE_PRECISION as u32) * estimate as u32);
                 self.poll.variance = Some(0.5 * uncertainty * uncertainty * 10000.0);
+                self.poll.ln_gm_a = Some(LOGS[estimate as usize]);
+                self.poll.ln_gm_b = Some(LOGS[100 - estimate as usize]);
                 self.poll.num_forecasters = 1;
                 self.poll.accumulated_weights = (1.0 - uncertainty)
                     * self.user_estimate.score_weight
@@ -181,16 +240,18 @@ impl<'info> MakeEstimate<'info> {
                     * self.user_estimate.recency_weight;
                 self.poll.num_estimate_updates += 1;
 
-                self.scoring_list.last_slot = Clock::get().unwrap().slot;
+                let current_slot = Clock::get().unwrap().slot;
+                scoring_list.new(current_slot);
             }
         }
 
-        let last_lower_option =
-            self.scoring_list.options[self.user_estimate.lower_estimate as usize];
-        let last_upper_option =
-            self.scoring_list.options[self.user_estimate.upper_estimate as usize];
-        let last_lower_cost = self.scoring_list.cost[self.user_estimate.lower_estimate as usize];
-        let last_upper_cost = self.scoring_list.cost[self.user_estimate.upper_estimate as usize];
+        let last_lower_option = scoring_list.options[self.user_estimate.lower_estimate as usize];
+        let last_upper_option = scoring_list.options[self.user_estimate.upper_estimate as usize];
+        let last_lower_cost = scoring_list.cost[self.user_estimate.lower_estimate as usize];
+        let last_upper_cost = scoring_list.cost[self.user_estimate.upper_estimate as usize];
+
+        let last_peer_score_a = scoring_list.peer_score_a[estimate as usize];
+        let last_peer_score_b = scoring_list.peer_score_b[estimate as usize];
 
         self.user_score.set_inner(UserScore::new(
             self.forecaster.key(),
@@ -199,6 +260,8 @@ impl<'info> MakeEstimate<'info> {
             last_upper_option,
             last_lower_cost,
             last_upper_cost,
+            last_peer_score_a,
+            last_peer_score_b,
             bumps.user_score,
         ));
 

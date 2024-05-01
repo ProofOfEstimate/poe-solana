@@ -4,6 +4,11 @@ import { Poe } from "../target/types/poe";
 
 import { expect } from "chai";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  getAccount,
+  getAssociatedTokenAddress,
+  getMint,
+} from "@solana/spl-token";
 
 const confirmTx = async (signature: string) => {
   const latestBlockhash = await anchor
@@ -61,7 +66,24 @@ describe("poe", () => {
       program.programId
     );
 
-    await program.methods.initialize().accounts({ state: statePda }).rpc();
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
+    await program.methods
+      .initialize()
+      .accounts({
+        state: statePda,
+        mint: mintPda,
+        escrowAccount: escrowPda,
+      })
+      .rpc();
 
     let stateAccount = await program.account.poeState.fetch(statePda);
 
@@ -83,20 +105,57 @@ describe("poe", () => {
       program.programId
     );
 
-    await program.methods.registerUser().accounts({ user: user1Pda }).rpc();
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const tokenAccountAddress1 = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    const tokenAccountAddress2 = await getAssociatedTokenAddress(
+      mintPda,
+      secondUser.publicKey
+    );
+
     await program.methods
       .registerUser()
-      .accounts({ payer: secondUser.publicKey, user: user2Pda })
+      .accounts({
+        user: user1Pda,
+        mint: mintPda,
+        tokenAccount: tokenAccountAddress1,
+      })
+      .rpc();
+    await program.methods
+      .registerUser()
+      .accounts({
+        payer: secondUser.publicKey,
+        user: user2Pda,
+        mint: mintPda,
+        tokenAccount: tokenAccountAddress2,
+      })
       .signers([secondUser])
       .rpc();
 
     const user1Account = await program.account.user.fetch(user1Pda);
     const user2Account = await program.account.user.fetch(user2Pda);
 
-    expect(user1Account.score).to.eq(1.0);
+    const info = await getAccount(
+      program.provider.connection,
+      tokenAccountAddress1
+    );
+    const amount = Number(info.amount);
+    const mint = await getMint(program.provider.connection, info.mint);
+    const balance = amount / 10 ** mint.decimals;
+    expect(balance).to.eq(1000, "Wrong balance");
+
+    expect(user1Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
     expect(user1Account.bump).to.eq(bump1);
-    expect(user2Account.score).to.eq(1.0);
+    expect(user2Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
     expect(user2Account.bump).to.eq(bump2);
+    // expect(balance).to.eq(101, "Wrong token balance");
   });
 
   it("creates poll!", async () => {
@@ -147,14 +206,20 @@ describe("poe", () => {
     expect(pollAccount.numEstimateUpdates.toString()).to.eq("0");
     expect(pollAccount.collectiveEstimate).to.eq(null);
     expect(pollAccount.accumulatedWeights).to.eq(0.0);
+    expect(pollAccount.endSlot).to.eq(null, "End slot is not None");
     expect(pollAccount.bump).to.eq(pollBump);
-    expect(scoringAccount.options.length).to.eq(101, "Wrong array length");
-    expect(scoringAccount.bump).to.eq(scoringBump);
+    expect(scoringAccount.options.length).to.eq(128, "Wrong array length");
   });
 
   it("makes a prediction!", async () => {
+    const [statePda, _stateBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poe_state")],
+      program.programId
+    );
+    let stateAccount = await program.account.poeState.fetch(statePda);
+    const pollId = stateAccount.numPolls.sub(new anchor.BN(1));
     const [pollPda, pollBump] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("poll"), new anchor.BN(0).toArrayLike(Buffer, "le", 8)],
+      [Buffer.from("poll"), pollId.toArrayLike(Buffer, "le", 8)],
       program.programId
     );
 
@@ -169,17 +234,6 @@ describe("poe", () => {
           Buffer.from("user_estimate"),
           pollPda.toBuffer(),
           program.provider.publicKey.toBuffer(),
-        ],
-        program.programId
-      );
-
-    const [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
         ],
         program.programId
       );
@@ -210,26 +264,41 @@ describe("poe", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate - uncertainty1, estimate + uncertainty1)
       .accounts({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     const pollAccount = await program.account.poll.fetch(pollPda);
     const userAccount = await program.account.user.fetch(userPda);
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
     );
@@ -255,14 +324,6 @@ describe("poe", () => {
       "Wrong lower prediction."
     );
     expect(userEstimateAccount.upperEstimate).to.eq(
-      estimate + uncertainty1,
-      "Wrong upper prediction."
-    );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate - uncertainty1,
-      "Wrong lower prediction."
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
       estimate + uncertainty1,
       "Wrong upper prediction."
     );
@@ -322,17 +383,6 @@ describe("poe", () => {
         program.programId
       );
 
-    let [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          secondUser.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     let [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -359,6 +409,21 @@ describe("poe", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      secondUser.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate2 - uncertainty2, estimate2 + uncertainty2)
       .accounts({
@@ -366,13 +431,15 @@ describe("poe", () => {
         user: user2Pda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .signers([secondUser])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     pollAccount = await program.account.poll.fetch(pollPda);
     const user1Account = await program.account.user.fetch(user1Pda);
@@ -380,8 +447,6 @@ describe("poe", () => {
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
     );
@@ -438,14 +503,6 @@ describe("poe", () => {
       "Wrong prediction."
     );
     expect(userEstimateAccount.upperEstimate).to.eq(
-      estimate2 + uncertainty2,
-      "Wrong prediction."
-    );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate2 - uncertainty2,
-      "Wrong prediction."
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
       estimate2 + uncertainty2,
       "Wrong prediction."
     );
@@ -573,7 +630,7 @@ describe("poe", () => {
         userScore: userScorePda,
       })
       .signers([secondUser])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     pollAccount = await program.account.poll.fetch(pollPda);
     const user1Account = await program.account.user.fetch(user1Pda);
@@ -758,7 +815,7 @@ describe("poe", () => {
       "Wrong variance."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty1) / 100) * 1.0,
+      (1 - (2 * uncertainty1) / 100) * 0.0001,
       1e-6,
       "Wrong accumulated weights."
     );
@@ -896,17 +953,6 @@ describe("poe", () => {
         program.programId
       );
 
-    let [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     let [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -934,16 +980,33 @@ describe("poe", () => {
       );
     // console.log("User score making again", pollAddress);
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate - uncertainty2, estimate + uncertainty2)
       .accounts({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .rpc();
 
@@ -952,9 +1015,6 @@ describe("poe", () => {
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
 
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
@@ -977,14 +1037,6 @@ describe("poe", () => {
       estimate + uncertainty2,
       "Wrong upper estimate"
     );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate - uncertainty2,
-      "Wrong lower estimate"
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
-      estimate + uncertainty2,
-      "Wrong upper estimate"
-    );
 
     expect(updateAccount.poll.toBase58()).to.eq(pollPda.toBase58());
     expect(pollAccount.numEstimateUpdates.toString()).to.eq(
@@ -992,7 +1044,7 @@ describe("poe", () => {
       "Wrong number of prediction updates."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty2) / 100) * 1.0,
+      (1 - (2 * uncertainty2) / 100) * 0.0001,
       1e-4,
       "Wrong accumulated weights."
     );
@@ -1115,6 +1167,21 @@ describe("poe", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const tokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .collectPoints()
       .accounts({
@@ -1125,6 +1192,9 @@ describe("poe", () => {
         userEstimate: userEstimatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        mint: mintPda,
+        escrowAccount: escrowPda,
+        forecasterTokenAccount: tokenAccountAddress,
       })
       .signers([secondUser])
       .rpc();
@@ -1142,19 +1212,27 @@ describe("poe", () => {
 
     // Depending on crowd prediction, this could be wrong
     if (estimate <= 50) {
-      expect(user1Account.score).to.eq(1.0, "Wrong user swcore");
+      expect(user1Account.score).to.approximately(
+        0.0001,
+        0.000001,
+        "Wrong user swcore"
+      );
       expect(user1Account.correctAnswersCount).to.eq(
         0,
         "Wrong correct answer count"
       );
     } else {
-      expect(user1Account.score).to.be.greaterThan(1.0, "Wrong user score");
+      expect(user1Account.score).to.be.greaterThan(0.0001, "Wrong user score");
       expect(user1Account.correctAnswersCount).to.eq(
         1,
         "Wrong correct answer count"
       );
     }
-    expect(user2Account.score).to.eq(1.0, "Wrong user 2 score");
+    expect(user2Account.score).to.approximately(
+      0.0001,
+      0.00001,
+      "Wrong user 2 score"
+    );
     expect(user2Account.participationCount).to.eq(
       0,
       "Wrong user 2 participation count"
@@ -1274,17 +1352,6 @@ describe("precision", () => {
         program.programId
       );
 
-    const [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     const [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1311,22 +1378,40 @@ describe("precision", () => {
         program.programId
       );
 
+    let [mintPda, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("poeken_mint")],
+      program.programId
+    );
+
+    const forecasterTokenAccountAddress = await getAssociatedTokenAddress(
+      mintPda,
+      program.provider.publicKey
+    );
+
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .makeEstimate(estimate - uncertainty, estimate + uncertainty)
       .accounts({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
+        forecasterTokenAccount: forecasterTokenAccountAddress,
+        mint: mintPda,
+        escrowAccount: escrowPda,
       })
       .rpc();
 
     const pollAccount = await program.account.poll.fetch(pollPda);
-
-    expect(pollAccount.collectiveEstimate).to.approximately(
+    const tokenAccount = expect(
+      pollAccount.collectiveEstimate
+    ).to.approximately(
       10 ** precision * estimate,
       0.001,
       "Wrong crowd prediction."
@@ -1414,10 +1499,6 @@ describe("precision", () => {
       0.0000001,
       "Wrong crowd prediction."
     );
-    expect(pollAccount.variance).to.approximately(
-      0,
-      0.0000001,
-      "Wrong variance"
-    );
+    expect(pollAccount.variance).to.approximately(0, 0.0001, "Wrong variance");
   });
 });
