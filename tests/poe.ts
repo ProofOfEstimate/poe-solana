@@ -238,17 +238,6 @@ describe("poe", () => {
         program.programId
       );
 
-    const [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     const [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -296,7 +285,6 @@ describe("poe", () => {
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
@@ -311,8 +299,6 @@ describe("poe", () => {
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
     );
@@ -338,14 +324,6 @@ describe("poe", () => {
       "Wrong lower prediction."
     );
     expect(userEstimateAccount.upperEstimate).to.eq(
-      estimate + uncertainty1,
-      "Wrong upper prediction."
-    );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate - uncertainty1,
-      "Wrong lower prediction."
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
       estimate + uncertainty1,
       "Wrong upper prediction."
     );
@@ -405,17 +383,6 @@ describe("poe", () => {
         program.programId
       );
 
-    let [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          secondUser.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     let [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -464,7 +431,6 @@ describe("poe", () => {
         user: user2Pda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
@@ -481,8 +447,6 @@ describe("poe", () => {
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
     );
@@ -539,14 +503,6 @@ describe("poe", () => {
       "Wrong prediction."
     );
     expect(userEstimateAccount.upperEstimate).to.eq(
-      estimate2 + uncertainty2,
-      "Wrong prediction."
-    );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate2 - uncertainty2,
-      "Wrong prediction."
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
       estimate2 + uncertainty2,
       "Wrong prediction."
     );
@@ -997,17 +953,6 @@ describe("poe", () => {
         program.programId
       );
 
-    let [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     let [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1056,7 +1001,6 @@ describe("poe", () => {
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
@@ -1071,9 +1015,6 @@ describe("poe", () => {
     const userEstimateAccount = await program.account.userEstimate.fetch(
       userEstimatePda
     );
-
-    const userEstimateUpdateAccount =
-      await program.account.userEstimateUpdate.fetch(userEstimateUpdatePda);
 
     const updateAccount = await program.account.pollEstimateUpdate.fetch(
       estimateUpdatePda
@@ -1093,14 +1034,6 @@ describe("poe", () => {
       "Wrong lower estimate"
     );
     expect(userEstimateAccount.upperEstimate).to.eq(
-      estimate + uncertainty2,
-      "Wrong upper estimate"
-    );
-    expect(userEstimateUpdateAccount.lowerEstimate).to.eq(
-      estimate - uncertainty2,
-      "Wrong lower estimate"
-    );
-    expect(userEstimateUpdateAccount.upperEstimate).to.eq(
       estimate + uncertainty2,
       "Wrong upper estimate"
     );
@@ -1244,6 +1177,11 @@ describe("poe", () => {
       program.provider.publicKey
     );
 
+    let [escrowPda, _escrowBump] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("escrow")],
+      program.programId
+    );
+
     await program.methods
       .collectPoints()
       .accounts({
@@ -1255,6 +1193,7 @@ describe("poe", () => {
         scoringList: scoringListPda,
         userScore: userScorePda,
         mint: mintPda,
+        escrowAccount: escrowPda,
         forecasterTokenAccount: tokenAccountAddress,
       })
       .signers([secondUser])
@@ -1413,17 +1352,6 @@ describe("precision", () => {
         program.programId
       );
 
-    const [userEstimateUpdatePda, _userUpdateBump] =
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_estimate_update"),
-          pollPda.toBuffer(),
-          program.provider.publicKey.toBuffer(),
-          new anchor.BN(0).toArrayLike(Buffer, "le", 8),
-        ],
-        program.programId
-      );
-
     const [estimateUpdatePda, updateBump] =
       anchor.web3.PublicKey.findProgramAddressSync(
         [
@@ -1471,7 +1399,6 @@ describe("precision", () => {
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
-        userEstimateUpdate: userEstimateUpdatePda,
         pollEstimateUpdate: estimateUpdatePda,
         scoringList: scoringListPda,
         userScore: userScorePda,
