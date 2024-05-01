@@ -1,0 +1,21 @@
+[package]
+name = "poe"
+version = "0.1.0"
+description = "Proof of Estimate - Prediction Poll"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "poe"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = {version = "0.29.0", features = ["init-if-needed"]}
+anchor-spl = "0.29.0"
+bytemuck = "1.15.0"
