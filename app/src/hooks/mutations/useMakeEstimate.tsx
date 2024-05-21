@@ -111,7 +111,7 @@ const makeEstimate = async (
       lowerEstimate !== undefined ? lowerEstimate : 0,
       upperEstimate !== undefined ? upperEstimate : 0
     )
-    .accounts({
+    .accountsPartial({
       user: userPda,
       poll: pollPda,
       userEstimate: userEstimatePda,
@@ -129,7 +129,7 @@ const makeEstimate = async (
   if (userAccount === null) {
     const registerUserInstruction = await program.methods
       .registerUser()
-      .accounts({
+      .accountsPartial({
         user: userPda,
         mint: mintPda,
         tokenAccount: forecasterTokenAccountAddress,

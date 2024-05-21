@@ -1,116 +1,329 @@
 {
-  "version": "0.1.0",
-  "name": "poe",
+  "address": "485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi",
+  "metadata": {
+    "name": "poe",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Proof of Estimate - Prediction Poll"
+  },
   "instructions": [
     {
-      "name": "initialize",
-      "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "state",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+      "name": "collect_points",
+      "discriminator": [
+        221,
+        8,
+        237,
+        153,
+        212,
+        171,
+        156,
+        131
       ],
-      "args": []
-    },
-    {
-      "name": "registerUser",
       "accounts": [
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "forecaster"
         },
         {
           "name": "user",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_estimate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
         },
         {
           "name": "mint",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "forecaster_token_account",
+          "writable": true
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "createPoll",
+      "name": "create_poll",
+      "discriminator": [
+        182,
+        171,
+        112,
+        238,
+        6,
+        219,
+        14,
+        110
+      ],
       "accounts": [
         {
           "name": "creator",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "resolver",
-          "isMut": false,
-          "isSigner": false
+          "name": "resolver"
         },
         {
           "name": "state",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "poll",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "state.num_polls",
+                "account": "PoeState"
+              }
+            ]
+          }
         },
         {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -133,208 +346,728 @@
       ]
     },
     {
-      "name": "makeEstimate",
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
       "accounts": [
         {
-          "name": "forecaster",
-          "isMut": true,
-          "isSigner": true
+          "name": "payer",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "user",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "poll",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userEstimate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "pollEstimateUpdate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userScore",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "forecasterTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "mint",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "lowerEstimate",
-          "type": "u16"
-        },
-        {
-          "name": "upperEstimate",
-          "type": "u16"
-        }
-      ]
-    },
-    {
-      "name": "updateEstimate",
-      "accounts": [
-        {
-          "name": "forecaster",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "poll",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userEstimate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userEstimateUpdate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "estimateUpdate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userScore",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "newLowerEstimate",
-          "type": "u16"
-        },
-        {
-          "name": "newUpperEstimate",
-          "type": "u16"
-        }
-      ]
-    },
-    {
-      "name": "removeEstimate",
-      "accounts": [
-        {
-          "name": "forecaster",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "poll",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userEstimate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "estimateUpdate",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userScore",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "resolvePoll",
+      "name": "make_estimate",
+      "discriminator": [
+        169,
+        43,
+        178,
+        59,
+        233,
+        178,
+        74,
+        199
+      ],
       "accounts": [
         {
-          "name": "resolver",
-          "isMut": true,
-          "isSigner": true
+          "name": "forecaster",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
         },
         {
           "name": "poll",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
         },
         {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
+          "name": "user_estimate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "poll_estimate_update",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101,
+                  95,
+                  117,
+                  112,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "poll.num_estimate_updates",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "forecaster_token_account",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "lower_estimate",
+          "type": "u16"
+        },
+        {
+          "name": "upper_estimate",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "register_user",
+      "discriminator": [
+        2,
+        241,
+        150,
+        223,
+        99,
+        214,
+        116,
+        97
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "remove_estimate",
+      "discriminator": [
+        123,
+        41,
+        255,
+        206,
+        43,
+        234,
+        150,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "forecaster",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_estimate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "estimate_update",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101,
+                  95,
+                  117,
+                  112,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "poll.num_estimate_updates",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_poll",
+      "discriminator": [
+        130,
+        62,
+        235,
+        12,
+        76,
+        239,
+        17,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "resolver",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "poll"
+          ]
+        },
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -345,78 +1078,368 @@
       ]
     },
     {
-      "name": "collectPoints",
+      "name": "update_estimate",
+      "discriminator": [
+        16,
+        66,
+        42,
+        145,
+        179,
+        218,
+        133,
+        181
+      ],
       "accounts": [
         {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
           "name": "forecaster",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "signer": true
         },
         {
           "name": "poll",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
         },
         {
-          "name": "userEstimate",
-          "isMut": true,
-          "isSigner": false
+          "name": "user_estimate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
         },
         {
-          "name": "scoringList",
-          "isMut": true,
-          "isSigner": false
+          "name": "user_estimate_update",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101,
+                  95,
+                  117,
+                  112,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              },
+              {
+                "kind": "account",
+                "path": "user_estimate.num_estimate_updates",
+                "account": "UserEstimate"
+              }
+            ]
+          }
         },
         {
-          "name": "userScore",
-          "isMut": true,
-          "isSigner": false
+          "name": "estimate_update",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108,
+                  95,
+                  101,
+                  115,
+                  116,
+                  105,
+                  109,
+                  97,
+                  116,
+                  101,
+                  95,
+                  117,
+                  112,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "poll.num_estimate_updates",
+                "account": "Poll"
+              }
+            ]
+          }
         },
         {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
         },
         {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "user_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "forecaster"
+              }
+            ]
+          }
         },
         {
-          "name": "forecasterTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "new_lower_estimate",
+          "type": "u16"
+        },
+        {
+          "name": "new_upper_estimate",
+          "type": "u16"
+        }
+      ]
     }
   ],
   "accounts": [
+    {
+      "name": "PoeState",
+      "discriminator": [
+        56,
+        89,
+        110,
+        49,
+        245,
+        252,
+        16,
+        20
+      ]
+    },
+    {
+      "name": "Poll",
+      "discriminator": [
+        110,
+        234,
+        167,
+        188,
+        231,
+        136,
+        153,
+        111
+      ]
+    },
+    {
+      "name": "PollEstimateUpdate",
+      "discriminator": [
+        140,
+        170,
+        34,
+        23,
+        150,
+        213,
+        62,
+        18
+      ]
+    },
+    {
+      "name": "ScoringList",
+      "discriminator": [
+        200,
+        108,
+        113,
+        50,
+        15,
+        45,
+        206,
+        81
+      ]
+    },
+    {
+      "name": "User",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
+    },
+    {
+      "name": "UserEstimate",
+      "discriminator": [
+        4,
+        202,
+        200,
+        189,
+        121,
+        204,
+        147,
+        101
+      ]
+    },
+    {
+      "name": "UserEstimateUpdate",
+      "discriminator": [
+        231,
+        183,
+        179,
+        64,
+        195,
+        152,
+        147,
+        122
+      ]
+    },
+    {
+      "name": "UserScore",
+      "discriminator": [
+        212,
+        150,
+        123,
+        224,
+        34,
+        227,
+        84,
+        39
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "PollClosed",
+      "msg": "Poll is closed."
+    },
+    {
+      "code": 6001,
+      "name": "PollNotResolved",
+      "msg": "Poll has not been resolved."
+    },
+    {
+      "code": 6002,
+      "name": "PollAlreadyResolved",
+      "msg": "Poll has already been resolved."
+    }
+  ],
+  "types": [
     {
       "name": "PoeState",
       "type": {
@@ -424,10 +1447,10 @@
         "fields": [
           {
             "name": "authority",
-            "type": "publicKey"
+            "type": "pubkey"
           },
           {
-            "name": "numPolls",
+            "name": "num_polls",
             "type": "u64"
           },
           {
@@ -435,8 +1458,108 @@
             "type": "f32"
           },
           {
-            "name": "recalibrationFactor",
+            "name": "recalibration_factor",
             "type": "f32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Poll",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "resolver",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "category",
+            "type": "u16"
+          },
+          {
+            "name": "betting_amount",
+            "type": "u64"
+          },
+          {
+            "name": "start_slot",
+            "type": "u64"
+          },
+          {
+            "name": "end_slot",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "decay_rate",
+            "type": "f32"
+          },
+          {
+            "name": "collective_estimate",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "variance",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "ln_gm_a",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "ln_gm_b",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "num_forecasters",
+            "type": "u64"
+          },
+          {
+            "name": "num_estimate_updates",
+            "type": "u64"
+          },
+          {
+            "name": "accumulated_weights",
+            "type": "f32"
+          },
+          {
+            "name": "accumulated_weights_squared",
+            "type": "f32"
+          },
+          {
+            "name": "result",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "question",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
           },
           {
             "name": "bump",
@@ -452,7 +1575,7 @@
         "fields": [
           {
             "name": "poll",
-            "type": "publicKey"
+            "type": "pubkey"
           },
           {
             "name": "slot",
@@ -482,107 +1605,11 @@
       }
     },
     {
-      "name": "Poll",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "creator",
-            "type": "publicKey"
-          },
-          {
-            "name": "resolver",
-            "type": "publicKey"
-          },
-          {
-            "name": "id",
-            "type": "u64"
-          },
-          {
-            "name": "category",
-            "type": "u16"
-          },
-          {
-            "name": "bettingAmount",
-            "type": "u64"
-          },
-          {
-            "name": "startSlot",
-            "type": "u64"
-          },
-          {
-            "name": "endSlot",
-            "type": {
-              "option": "u64"
-            }
-          },
-          {
-            "name": "decayRate",
-            "type": "f32"
-          },
-          {
-            "name": "collectiveEstimate",
-            "type": {
-              "option": "u32"
-            }
-          },
-          {
-            "name": "variance",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "lnGmA",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "lnGmB",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "numForecasters",
-            "type": "u64"
-          },
-          {
-            "name": "numEstimateUpdates",
-            "type": "u64"
-          },
-          {
-            "name": "accumulatedWeights",
-            "type": "f32"
-          },
-          {
-            "name": "accumulatedWeightsSquared",
-            "type": "f32"
-          },
-          {
-            "name": "result",
-            "type": {
-              "option": "bool"
-            }
-          },
-          {
-            "name": "question",
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "ScoringList",
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
       "type": {
         "kind": "struct",
         "fields": [
@@ -605,7 +1632,7 @@
             }
           },
           {
-            "name": "peerScoreA",
+            "name": "peer_score_a",
             "type": {
               "array": [
                 "f32",
@@ -614,7 +1641,7 @@
             }
           },
           {
-            "name": "peerScoreB",
+            "name": "peer_score_b",
             "type": {
               "array": [
                 "f32",
@@ -623,180 +1650,8 @@
             }
           },
           {
-            "name": "lastSlot",
+            "name": "last_slot",
             "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserEstimateUpdate",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "poll",
-            "type": "publicKey"
-          },
-          {
-            "name": "user",
-            "type": "publicKey"
-          },
-          {
-            "name": "slot",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "lowerEstimate",
-            "type": "u16"
-          },
-          {
-            "name": "upperEstimate",
-            "type": "u16"
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserEstimate",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "forecaster",
-            "type": "publicKey"
-          },
-          {
-            "name": "poll",
-            "type": "publicKey"
-          },
-          {
-            "name": "lowerEstimate",
-            "type": "u16"
-          },
-          {
-            "name": "upperEstimate",
-            "type": "u16"
-          },
-          {
-            "name": "scoreWeight",
-            "type": "f32"
-          },
-          {
-            "name": "recencyWeight",
-            "type": "f32"
-          },
-          {
-            "name": "numForecasters",
-            "type": "u64"
-          },
-          {
-            "name": "numEstimateUpdates",
-            "type": "u64"
-          },
-          {
-            "name": "options",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "cost",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "lnA",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "lnB",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserScore",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "forecaster",
-            "type": "publicKey"
-          },
-          {
-            "name": "poll",
-            "type": "publicKey"
-          },
-          {
-            "name": "options",
-            "type": "f32"
-          },
-          {
-            "name": "lastLowerOption",
-            "type": "f32"
-          },
-          {
-            "name": "lastUpperOption",
-            "type": "f32"
-          },
-          {
-            "name": "cost",
-            "type": "f32"
-          },
-          {
-            "name": "lastLowerCost",
-            "type": "f32"
-          },
-          {
-            "name": "lastUpperCost",
-            "type": "f32"
-          },
-          {
-            "name": "lastPeerScoreA",
-            "type": "f32"
-          },
-          {
-            "name": "lastPeerScoreB",
-            "type": "f32"
-          },
-          {
-            "name": "lnA",
-            "type": "f32"
-          },
-          {
-            "name": "lnB",
-            "type": "f32"
-          },
-          {
-            "name": "peerScoreA",
-            "type": "f32"
-          },
-          {
-            "name": "peerScoreB",
-            "type": "f32"
-          },
-          {
-            "name": "lastSlot",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
           }
         ]
       }
@@ -811,11 +1666,11 @@
             "type": "f32"
           },
           {
-            "name": "participationCount",
+            "name": "participation_count",
             "type": "u32"
           },
           {
-            "name": "correctAnswersCount",
+            "name": "correct_answers_count",
             "type": "u32"
           },
           {
@@ -824,26 +1679,178 @@
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "PollClosed",
-      "msg": "Poll is closed."
     },
     {
-      "code": 6001,
-      "name": "PollNotResolved",
-      "msg": "Poll has not been resolved."
+      "name": "UserEstimate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "forecaster",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "lower_estimate",
+            "type": "u16"
+          },
+          {
+            "name": "upper_estimate",
+            "type": "u16"
+          },
+          {
+            "name": "score_weight",
+            "type": "f32"
+          },
+          {
+            "name": "recency_weight",
+            "type": "f32"
+          },
+          {
+            "name": "num_forecasters",
+            "type": "u64"
+          },
+          {
+            "name": "num_estimate_updates",
+            "type": "u64"
+          },
+          {
+            "name": "options",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "cost",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "ln_a",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "ln_b",
+            "type": {
+              "option": "f32"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     },
     {
-      "code": 6002,
-      "name": "PollAlreadyResolved",
-      "msg": "Poll has already been resolved."
+      "name": "UserEstimateUpdate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "slot",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "lower_estimate",
+            "type": "u16"
+          },
+          {
+            "name": "upper_estimate",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserScore",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "forecaster",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "options",
+            "type": "f32"
+          },
+          {
+            "name": "last_lower_option",
+            "type": "f32"
+          },
+          {
+            "name": "last_upper_option",
+            "type": "f32"
+          },
+          {
+            "name": "cost",
+            "type": "f32"
+          },
+          {
+            "name": "last_lower_cost",
+            "type": "f32"
+          },
+          {
+            "name": "last_upper_cost",
+            "type": "f32"
+          },
+          {
+            "name": "last_peer_score_a",
+            "type": "f32"
+          },
+          {
+            "name": "last_peer_score_b",
+            "type": "f32"
+          },
+          {
+            "name": "ln_a",
+            "type": "f32"
+          },
+          {
+            "name": "ln_b",
+            "type": "f32"
+          },
+          {
+            "name": "peer_score_a",
+            "type": "f32"
+          },
+          {
+            "name": "peer_score_b",
+            "type": "f32"
+          },
+          {
+            "name": "last_slot",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     }
-  ],
-  "metadata": {
-    "address": "485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi"
-  }
+  ]
 }

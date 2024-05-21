@@ -75,7 +75,7 @@ const createPoll = async (
       form.getValues().category,
       form.getValues().decay
     )
-    .accounts({
+    .accountsPartial({
       resolver: wallet.publicKey,
       state: statePda,
       poll: pollPda,
@@ -87,7 +87,7 @@ const createPoll = async (
   if (userAccount === null) {
     const registerUserInstruction = await program.methods
       .registerUser()
-      .accounts({
+      .accountsPartial({
         user: userPda,
         mint: mintPda,
         tokenAccount: tokenAccountAddress,
