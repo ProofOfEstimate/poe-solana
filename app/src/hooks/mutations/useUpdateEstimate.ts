@@ -85,7 +85,7 @@ const updateEstimate = async (
       lowerEstimate !== undefined ? lowerEstimate : 0,
       upperEstimate !== undefined ? upperEstimate : 0
     )
-    .accounts({
+    .accountsPartial({
       poll: pollPda,
       userEstimate: userEstimatePda,
       userEstimateUpdate: userEstimateUpdatePda,

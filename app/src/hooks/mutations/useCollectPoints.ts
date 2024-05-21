@@ -78,7 +78,7 @@ const collectPoints = async (
 
   const registerUserInstruction = await program.methods
     .collectPoints()
-    .accounts({
+    .accountsPartial({
       user: userPda,
       forecaster: wallet.publicKey,
       poll: pollPda,
