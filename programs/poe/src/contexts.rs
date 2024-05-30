@@ -1,3 +1,4 @@
+mod add_metadata;
 mod collect_points;
 mod create_poll;
 mod initialize;
@@ -7,6 +8,7 @@ mod remove_estimate;
 mod resolve_poll;
 mod update_estimate;
 
+pub use add_metadata::*;
 pub use collect_points::*;
 pub use create_poll::*;
 pub use initialize::*;

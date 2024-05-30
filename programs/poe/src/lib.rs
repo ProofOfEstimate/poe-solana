@@ -18,6 +18,15 @@ pub mod poe {
         ctx.accounts.initialize(&ctx.bumps)
     }
 
+    pub fn add_metadata(
+        ctx: Context<AddMetadata>,
+        uri: String,
+        name: String,
+        symbol: String,
+    ) -> Result<()> {
+        ctx.accounts.add_metadata(&ctx.bumps, uri, name, symbol)
+    }
+
     pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {
         ctx.accounts.register_user(&ctx.bumps)?;
         ctx.accounts.mint_tokens(&ctx.bumps)
