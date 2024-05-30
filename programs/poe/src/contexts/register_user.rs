@@ -18,6 +18,9 @@ pub struct RegisterUser<'info> {
         bump
     )]
     pub user: Box<Account<'info, User>>,
+    #[account(seeds = [b"auth"], bump)]
+    /// CHECK:
+    pub auth: UncheckedAccount<'info>,
     #[account(
         seeds = ["poeken_mint".as_bytes()],
         bump,
@@ -48,11 +51,11 @@ impl<'info> RegisterUser<'info> {
             CpiContext::new_with_signer(
                 self.token_program.to_account_info(),
                 MintTo {
-                    authority: self.mint.to_account_info(),
+                    authority: self.auth.to_account_info(),
                     to: self.token_account.to_account_info(),
                     mint: self.mint.to_account_info(),
                 },
-                &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
+                &[&["auth".as_bytes(), &[bumps.auth]]],
             ),
             1000 * 1000000000,
         )?;

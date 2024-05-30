@@ -78,7 +78,7 @@ describe("poe", () => {
 
     await program.methods
       .initialize()
-      .accounts({
+      .accountsPartial({
         state: statePda,
         mint: mintPda,
         escrowAccount: escrowPda,
@@ -122,7 +122,7 @@ describe("poe", () => {
 
     await program.methods
       .registerUser()
-      .accounts({
+      .accountsPartial({
         user: user1Pda,
         mint: mintPda,
         tokenAccount: tokenAccountAddress1,
@@ -130,7 +130,7 @@ describe("poe", () => {
       .rpc();
     await program.methods
       .registerUser()
-      .accounts({
+      .accountsPartial({
         payer: secondUser.publicKey,
         user: user2Pda,
         mint: mintPda,
@@ -178,7 +178,7 @@ describe("poe", () => {
 
     await program.methods
       .createPoll(question, description, category, decay_rate)
-      .accounts({
+      .accountsPartial({
         resolver: secondUser.publicKey,
         state: statePda,
         poll: pollPda,
@@ -281,7 +281,7 @@ describe("poe", () => {
 
     await program.methods
       .makeEstimate(estimate - uncertainty1, estimate + uncertainty1)
-      .accounts({
+      .accountsPartial({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
@@ -426,7 +426,7 @@ describe("poe", () => {
 
     await program.methods
       .makeEstimate(estimate2 - uncertainty2, estimate2 + uncertainty2)
-      .accounts({
+      .accountsPartial({
         forecaster: secondUser.publicKey,
         user: user2Pda,
         poll: pollPda,
@@ -620,7 +620,7 @@ describe("poe", () => {
 
     await program.methods
       .updateEstimate(updatedSecondPrediction, updatedSecondPrediction)
-      .accounts({
+      .accountsPartial({
         forecaster: secondUser.publicKey,
         poll: pollPda,
         userEstimate: userEstimatePda,
@@ -776,7 +776,7 @@ describe("poe", () => {
 
     await program.methods
       .removeEstimate()
-      .accounts({
+      .accountsPartial({
         forecaster: secondUser.publicKey,
         user: user2Pda,
         poll: pollPda,
@@ -884,7 +884,7 @@ describe("poe", () => {
 
     await program.methods
       .removeEstimate()
-      .accounts({
+      .accountsPartial({
         forecaster: program.provider.publicKey,
         user: user1Pda,
         poll: pollPda,
@@ -997,7 +997,7 @@ describe("poe", () => {
 
     await program.methods
       .makeEstimate(estimate - uncertainty2, estimate + uncertainty2)
-      .accounts({
+      .accountsPartial({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
@@ -1184,7 +1184,7 @@ describe("poe", () => {
 
     await program.methods
       .collectPoints()
-      .accounts({
+      .accountsPartial({
         payer: secondUser.publicKey,
         forecaster: program.provider.publicKey,
         user: user1Pda,
@@ -1322,7 +1322,7 @@ describe("precision", () => {
 
     await program.methods
       .createPoll(question, description, category, decay_rate)
-      .accounts({
+      .accountsPartial({
         resolver: secondUser.publicKey,
         state: statePda,
         poll: pollPda,
@@ -1395,7 +1395,7 @@ describe("precision", () => {
 
     await program.methods
       .makeEstimate(estimate - uncertainty, estimate + uncertainty)
-      .accounts({
+      .accountsPartial({
         user: userPda,
         poll: pollPda,
         userEstimate: userEstimatePda,
@@ -1482,7 +1482,7 @@ describe("precision", () => {
 
     await program.methods
       .updateEstimate(updatedEstimate, updatedEstimate)
-      .accounts({
+      .accountsPartial({
         poll: pollPda,
         userEstimate: userEstimatePda,
         userEstimateUpdate: userEstimateUpdatePda,
