@@ -67,12 +67,15 @@ pub struct MakeEstimate<'info> {
         mut
     )]
     pub mint: Box<Account<'info, Mint>>,
+    #[account(seeds = [b"auth"], bump)]
+    /// CHECK:
+    pub auth: UncheckedAccount<'info>,
     #[account(
         mut,
         seeds=[b"escrow"],
         bump,
         token::mint = mint,
-        token::authority = mint
+        token::authority = auth
     )]
     pub escrow_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
