@@ -39,10 +39,15 @@ process.env.ANCHOR_WALLET = idWallet;
     tokenMetaData
   );
 
-  // await program.methods
-  //   .addMetadata(uri, name, symbol)
-  //   .accountsPartial({ auth: auth, mint: mintPda, metadata: metadata })
-  //   .rpc();
+  await program.methods
+    .addMetadata(uri, name, symbol)
+    .accountsPartial({
+      auth: auth,
+      mint: mintPda,
+      metadata: metadata,
+      tokenMetadataProgram: tokenMetaData,
+    })
+    .rpc();
 })()
   .then(() => console.log("Metadata added!"))
   .catch((e) => console.log(e));
