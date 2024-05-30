@@ -40,7 +40,7 @@ const registerUser = async (
 
   const registerUserInstruction = await program.methods
     .registerUser()
-    .accounts({
+    .accountsPartial({
       user: userPda,
       mint: mintPda,
       tokenAccount: tokenAccountAddress,

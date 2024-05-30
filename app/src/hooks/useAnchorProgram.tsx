@@ -15,24 +15,16 @@ export default function useAnchorProgram(): Program<Poe> {
   useEffect(() => {
     let provider;
     if (wallet) {
-      provider = new AnchorProvider(connection, wallet, {});
+      provider = new AnchorProvider(connection, wallet);
     } else {
-      provider = new AnchorProvider(
-        connection,
-        {
-          publicKey: Keypair.generate().publicKey,
-          signAllTransactions: async (txes) => txes,
-          signTransaction: async (tx) => tx,
-        },
-        {}
-      );
+      provider = new AnchorProvider(connection, {
+        publicKey: Keypair.generate().publicKey,
+        signAllTransactions: async (txes) => txes,
+        signTransaction: async (tx) => tx,
+      });
     }
 
-    const program = new Program(
-      idl,
-      idl.metadata.address,
-      provider
-    ) as unknown as Program<Poe>;
+    const program = new Program(idl, provider) as unknown as Program<Poe>;
     setProgram(program);
   }, [wallet, connection, idl]);
 
