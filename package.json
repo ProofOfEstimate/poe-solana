@@ -5,6 +5,8 @@
     },
     "dependencies": {
         "@coral-xyz/anchor": "^0.30.0",
+        "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
+        "@metaplex-foundation/umi": "^0.9.1",
         "@solana/spl-token": "^0.4.6"
     },
     "devDependencies": {
