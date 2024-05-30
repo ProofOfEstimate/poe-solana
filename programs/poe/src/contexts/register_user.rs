@@ -57,7 +57,7 @@ impl<'info> RegisterUser<'info> {
                 },
                 &[&["auth".as_bytes(), &[bumps.auth]]],
             ),
-            1000 * 1000000000,
+            2000 * 1000000000,
         )?;
 
         msg!("Minted tokens");

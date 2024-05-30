@@ -32,7 +32,11 @@ process.env.ANCHOR_WALLET = idWallet;
 
   await program.methods
     .initialize()
-    .accounts({ state: statePda, mint: mintPda, escrowAccount: escrowPda })
+    .accountsPartial({
+      state: statePda,
+      mint: mintPda,
+      escrowAccount: escrowPda,
+    })
     .rpc();
 })()
   .then(() => console.log("POE initialized!"))

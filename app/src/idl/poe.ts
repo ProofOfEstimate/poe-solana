@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/poe.json`.
  */
 export type Poe = {
-  address: "485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi";
+  address: "FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w";
   metadata: {
     name: "poe";
     version: "0.1.0";
@@ -13,6 +13,73 @@ export type Poe = {
     description: "Proof of Estimate - Prediction Poll";
   };
   instructions: [
+    {
+      name: "addMetadata";
+      discriminator: [231, 195, 40, 240, 67, 231, 53, 136];
+      accounts: [
+        {
+          name: "payer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "auth";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 117, 116, 104];
+              }
+            ];
+          };
+        },
+        {
+          name: "mint";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [112, 111, 101, 107, 101, 110, 95, 109, 105, 110, 116];
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "metadata";
+          writable: true;
+        },
+        {
+          name: "tokenMetadataProgram";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        }
+      ];
+      args: [
+        {
+          name: "uri";
+          type: "string";
+        },
+        {
+          name: "name";
+          type: "string";
+        },
+        {
+          name: "symbol";
+          type: "string";
+        }
+      ];
+    },
     {
       name: "collectPoints";
       discriminator: [221, 8, 237, 153, 212, 171, 156, 131];
@@ -137,6 +204,17 @@ export type Poe = {
               {
                 kind: "account";
                 path: "forecaster";
+              }
+            ];
+          };
+        },
+        {
+          name: "auth";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 117, 116, 104];
               }
             ];
           };
@@ -295,6 +373,17 @@ export type Poe = {
               {
                 kind: "const";
                 value: [112, 111, 101, 95, 115, 116, 97, 116, 101];
+              }
+            ];
+          };
+        },
+        {
+          name: "auth";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 117, 116, 104];
               }
             ];
           };
@@ -518,6 +607,17 @@ export type Poe = {
           };
         },
         {
+          name: "auth";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 117, 116, 104];
+              }
+            ];
+          };
+        },
+        {
           name: "escrowAccount";
           writable: true;
           pda: {
@@ -574,6 +674,17 @@ export type Poe = {
               {
                 kind: "account";
                 path: "payer";
+              }
+            ];
+          };
+        },
+        {
+          name: "auth";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 117, 116, 104];
               }
             ];
           };

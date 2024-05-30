@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { Poe } from "../target/types/poe";
 import os from "os";
 import { MPL_TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
@@ -38,6 +38,8 @@ process.env.ANCHOR_WALLET = idWallet;
     [Buffer.from("metadata"), tokenMetaData.toBuffer(), mintPda.toBuffer()],
     tokenMetaData
   );
+
+  console.log("Metadata", metadata.toBase58());
 
   await program.methods
     .addMetadata(uri, name, symbol)

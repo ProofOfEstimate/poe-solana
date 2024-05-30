@@ -14,13 +14,10 @@ pub struct AddMetadata<'info> {
     /// CHECK:
     pub auth: UncheckedAccount<'info>,
     #[account(
-        init,
-        seeds = ["poeken_mint".as_bytes()],
-        bump,
-        payer = payer,
-        mint::decimals = 9,
-        mint::authority = auth,
-    )]
+      seeds = ["poeken_mint".as_bytes()],
+      bump,
+      mut
+  )]
     pub mint: Box<Account<'info, Mint>>,
     pub token_program: Program<'info, Token>,
     /// CHECK:
@@ -29,6 +26,7 @@ pub struct AddMetadata<'info> {
     /// CHECK:
     pub token_metadata_program: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 impl<'info> AddMetadata<'info> {
@@ -50,7 +48,7 @@ impl<'info> AddMetadata<'info> {
                 payer: &self.payer.to_account_info(),
                 update_authority: (&self.payer.to_account_info(), false),
                 system_program: &self.system_program.to_account_info(),
-                rent: None,
+                rent: Some(&self.rent.to_account_info()),
             },
             CreateMetadataAccountV3InstructionArgs {
                 is_mutable: true,
