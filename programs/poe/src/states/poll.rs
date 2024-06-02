@@ -8,6 +8,7 @@ pub struct Poll {
     pub resolver: Pubkey,
     pub id: u64,
     pub category: u16,
+    pub has_started: bool,
     pub betting_amount: u64,
     pub start_slot: u64,
     pub end_slot: Option<u64>,
@@ -37,7 +38,7 @@ impl Poll {
             + 6 * U64_L
             + U32_L
             + 6 * F32_L
-            + BOOL_L
+            + 2 * BOOL_L
             + 2 * STRING_L
             + question.len()
             + description.len()
@@ -60,6 +61,7 @@ impl Poll {
             resolver,
             id,
             category,
+            has_started: false,
             betting_amount: 100 * 1000000000,
             question,
             description,

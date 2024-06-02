@@ -121,11 +121,16 @@ impl<'info> MakeEstimate<'info> {
         upper_estimate: u16,
     ) -> Result<()> {
         let current_slot = Clock::get().unwrap().slot;
-        let recency_weight = recency_weight(
-            self.poll.decay_rate,
-            current_slot as f32,
-            self.poll.start_slot as f32,
-        );
+        let recency_w: f32;
+        if self.poll.has_started {
+            recency_w = recency_weight(
+                self.poll.decay_rate,
+                current_slot as f32,
+                self.poll.start_slot as f32,
+            );
+        } else {
+            recency_w = 1.0
+        }
 
         self.user_estimate.set_inner(UserEstimate::new(
             self.forecaster.key(),
@@ -133,7 +138,7 @@ impl<'info> MakeEstimate<'info> {
             lower_estimate,
             upper_estimate,
             self.user.score,
-            recency_weight,
+            recency_w,
             self.poll.num_forecasters + 1,
             bumps.user_estimate,
         ));

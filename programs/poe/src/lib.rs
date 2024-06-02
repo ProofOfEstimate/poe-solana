@@ -43,6 +43,10 @@ pub mod poe {
             .create_poll(&ctx.bumps, question, description, category, decay)
     }
 
+    pub fn start_poll(ctx: Context<StartPoll>) -> Result<()> {
+        ctx.accounts.start_poll()
+    }
+
     pub fn make_estimate(
         ctx: Context<MakeEstimate>,
         lower_estimate: u16,

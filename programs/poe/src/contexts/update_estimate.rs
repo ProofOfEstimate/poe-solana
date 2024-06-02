@@ -86,11 +86,17 @@ impl<'info> UpdateEstimate<'info> {
                     * self.user_estimate.recency_weight;
 
                 let current_slot = Clock::get().unwrap().slot as f32;
-                let new_recency_weight = recency_weight(
-                    self.poll.decay_rate,
-                    current_slot,
-                    self.poll.start_slot as f32,
-                );
+                let new_recency_weight: f32;
+                if self.poll.has_started {
+                    new_recency_weight = recency_weight(
+                        self.poll.decay_rate,
+                        current_slot as f32,
+                        self.poll.start_slot as f32,
+                    );
+                } else {
+                    new_recency_weight = 1.0
+                }
+
                 self.user_estimate.recency_weight = new_recency_weight;
                 let weight_new =
                     (1.0 - new_uncertainty) * self.user_estimate.score_weight * new_recency_weight;
