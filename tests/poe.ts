@@ -149,11 +149,11 @@ describe("poe", () => {
     const amount = Number(info.amount);
     const mint = await getMint(program.provider.connection, info.mint);
     const balance = amount / 10 ** mint.decimals;
-    expect(balance).to.eq(1000, "Wrong balance");
+    expect(balance).to.eq(2000, "Wrong balance");
 
-    expect(user1Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
+    expect(user1Account.score).to.approximately(100, 0.00001, "Wrong score");
     expect(user1Account.bump).to.eq(bump1);
-    expect(user2Account.score).to.approximately(0.0001, 0.00001, "Wrong score");
+    expect(user2Account.score).to.approximately(100, 0.00001, "Wrong score");
     expect(user2Account.bump).to.eq(bump2);
     // expect(balance).to.eq(101, "Wrong token balance");
   });
@@ -339,7 +339,7 @@ describe("poe", () => {
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
       (1 - (2 * uncertainty1) / 100) * userAccount.score,
-      1e-6,
+      1e-2,
       "Wrong accumulated weights"
     );
     expect(pollAccount.numForecasters.toString()).to.eq(
@@ -508,7 +508,7 @@ describe("poe", () => {
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
       weight1 + weight2,
-      1e-4,
+      1e-2,
       "Wrong accumulated weights"
     );
     expect(userEstimateAccount.bump).to.eq(predictionBump, "Wrong bump.");
@@ -815,8 +815,8 @@ describe("poe", () => {
       "Wrong variance."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty1) / 100) * 0.0001,
-      1e-6,
+      (1 - (2 * uncertainty1) / 100) * 100,
+      1e-2,
       "Wrong accumulated weights."
     );
     expect(pollAccount.numForecasters.toString()).to.eq(
@@ -1044,8 +1044,8 @@ describe("poe", () => {
       "Wrong number of prediction updates."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty2) / 100) * 0.0001,
-      1e-4,
+      (1 - (2 * uncertainty2) / 100) * 100,
+      1e-2,
       "Wrong accumulated weights."
     );
     expect(userEstimateAccount.lowerEstimate).to.eq(
@@ -1108,8 +1108,8 @@ describe("poe", () => {
       "Wrong number of prediction updates."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty2) / 100) * 1.0,
-      8,
+      (1 - (2 * uncertainty2) / 100) * 100.0,
+      0.01,
       "Wrong accumulated weights."
     );
     expect(pollAccount.collectiveEstimate).to.approximately(
@@ -1213,9 +1213,9 @@ describe("poe", () => {
     // Depending on crowd prediction, this could be wrong
     if (estimate <= 50) {
       expect(user1Account.score).to.approximately(
+        100,
         0.0001,
-        0.000001,
-        "Wrong user swcore"
+        "Wrong user score"
       );
       expect(user1Account.correctAnswersCount).to.eq(
         0,
@@ -1229,8 +1229,8 @@ describe("poe", () => {
       );
     }
     expect(user2Account.score).to.approximately(
-      0.0001,
-      0.00001,
+      100,
+      0.001,
       "Wrong user 2 score"
     );
     expect(user2Account.participationCount).to.eq(
@@ -1243,8 +1243,8 @@ describe("poe", () => {
       "Wrong number of prediction updates."
     );
     expect(pollAccount.accumulatedWeights).to.approximately(
-      (1 - (2 * uncertainty2) / 100) * 1.0,
-      8,
+      (1 - (2 * uncertainty2) / 100) * 100.0,
+      0.01,
       "Wrong accumulated weights."
     );
     expect(userEstimateAccount.lowerEstimate).to.eq(
