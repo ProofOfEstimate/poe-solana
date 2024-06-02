@@ -155,11 +155,12 @@ impl<'info> CollectPoints<'info> {
             let scaled_peer_score;
             let duration = self.poll.end_slot.unwrap() - self.poll.start_slot;
             // Adding 216000 slots (~1 day) to decrease points of short polls
-            let longer_duration = duration + 216000u64;
+            // let longer_duration = duration + 216000u64;
             if result {
-                let score = (self.user_score.options as f32 - self.user_score.cost
-                    + self.user_score.ln_a)
-                    / longer_duration as f32;
+                let score = 2.0
+                    * (self.user_score.options as f32 - self.user_score.cost
+                        + self.user_score.ln_a)
+                    / duration as f32;
                 self.user.score += score;
                 self.user.score = self.user.score.max(0.0001);
                 if score > 0.0 {
@@ -169,9 +170,9 @@ impl<'info> CollectPoints<'info> {
                     ((self.user_score.peer_score_a / (-1.0 * LOGS[0] * duration as f32) + 1.0)
                         * 1000000.0) as u64;
             } else {
-                let score = (self.user_score.ln_b - self.user_score.cost) / longer_duration as f32;
+                let score = 2.0 * (self.user_score.ln_b - self.user_score.cost) / duration as f32;
                 self.user.score += score;
-                self.user.score = self.user.score.max(0.001);
+                self.user.score = self.user.score.max(0.0001);
                 if score > 0.0 {
                     self.user.correct_answers_count += 1;
                 }
