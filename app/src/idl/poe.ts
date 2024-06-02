@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/poe.json`.
  */
 export type Poe = {
-  address: "FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w";
+  address: "HekQLx6SYDZgakKAkz7RqsbCesfCdbaHAUvQiWttpZB1";
   metadata: {
     name: "poe";
     version: "0.1.0";
@@ -963,6 +963,69 @@ export type Poe = {
       ];
     },
     {
+      name: "startPoll";
+      discriminator: [59, 188, 204, 28, 129, 88, 202, 242];
+      accounts: [
+        {
+          name: "creator";
+          writable: true;
+          signer: true;
+          relations: ["poll"];
+        },
+        {
+          name: "poll";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [112, 111, 108, 108];
+              },
+              {
+                kind: "account";
+                path: "poll.id";
+                account: "poll";
+              }
+            ];
+          };
+        },
+        {
+          name: "scoringList";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ];
+              },
+              {
+                kind: "account";
+                path: "poll";
+              }
+            ];
+          };
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        }
+      ];
+      args: [];
+    },
+    {
       name: "updateEstimate";
       discriminator: [16, 66, 42, 145, 179, 218, 133, 181];
       accounts: [
@@ -1213,16 +1276,21 @@ export type Poe = {
   errors: [
     {
       code: 6000;
+      name: "pollAlreadyStarted";
+      msg: "Poll has already started.";
+    },
+    {
+      code: 6001;
       name: "pollClosed";
       msg: "Poll is closed.";
     },
     {
-      code: 6001;
+      code: 6002;
       name: "pollNotResolved";
       msg: "Poll has not been resolved.";
     },
     {
-      code: 6002;
+      code: 6003;
       name: "pollAlreadyResolved";
       msg: "Poll has already been resolved.";
     }
@@ -1276,6 +1344,10 @@ export type Poe = {
           {
             name: "category";
             type: "u16";
+          },
+          {
+            name: "hasStarted";
+            type: "bool";
           },
           {
             name: "bettingAmount";

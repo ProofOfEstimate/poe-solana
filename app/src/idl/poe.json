@@ -1,5 +1,5 @@
 {
-  "address": "FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w",
+  "address": "HekQLx6SYDZgakKAkz7RqsbCesfCdbaHAUvQiWttpZB1",
   "metadata": {
     "name": "poe",
     "version": "0.1.0",
@@ -1235,6 +1235,85 @@
       ]
     },
     {
+      "name": "start_poll",
+      "discriminator": [
+        59,
+        188,
+        204,
+        28,
+        129,
+        88,
+        202,
+        242
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "poll"
+          ]
+        },
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll.id",
+                "account": "Poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "scoring_list",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  111,
+                  114,
+                  105,
+                  110,
+                  103,
+                  95,
+                  108,
+                  105,
+                  115,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "update_estimate",
       "discriminator": [
         16,
@@ -1582,16 +1661,21 @@
   "errors": [
     {
       "code": 6000,
+      "name": "PollAlreadyStarted",
+      "msg": "Poll has already started."
+    },
+    {
+      "code": 6001,
       "name": "PollClosed",
       "msg": "Poll is closed."
     },
     {
-      "code": 6001,
+      "code": 6002,
       "name": "PollNotResolved",
       "msg": "Poll has not been resolved."
     },
     {
-      "code": 6002,
+      "code": 6003,
       "name": "PollAlreadyResolved",
       "msg": "Poll has already been resolved."
     }
@@ -1645,6 +1729,10 @@
           {
             "name": "category",
             "type": "u16"
+          },
+          {
+            "name": "has_started",
+            "type": "bool"
           },
           {
             "name": "betting_amount",

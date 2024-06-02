@@ -86,11 +86,17 @@ impl<'info> UpdateEstimate<'info> {
                     * self.user_estimate.recency_weight;
 
                 let current_slot = Clock::get().unwrap().slot as f32;
-                let new_recency_weight = recency_weight(
-                    self.poll.decay_rate,
-                    current_slot,
-                    self.poll.start_slot as f32,
-                );
+                let new_recency_weight: f32;
+                if self.poll.has_started {
+                    new_recency_weight = recency_weight(
+                        self.poll.decay_rate,
+                        current_slot as f32,
+                        self.poll.start_slot as f32,
+                    );
+                } else {
+                    new_recency_weight = 1.0
+                }
+
                 self.user_estimate.recency_weight = new_recency_weight;
                 let weight_new =
                     (1.0 - new_uncertainty) * self.user_estimate.score_weight * new_recency_weight;
@@ -149,60 +155,63 @@ impl<'info> UpdateEstimate<'info> {
 
                 let current_slot = Clock::get().unwrap().slot;
 
-                // Update score list
-                scoring_list.update(
-                    old_ce_f,
-                    var_old / 10000.0,
-                    current_slot,
-                    self.poll.num_forecasters as f32,
-                    old_ln_gm_a,
-                    old_ln_gm_b,
-                );
+                if self.poll.has_started {
+                    // Update score list
+                    scoring_list.update(
+                        old_ce_f,
+                        var_old / 10000.0,
+                        current_slot,
+                        self.poll.num_forecasters as f32,
+                        old_ln_gm_a,
+                        old_ln_gm_b,
+                    );
 
-                // Update user score
-                let last_user_score_slot = self.user_score.last_slot;
-                // Idea to improve score_weight (still need to think about it):
-                // Use ratio of num_forecaster when user made estimation and current num_forecasters
-                // instead of just num_forecasters when user made estimation
-                let score_weight = 0.49
-                    * (2.0
-                        + (-LN_2 * self.user_estimate.num_forecasters as f32 / 42.0).exp()
-                        + 1000.0 / (1000.0 + self.user_estimate.num_forecasters as f32));
-                self.user_score.ln_a += score_weight
-                    * (current_slot - last_user_score_slot) as f32
-                    * (1.0 - old_uncertainty * old_uncertainty)
-                    * ((old_ue_f / 100.0 + EPSILON).ln() + LN_2);
+                    // Update user score
+                    let last_user_score_slot = self.user_score.last_slot.max(self.poll.start_slot);
+                    // Idea to improve score_weight (still need to think about it):
+                    // Use ratio of num_forecaster when user made estimation and current num_forecasters
+                    // instead of just num_forecasters when user made estimation
+                    let score_weight = 0.49
+                        * (2.0
+                            + (-LN_2 * self.user_estimate.num_forecasters as f32 / 42.0).exp()
+                            + 1000.0 / (1000.0 + self.user_estimate.num_forecasters as f32));
+                    self.user_score.ln_a += score_weight
+                        * (current_slot - last_user_score_slot) as f32
+                        * (1.0 - old_uncertainty * old_uncertainty)
+                        * ((old_ue_f / 100.0 + EPSILON).ln() + LN_2);
 
-                self.user_score.ln_b += score_weight
-                    * (current_slot - last_user_score_slot) as f32
-                    * (1.0 - old_uncertainty * old_uncertainty)
-                    * ((1.0 - old_ue_f / 100.0 + EPSILON).ln() + LN_2);
+                    self.user_score.ln_b += score_weight
+                        * (current_slot - last_user_score_slot) as f32
+                        * (1.0 - old_uncertainty * old_uncertainty)
+                        * ((1.0 - old_ue_f / 100.0 + EPSILON).ln() + LN_2);
 
-                let add_option = (scoring_list.options[self.user_estimate.upper_estimate as usize]
-                    - self.user_score.last_upper_option
-                    + scoring_list.options[self.user_estimate.lower_estimate as usize]
-                    - self.user_score.last_lower_option)
-                    / 2.0;
+                    let add_option = (scoring_list.options
+                        [self.user_estimate.upper_estimate as usize]
+                        - self.user_score.last_upper_option
+                        + scoring_list.options[self.user_estimate.lower_estimate as usize]
+                        - self.user_score.last_lower_option)
+                        / 2.0;
 
-                let add_cost = (scoring_list.cost[self.user_estimate.upper_estimate as usize]
-                    - self.user_score.last_upper_cost
-                    + scoring_list.cost[self.user_estimate.lower_estimate as usize]
-                    - self.user_score.last_lower_cost)
-                    / 2.0;
+                    let add_cost = (scoring_list.cost[self.user_estimate.upper_estimate as usize]
+                        - self.user_score.last_upper_cost
+                        + scoring_list.cost[self.user_estimate.lower_estimate as usize]
+                        - self.user_score.last_lower_cost)
+                        / 2.0;
 
-                let add_peer_score_a = scoring_list.peer_score_a
-                    [self.user_estimate.get_estimate() as usize]
-                    - self.user_score.last_peer_score_a;
+                    let add_peer_score_a = scoring_list.peer_score_a
+                        [self.user_estimate.get_estimate() as usize]
+                        - self.user_score.last_peer_score_a;
 
-                let add_peer_score_b = scoring_list.peer_score_b
-                    [self.user_estimate.get_estimate() as usize]
-                    - self.user_score.last_peer_score_b;
+                    let add_peer_score_b = scoring_list.peer_score_b
+                        [self.user_estimate.get_estimate() as usize]
+                        - self.user_score.last_peer_score_b;
 
-                self.user_score.options += add_option;
-                self.user_score.cost += add_cost;
-                self.user_score.peer_score_a += add_peer_score_a;
-                self.user_score.peer_score_b += add_peer_score_b;
-                self.user_score.last_slot = current_slot;
+                    self.user_score.options += add_option;
+                    self.user_score.cost += add_cost;
+                    self.user_score.peer_score_a += add_peer_score_a;
+                    self.user_score.peer_score_b += add_peer_score_b;
+                    self.user_score.last_slot = current_slot;
+                }
 
                 msg!("Updated collective estimate");
             }

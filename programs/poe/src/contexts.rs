@@ -6,6 +6,7 @@ mod make_estimate;
 mod register_user;
 mod remove_estimate;
 mod resolve_poll;
+mod start_poll;
 mod update_estimate;
 
 pub use add_metadata::*;
@@ -16,4 +17,5 @@ pub use make_estimate::*;
 pub use register_user::*;
 pub use remove_estimate::*;
 pub use resolve_poll::*;
+pub use start_poll::*;
 pub use update_estimate::*;

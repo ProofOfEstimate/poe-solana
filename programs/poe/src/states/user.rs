@@ -17,7 +17,7 @@ impl User {
 
     pub fn new(bump: u8) -> Self {
         Self {
-            score: 0.0001,
+            score: 100.0,
             participation_count: 0,
             correct_answers_count: 0,
             bump,

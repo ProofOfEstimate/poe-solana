@@ -34,6 +34,7 @@ import { Button } from "./ui/button";
 import { TbLoader2 } from "react-icons/tb";
 import { useAllPolls } from "@/hooks/queries/useAllPolls";
 import { useRouter } from "next/navigation";
+import { useStartPoll } from "@/hooks/mutations/useStartPoll";
 
 const MyPollsTab = () => {
   const tab = useMyPollsTabsStore((state) => state.tab);
@@ -131,6 +132,11 @@ const CreatedPolls = () => {
     connection,
     wallet
   );
+  const { mutate: startPoll, isPending: isStarting } = useStartPoll(
+    program,
+    connection,
+    wallet
+  );
 
   const router = useRouter();
 
@@ -169,6 +175,23 @@ const CreatedPolls = () => {
                       <Button disabled variant={"outline"}>
                         <TbLoader2 className="h-4 w-4 animate-spin" />
                       </Button>
+                    ) : !poll.hasStarted ? (
+                      <>
+                        {" "}
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+
+                            startPoll({
+                              pollId: poll.id,
+                            });
+                          }}
+                          disabled={isStarting}
+                          variant={"outline"}
+                        >
+                          Start Poll
+                        </Button>
+                      </>
                     ) : (
                       <Flex gap={"2"}>
                         <Button
