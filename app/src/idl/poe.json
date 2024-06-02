@@ -1,5 +1,5 @@
 {
-  "address": "485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi",
+  "address": "FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w",
   "metadata": {
     "name": "poe",
     "version": "0.1.0",
@@ -7,6 +7,99 @@
     "description": "Proof of Estimate - Prediction Poll"
   },
   "instructions": [
+    {
+      "name": "add_metadata",
+      "discriminator": [
+        231,
+        195,
+        40,
+        240,
+        67,
+        231,
+        53,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  101,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "token_metadata_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        }
+      ]
+    },
     {
       "name": "collect_points",
       "discriminator": [
@@ -161,6 +254,22 @@
               {
                 "kind": "account",
                 "path": "forecaster"
+              }
+            ]
+          }
+        },
+        {
+          "name": "auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104
+                ]
               }
             ]
           }
@@ -380,6 +489,22 @@
                   97,
                   116,
                   101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104
                 ]
               }
             ]
@@ -665,6 +790,22 @@
           }
         },
         {
+          "name": "auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
           "name": "escrow_account",
           "writable": true,
           "pda": {
@@ -742,6 +883,22 @@
               {
                 "kind": "account",
                 "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104
+                ]
               }
             ]
           }

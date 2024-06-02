@@ -8,7 +8,7 @@ mod utils;
 
 use contexts::*;
 
-declare_id!("485U8Ea7YoM6Nd5QR7AmZu34RBeMTG5P3iG5KAEcecTi");
+declare_id!("FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w");
 
 #[program]
 pub mod poe {
@@ -16,6 +16,15 @@ pub mod poe {
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         ctx.accounts.initialize(&ctx.bumps)
+    }
+
+    pub fn add_metadata(
+        ctx: Context<AddMetadata>,
+        uri: String,
+        name: String,
+        symbol: String,
+    ) -> Result<()> {
+        ctx.accounts.add_metadata(&ctx.bumps, uri, name, symbol)
     }
 
     pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {

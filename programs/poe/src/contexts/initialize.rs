@@ -15,13 +15,16 @@ pub struct Initialize<'info> {
         bump
     )]
     pub state: Box<Account<'info, PoeState>>,
+    #[account(seeds = [b"auth"], bump)]
+    /// CHECK:
+    pub auth: UncheckedAccount<'info>,
     #[account(
         init,
         seeds = ["poeken_mint".as_bytes()],
         bump,
         payer = payer,
         mint::decimals = 9,
-        mint::authority = mint,
+        mint::authority = auth,
     )]
     pub mint: Box<Account<'info, Mint>>,
     #[account(
@@ -30,7 +33,7 @@ pub struct Initialize<'info> {
         seeds=[b"escrow"],
         bump,
         token::mint = mint,
-        token::authority = mint
+        token::authority = auth
     )]
     pub escrow_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,

@@ -8,7 +8,7 @@ const generateKey = async () => {
   while (!desiredKey && counter < maxCount) {
     const keyPair = Keypair.generate();
 
-    if (keyPair.publicKey.toString().slice(0, 5).toLowerCase() === "edgar") {
+    if (keyPair.publicKey.toString().slice(0, 3).toLowerCase() === "poe") {
       console.log("Public Key:", keyPair.publicKey.toString());
       console.log("Secret Key:", keyPair.secretKey);
       desiredKey = true;

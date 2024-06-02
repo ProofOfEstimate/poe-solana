@@ -49,6 +49,9 @@ pub struct CollectPoints<'info> {
         close = payer
       )]
     pub user_score: Box<Account<'info, UserScore>>,
+    #[account(seeds = [b"auth"], bump)]
+    /// CHECK:
+    pub auth: UncheckedAccount<'info>,
     #[account(
         seeds = ["poeken_mint".as_bytes()],
         bump,
@@ -60,7 +63,7 @@ pub struct CollectPoints<'info> {
         seeds=[b"escrow"],
         bump,
         token::mint = mint,
-        token::authority = mint
+        token::authority = auth
     )]
     pub escrow_account: Box<Account<'info, TokenAccount>>,
     #[account(
@@ -180,14 +183,14 @@ impl<'info> CollectPoints<'info> {
             let cpi_accounts = token::Transfer {
                 from: self.escrow_account.to_account_info(),
                 to: self.forecaster_token_account.to_account_info(),
-                authority: self.mint.to_account_info(),
+                authority: self.auth.to_account_info(),
             };
 
             token::transfer(
                 CpiContext::new_with_signer(
                     self.token_program.to_account_info(),
                     cpi_accounts,
-                    &[&["poeken_mint".as_bytes(), &[bumps.mint]]],
+                    &[&["auth".as_bytes(), &[bumps.auth]]],
                 ),
                 self.poll.betting_amount / 1000000 * scaled_peer_score,
             )?;
