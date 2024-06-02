@@ -8,7 +8,7 @@ mod utils;
 
 use contexts::*;
 
-declare_id!("FDpt9Gxn71wNxKfnNgHpwzmbmFhHXhbMkFZ1DJGFff9w");
+declare_id!("HekQLx6SYDZgakKAkz7RqsbCesfCdbaHAUvQiWttpZB1");
 
 #[program]
 pub mod poe {

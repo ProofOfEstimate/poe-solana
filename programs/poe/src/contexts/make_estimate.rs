@@ -210,16 +210,18 @@ impl<'info> MakeEstimate<'info> {
 
                 self.poll.ln_gm_b = Some(new_ln_gm_b);
 
-                let current_slot = Clock::get().unwrap().slot;
+                if self.poll.has_started {
+                    let current_slot = Clock::get().unwrap().slot;
 
-                scoring_list.update(
-                    ce_f,
-                    var_old / 10000.0,
-                    current_slot,
-                    self.poll.num_forecasters as f32 - 1.0,
-                    old_ln_gm_a,
-                    old_ln_gm_b,
-                );
+                    scoring_list.update(
+                        ce_f,
+                        var_old / 10000.0,
+                        current_slot,
+                        self.poll.num_forecasters as f32 - 1.0,
+                        old_ln_gm_a,
+                        old_ln_gm_b,
+                    );
+                }
 
                 msg!("Updated collective estimate");
             }
@@ -242,30 +244,46 @@ impl<'info> MakeEstimate<'info> {
                     * self.user_estimate.recency_weight;
                 self.poll.num_estimate_updates += 1;
 
-                let current_slot = Clock::get().unwrap().slot;
-                scoring_list.new(current_slot);
+                // let current_slot = Clock::get().unwrap().slot;
+                // scoring_list.new(current_slot);
             }
         }
 
-        let last_lower_option = scoring_list.options[self.user_estimate.lower_estimate as usize];
-        let last_upper_option = scoring_list.options[self.user_estimate.upper_estimate as usize];
-        let last_lower_cost = scoring_list.cost[self.user_estimate.lower_estimate as usize];
-        let last_upper_cost = scoring_list.cost[self.user_estimate.upper_estimate as usize];
+        if self.poll.has_started {
+            let last_lower_option =
+                scoring_list.options[self.user_estimate.lower_estimate as usize];
+            let last_upper_option =
+                scoring_list.options[self.user_estimate.upper_estimate as usize];
+            let last_lower_cost = scoring_list.cost[self.user_estimate.lower_estimate as usize];
+            let last_upper_cost = scoring_list.cost[self.user_estimate.upper_estimate as usize];
 
-        let last_peer_score_a = scoring_list.peer_score_a[estimate as usize];
-        let last_peer_score_b = scoring_list.peer_score_b[estimate as usize];
+            let last_peer_score_a = scoring_list.peer_score_a[estimate as usize];
+            let last_peer_score_b = scoring_list.peer_score_b[estimate as usize];
 
-        self.user_score.set_inner(UserScore::new(
-            self.forecaster.key(),
-            self.poll.key(),
-            last_lower_option,
-            last_upper_option,
-            last_lower_cost,
-            last_upper_cost,
-            last_peer_score_a,
-            last_peer_score_b,
-            bumps.user_score,
-        ));
+            self.user_score.set_inner(UserScore::new(
+                self.forecaster.key(),
+                self.poll.key(),
+                last_lower_option,
+                last_upper_option,
+                last_lower_cost,
+                last_upper_cost,
+                last_peer_score_a,
+                last_peer_score_b,
+                bumps.user_score,
+            ));
+        } else {
+            self.user_score.set_inner(UserScore::new(
+                self.forecaster.key(),
+                self.poll.key(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                bumps.user_score,
+            ));
+        }
 
         self.poll_estimate_update.set_inner(PollEstimateUpdate::new(
             self.poll.key(),

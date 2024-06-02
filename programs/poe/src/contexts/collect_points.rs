@@ -94,7 +94,7 @@ impl<'info> CollectPoints<'info> {
 
         // Update user score
         let last_poll_slot = self.poll.end_slot.unwrap();
-        let last_user_score_slot = self.user_score.last_slot;
+        let last_user_score_slot = self.user_score.last_slot.max(self.poll.start_slot);
 
         // Idea to improve score_weight (still need to think about it):
         // Use ratio of num_forecaster when user made estimation and current num_forecasters
