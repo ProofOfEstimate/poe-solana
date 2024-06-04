@@ -12,10 +12,8 @@ pub struct UserEstimate {
     pub recency_weight: f32,
     pub num_forecasters: u64,
     pub num_estimate_updates: u64,
-    pub options: Option<f32>,
-    pub cost: Option<f32>,
-    pub ln_a: Option<f32>,
-    pub ln_b: Option<f32>,
+    pub reputation_score: Option<f32>,
+    pub payout_score: Option<f32>,
     pub bump: u8,
 }
 
@@ -23,7 +21,7 @@ impl UserEstimate {
     pub const SEED_PREFIX: &'static str = "user_estimate";
 
     pub const LEN: usize =
-        8 + 2 * PUBKEY_L + 2 * U16_L + 2 * F32_L + 2 * U64_L + 4 * OPTION_L + 4 * F32_L + U8_L;
+        8 + 2 * PUBKEY_L + 2 * U16_L + 2 * F32_L + 2 * U64_L + 2 * OPTION_L + 2 * F32_L + U8_L;
 
     pub fn new(
         forecaster: Pubkey,
@@ -44,10 +42,8 @@ impl UserEstimate {
             recency_weight,
             num_forecasters,
             num_estimate_updates: 1,
-            options: None,
-            cost: None,
-            ln_a: None,
-            ln_b: None,
+            reputation_score: None,
+            payout_score: None,
             bump,
         }
     }

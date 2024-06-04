@@ -169,6 +169,10 @@ impl<'info> CollectPoints<'info> {
                 scaled_peer_score =
                     ((self.user_score.peer_score_a / (-1.0 * LOGS[0] * duration as f32) + 1.0)
                         * 1000000.0) as u64;
+
+                // Store this info in user_estimate so user_score account can be closed
+                self.user_estimate.reputation_score = Some(score);
+                self.user_estimate.payout_score = Some(scaled_peer_score as f32 / 1000000.0);
             } else {
                 let score = 2.0 * (self.user_score.ln_b - self.user_score.cost) / duration as f32;
                 self.user.score += score;
@@ -179,6 +183,10 @@ impl<'info> CollectPoints<'info> {
                 scaled_peer_score =
                     ((self.user_score.peer_score_b / (-1.0 * LOGS[0] * duration as f32) + 1.0)
                         * 1000000.0) as u64;
+
+                // Store this info in user_estimate so user_score account can be closed
+                self.user_estimate.reputation_score = Some(score);
+                self.user_estimate.payout_score = Some(scaled_peer_score as f32 / 1000000.0);
             }
 
             let cpi_accounts = token::Transfer {
@@ -196,12 +204,6 @@ impl<'info> CollectPoints<'info> {
                 self.poll.betting_amount / 1000000 * scaled_peer_score,
             )?;
         }
-
-        // Store this info in user_estimate so user_score account can be closed
-        self.user_estimate.options = Some(self.user_score.options);
-        self.user_estimate.cost = Some(self.user_score.cost);
-        self.user_estimate.ln_a = Some(self.user_score.ln_a);
-        self.user_estimate.ln_b = Some(self.user_score.ln_b);
 
         msg!("Collected points");
         Ok(())
