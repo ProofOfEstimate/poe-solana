@@ -149,7 +149,7 @@ describe("poe", () => {
     const amount = Number(info.amount);
     const mint = await getMint(program.provider.connection, info.mint);
     const balance = amount / 10 ** mint.decimals;
-    expect(balance).to.eq(2000, "Wrong balance");
+    expect(balance).to.eq(4000, "Wrong balance");
 
     expect(user1Account.score).to.approximately(100, 0.00001, "Wrong score");
     expect(user1Account.bump).to.eq(bump1);

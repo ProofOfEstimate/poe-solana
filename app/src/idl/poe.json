@@ -1,5 +1,5 @@
 {
-  "address": "HekQLx6SYDZgakKAkz7RqsbCesfCdbaHAUvQiWttpZB1",
+  "address": "8zc7ckn91DQ2hjLDH59NTLqx9iScEsL7GB1cn2hCYkCv",
   "metadata": {
     "name": "poe",
     "version": "0.1.0",
@@ -1907,6 +1907,10 @@
         "kind": "struct",
         "fields": [
           {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
             "name": "score",
             "type": "f32"
           },
@@ -1963,25 +1967,13 @@
             "type": "u64"
           },
           {
-            "name": "options",
+            "name": "reputation_score",
             "type": {
               "option": "f32"
             }
           },
           {
-            "name": "cost",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "ln_a",
-            "type": {
-              "option": "f32"
-            }
-          },
-          {
-            "name": "ln_b",
+            "name": "payout_score",
             "type": {
               "option": "f32"
             }

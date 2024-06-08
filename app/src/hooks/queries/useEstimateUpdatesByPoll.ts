@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { BN, Program } from "@coral-xyz/anchor";
-import { Poe } from "@/idl/poe";
 import { PublicKey } from "@solana/web3.js";
+import { Poe } from "@/idl/poe";
 
 type EstimateData = {
   name: Date;

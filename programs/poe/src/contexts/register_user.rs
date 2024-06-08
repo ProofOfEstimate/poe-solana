@@ -41,7 +41,7 @@ pub struct RegisterUser<'info> {
 
 impl<'info> RegisterUser<'info> {
     pub fn register_user(&mut self, bumps: &RegisterUserBumps) -> Result<()> {
-        self.user.set_inner(User::new(bumps.user));
+        self.user.set_inner(User::new(self.payer.key(), bumps.user));
         msg!("User registered");
         Ok(())
     }
@@ -57,7 +57,7 @@ impl<'info> RegisterUser<'info> {
                 },
                 &[&["auth".as_bytes(), &[bumps.auth]]],
             ),
-            2000 * 1000000000,
+            4000 * 1000000000,
         )?;
 
         msg!("Minted tokens");

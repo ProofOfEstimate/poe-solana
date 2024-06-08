@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/poe.json`.
  */
 export type Poe = {
-  address: "HekQLx6SYDZgakKAkz7RqsbCesfCdbaHAUvQiWttpZB1";
+  address: "8zc7ckn91DQ2hjLDH59NTLqx9iScEsL7GB1cn2hCYkCv";
   metadata: {
     name: "poe";
     version: "0.1.0";
@@ -1510,6 +1510,10 @@ export type Poe = {
         kind: "struct";
         fields: [
           {
+            name: "userAddress";
+            type: "pubkey";
+          },
+          {
             name: "score";
             type: "f32";
           },
@@ -1566,25 +1570,13 @@ export type Poe = {
             type: "u64";
           },
           {
-            name: "options";
+            name: "reputationScore";
             type: {
               option: "f32";
             };
           },
           {
-            name: "cost";
-            type: {
-              option: "f32";
-            };
-          },
-          {
-            name: "lnA";
-            type: {
-              option: "f32";
-            };
-          },
-          {
-            name: "lnB";
+            name: "payoutScore";
             type: {
               option: "f32";
             };
