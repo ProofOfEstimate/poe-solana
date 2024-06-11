@@ -1,19 +1,8 @@
 "use client";
 
 import MyPollsTab from "@/components/my-polls-tab";
-import { PollCard } from "@/components/poll-card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useAllPollsByUser } from "@/hooks/queries/useAllPollsByUser";
-import { usePollFilterStore } from "@/hooks/states/usePollFilterStore";
-import useAnchorProgram from "@/hooks/useAnchorProgram";
-import { Flex, Grid, Heading } from "@radix-ui/themes";
-import { useWallet } from "@solana/wallet-adapter-react";
+
+import { Heading } from "@radix-ui/themes";
 import { FC } from "react";
 
 const Polls: FC = () => {
