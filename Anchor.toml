@@ -5,10 +5,10 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-poe = "8zc7ckn91DQ2hjLDH59NTLqx9iScEsL7GB1cn2hCYkCv"
+poe = "ACyH6Avm4uYen8WWyTU4chExQqpF4gCHy5MmtqtpWomk"
 
 [programs.localnet]
-poe = "8zc7ckn91DQ2hjLDH59NTLqx9iScEsL7GB1cn2hCYkCv"
+poe = "ACyH6Avm4uYen8WWyTU4chExQqpF4gCHy5MmtqtpWomk"
 
 [registry]
 url = "https://api.apr.dev"
