@@ -143,9 +143,11 @@ const CreatedPolls = () => {
   const { data: allPolls, isLoading: isLoadingPolls } = useAllPolls(program);
   const createdPolls =
     allPolls !== undefined
-      ? allPolls.filter(
-          (poll) => poll.creator.toBase58() === wallet.publicKey?.toBase58()
-        )
+      ? allPolls
+          .filter(
+            (poll) => poll.creator.toBase58() === wallet.publicKey?.toBase58()
+          )
+          .sort((a, b) => a.id - b.id)
       : [];
 
   const [pollIndex, setPollIndex] = useState(-1);

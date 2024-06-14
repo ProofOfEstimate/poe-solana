@@ -102,6 +102,7 @@ const AllPolls = () => {
               (categories.includes(poll.category.toString()) ||
                 categories.length === 0)
           )
+          .sort((a, b) => a.id - b.id)
           .map((poll) => (
             <PollCard key={poll.id} pollId={poll.id} question={poll.question} />
           ))}
