@@ -1,0 +1,92 @@
+use anchor_lang::prelude::*;
+
+pub mod constants;
+pub mod contexts;
+pub mod errors;
+pub mod states;
+mod utils;
+
+use contexts::*;
+
+declare_id!("ACyH6Avm4uYen8WWyTU4chExQqpF4gCHy5MmtqtpWomk");
+
+#[program]
+pub mod poe {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        ctx.accounts.initialize(&ctx.bumps)
+    }
+
+    pub fn add_metadata(
+        ctx: Context<AddMetadata>,
+        uri: String,
+        name: String,
+        symbol: String,
+    ) -> Result<()> {
+        ctx.accounts.add_metadata(&ctx.bumps, uri, name, symbol)
+    }
+
+    pub fn register_user(ctx: Context<RegisterUser>) -> Result<()> {
+        ctx.accounts.register_user(&ctx.bumps)?;
+        ctx.accounts.mint_tokens(&ctx.bumps)
+    }
+
+    pub fn create_poll(
+        ctx: Context<CreatePoll>,
+        question: String,
+        description: String,
+        category: u16,
+        decay: f32,
+    ) -> Result<()> {
+        ctx.accounts
+            .create_poll(&ctx.bumps, question, description, category, decay)
+    }
+
+    pub fn start_poll(ctx: Context<StartPoll>) -> Result<()> {
+        ctx.accounts.start_poll()
+    }
+
+    pub fn make_estimate(
+        ctx: Context<MakeEstimate>,
+        lower_estimate: u16,
+        upper_estimate: u16,
+    ) -> Result<()> {
+        let estimate = (lower_estimate + upper_estimate) / 2;
+        let uncertainty = (upper_estimate - lower_estimate) as f32 / 100.0;
+
+        ctx.accounts
+            .sanity_checks(lower_estimate, upper_estimate, estimate)?;
+        ctx.accounts
+            .init_estimate_account(&ctx.bumps, lower_estimate, upper_estimate)?;
+        ctx.accounts.transfer_stake()?;
+        ctx.accounts
+            .update_collective_estimate(&ctx.bumps, estimate, uncertainty)
+    }
+
+    pub fn update_estimate(
+        ctx: Context<UpdateEstimate>,
+        new_lower_estimate: u16,
+        new_upper_estimate: u16,
+    ) -> Result<()> {
+        let new_estimate = (new_lower_estimate + new_upper_estimate) / 2;
+        let new_uncertainty = (new_upper_estimate - new_lower_estimate) as f32 / 100.0;
+        ctx.accounts
+            .update_collective_estimate(&ctx.bumps, new_estimate, new_uncertainty)?;
+        ctx.accounts
+            .update_user_estimate(new_lower_estimate, new_upper_estimate)
+    }
+
+    pub fn remove_estimate(ctx: Context<RemoveEstimate>) -> Result<()> {
+        ctx.accounts.remove_estimate(&ctx.bumps)
+    }
+
+    pub fn resolve_poll(ctx: Context<ResolvePoll>, result: bool) -> Result<()> {
+        ctx.accounts.resolve_poll(result)
+    }
+
+    pub fn collect_points(ctx: Context<CollectPoints>) -> Result<()> {
+        ctx.accounts.collect_points()?;
+        ctx.accounts.transfer_points_to_user(&ctx.bumps)
+    }
+}

@@ -1,0 +1,21 @@
+[toolchain]
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.devnet]
+poe = "ACyH6Avm4uYen8WWyTU4chExQqpF4gCHy5MmtqtpWomk"
+
+[programs.localnet]
+poe = "ACyH6Avm4uYen8WWyTU4chExQqpF4gCHy5MmtqtpWomk"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/Users/thomas/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
