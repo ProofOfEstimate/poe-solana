@@ -61,6 +61,8 @@ We aggregate all user-submitted probabilities to determine a real-time, fair mar
 #### Dynamic Asset Streaming
 Assets are continuously streamed to users based on the latest market price. This real-time adjustment keeps your positions aligned with the most current information, maximizing fairness and responsiveness.
 
+<img alt="Market Price and Option Streaming" src="/assets/market-price-and-streaming.png" width="480">
+
 
 ## Why Poe?
 
