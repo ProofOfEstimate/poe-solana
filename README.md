@@ -56,12 +56,12 @@ We are on a mission to build a fair and scalable prediction market that empowers
 Participants submit their subjective probabilities about future events (e.g., "75% chance that Event A will happen").
 
 #### Fair Market Price Aggregation
-We aggregate all user-submitted probabilities to determine a real-time, fair market price. 
+We aggregate all user-submitted probabilities to determine a real-time, fair market price between all users.
 
 #### Dynamic Asset Streaming
-Assets are continuously streamed to users based on the latest market price. This real-time adjustment keeps your positions aligned with the most current information, maximizing fairness and responsiveness.
+Assets are continuously streamed between users.
 
-<img alt="Market Price and Option Streaming" src="/assets/market-price-and-streaming.png" width="480">
+<img alt="Market Price and Option Streaming" src="/assets/streaming.png" width="480">
 
 
 ## Why Poe?
