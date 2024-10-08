@@ -45,7 +45,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-We are on a mission to build a scalable and stable prediction market that empowers better decision-making and fosters a more equitable financial ecosystem. By addressing the inherent flaws in traditional markets—such as front-running and liquidity constraints—we are paving the way for futarchy experiments and innovative governance models that could reshape organizations and societies alike.
+We are on a mission to build a fair and scalable prediction market that empowers better decision-making. By addressing the inherent flaws in traditional markets such as front-running and liquidity constraints we are paving the way for futarchy experiments and innovative governance models that could reshape organizations and societies alike.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
