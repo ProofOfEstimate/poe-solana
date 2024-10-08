@@ -26,10 +26,10 @@
 <div align="center">
   
 
-  <h1 align="center">POE - Proof of Estimate</h1>
+  <h1 align="center">Poe</h1>
 
   <p align="center">
-    Unlocking collective wisdom.
+    Reinventing Prediction Markets
     <br />
     <br />
     <a href="https://poe-solana-beta.vercel.app/" target="_blank" rel="noreferrer noopener">View Demo</a>
@@ -41,95 +41,39 @@
 </div>
 
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#scoring-system">Scoring system</a></li>
-        <li><a href="#why-poe">Why POE?</a></li>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-
-POE is a prediction poll that leverages the collective wisdom of its users to make predictions about future events.
-It fosters a collaborative environment, where users are motivated to exchange their insights and reasoning behind their estimates.
-
-At the heart of POE is an advanced scoring mechanism that records users' prediction accuracy over time, assigning greater 
-significance to individuals with a consistent history of precise forecasts. This system is enhanced by integrating temporal decay, 
-which prioritizes recent contributions, and recalibration techniques to refine the aggregation of user estimates.
-
-![POE Screenshot](/assets/screenshot.png)
+We are on a mission to build a scalable and stable prediction market that empowers better decision-making and fosters a more equitable financial ecosystem. By addressing the inherent flaws in traditional markets—such as front-running and liquidity constraints—we are paving the way for futarchy experiments and innovative governance models that could reshape organizations and societies alike.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Scoring System
+## How it works
 
-The scoring system tracks the historical accuracy of users' predictions and gives
-higher weight to those who have a proven track record of making accurate forecasts.
-The scoring system is the dynamically weighted sum of absolute and relative points.
-The weight shifts from absolute points for a small number of users to relative points
-for a large number of users.
+#### Belief-Based Trading Mechanism
+Participants submit their subjective probabilities about future events (e.g., "75% chance that Event A will happen").
 
-Users get absolute points for being correct, i.e. predicting a high probability for the actual outcome
-and relative points for being more correct, than the rest of the community.
+#### Fair Market Price Aggregation
+We aggregate all user-submitted probabilities to determine a real-time, fair market price. 
 
-#### Absolute points
-The logarithmic score is used to determine absolute points. It is a well
-researched and commonly used score in information theory.
-If we denote p as the expressed probability the score is:
-`x ln(p) + (1-x) ln(1-p) + ln(2)`
-where x is either one or zero depending on the truth or falsity of the estimate.
-
-#### Relative points
-Prediction markets are the inspiration to determine relative points. The collective
-prediction is considered as a market price. Participants that predict a higher or a
-lower probability are “buying” or “selling” continuously binary options.
-The virtual profit or loss enters the scoring system as relative points.
-![Relative points](/assets/relative-points.png)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+#### Dynamic Asset Streaming
+Assets are continuously streamed to users based on the latest market price. This real-time adjustment keeps your positions aligned with the most current information, maximizing fairness and responsiveness.
 
 
-### Why POE?
+## Why Poe?
 
-POE presents a compelling alternative to traditional prediction markets, potentially surpassing them in accuracy of forecasts. 
-While both POE and prediction markets aggregate forecasts to anticipate future events, their underlying motivations and reward systems reveal distinct values.
+Our platform is more than an innovative trading venue; it's a significant advancement for DeFi:
 
-Prediction markets operate through the buying and selling of contracts based on future events, with the primary objective of price determination. 
-Here, participants aim to maximize their profits rather than to seek truth. This profit-driven nature can sometimes incentivize manipulation over genuine prediction, 
-especially when high rewards are at stake.
+#### Eliminating Front-Running
+By removing the traditional order book and enabling continuous price recalculations, we prevent front-running and ensure a level playing field for all users.
 
-Conversely, POE is grounded in the pursuit of a deeper understanding of the world. It encourages participants to seek the truth, 
-fostering a community where the collective goal is enlightenment, not monetary gain. <a href="https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2015.2374" target="_blank" rel="noreferrer noopener">Research</a> supports that prediction polls equipped 
-with appropriate scoring feedback, collaborative capabilities, and sophisticated statistical aggregation methods can serve as a more 
-effective mechanism for harnessing the wisdom of crowds than traditional prediction markets.
+#### Enhancing Scalability and Liquidity
+Every participant inherently acts as a market maker. This unique model can scale to global demand.
 
-By launching as a large-scale experiment on the Solana blockchain, POE aspires not only to challenge the efficacy of existing prediction markets 
-but to redefine the standards for decision-making tools. Through its innovative approach, POE aims to become the definitive source for accurate predictions, 
-leveraging the collective intelligence of its users to illuminate the future. 
+#### Enabling Futarchy and Better Governance:
+By providing a reliable and expressive prediction market, we support futarchy experiments where policy decisions are guided by market predictions, leading to more informed and effective governance.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -171,7 +115,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 
 
-<!-- ROADMAP -->
+<!-- ROADMAP
 ## Roadmap
 
 - [ ] Build a community of truth seeker  
@@ -182,7 +126,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [ ] Provide computational resources and infrastructure for users to run their models and automate their predictions
      
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
 
 
